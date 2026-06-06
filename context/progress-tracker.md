@@ -1,0 +1,111 @@
+# Progress Tracker
+
+Update this file whenever the current phase, active feature, or implementation state changes.
+
+---
+
+## Current Phase
+
+**Phase 1 — Frontend UI Design**
+
+## Current Goal
+
+Set up the design system foundation: design tokens, global CSS, fonts (Playfair Display + Montserrat), shadcn/ui component installation, and the root layout.
+
+---
+
+## Completed
+
+- [x] Context files fully rewritten for Brand Estate real estate SaaS platform.
+- [x] Stack confirmed: Next.js 16, TypeScript, Tailwind CSS v4, shadcn/ui, Lucide React.
+- [x] `project-overview.md` — product goals, user roles, feature list, phase 1 scope defined.
+- [x] `architecture-context.md` — directory structure, route/role matrix, data interfaces, invariants.
+- [x] `ui-context.md` — color palette (affsflow-inspired), Playfair Display + Montserrat fonts, page inventory.
+- [x] `code-standards.md` — TypeScript, styling, font, component, cn() usage rules.
+- [x] `ai-workflow-rules.md` — spec-driven cycle, spec format, spec numbering, phase separation.
+- [x] `progress-tracker.md` — this file, reset and updated.
+- [x] **Spec 01 — Design System COMPLETE** ✅
+  - [x] `app/globals.css` rewritten: Brand Estate light + dark tokens, shadcn semantic overrides, `@theme inline` mappings, base layer, utility animations.
+  - [x] `app/layout.tsx` updated: Playfair Display + Montserrat via `next/font/google`, SEO metadata.
+  - [x] `lib/types.ts` created: UserRole, Property, Agent, Inquiry, all core interfaces.
+  - [x] `lib/constants.ts` created: role labels, property types, price ranges, amenities, nav links.
+  - [x] `lib/utils.ts` with `cn()` — already present, verified.
+  - [x] All 15 shadcn/ui components installed: Button, Card, Dialog, Input, Textarea, Tabs, ScrollArea, Badge, Select, Separator, Avatar, DropdownMenu, Table, Sheet, Skeleton.
+  - [x] `npm run build` ✅ — zero TypeScript errors, zero lint errors, clean production build.
+- [x] **Spec 02 — Root Layout & Navigation COMPLETE** ✅
+  - [x] Created `ThemeProvider` for zero-dependency theme management.
+  - [x] Created `ThemeToggle` dropdown using shadcn primitives.
+  - [x] Created unified `SearchModal` supporting tabbed search & country filtering.
+  - [x] Created geolocating `LocationSelector` using client-side lookup.
+  - [x] Created responsive `Navbar` and mobile navigation drawer.
+  - [x] Created content-rich semantic `Footer` with social icon SVGs.
+  - [x] Integrated header, footer, and FOUC prevention in `app/layout.tsx`.
+  - [x] Build and lint clean checks ✅.
+
+---
+
+## In Progress
+
+- [ ] **Spec 10 — Homepage**
+
+---
+
+## Next Up (Ordered)
+
+Phase 1 specs to be defined and implemented in order:
+
+| Spec  | Name                              | Status  |
+| ----- | --------------------------------- | ------- |
+| 01    | Design System & Tokens            | ✅ Done |
+| 02    | Root Layout & Navigation (Navbar, Footer) | ✅ Done |
+| 10    | Homepage                          | ⏳ Pending |
+| 11    | Property Search Page              | ⏳ Pending |
+| 12    | Property Detail Page              | ⏳ Pending |
+| 13    | Agent Directory Page              | ⏳ Pending |
+| 14    | Agent Public Profile Page         | ⏳ Pending |
+| 20    | Login Page                        | ⏳ Pending |
+| 21    | Register Page                     | ⏳ Pending |
+| 22    | Forgot / Reset Password Pages     | ⏳ Pending |
+| 30    | User Dashboard Home               | ⏳ Pending |
+| 31    | Saved Properties Page             | ⏳ Pending |
+| 32    | My Inquiries Page                 | ⏳ Pending |
+| 33    | Profile Settings Page             | ⏳ Pending |
+| 40    | Agent Dashboard Home              | ⏳ Pending |
+| 41    | My Listings Page                  | ⏳ Pending |
+| 42    | Create / Edit Listing Form        | ⏳ Pending |
+| 43    | Agent Leads / Inquiry Inbox       | ⏳ Pending |
+| 50    | Admin Dashboard Home              | ⏳ Pending |
+| 51    | Admin User Management             | ⏳ Pending |
+| 52    | Admin Listing Management          | ⏳ Pending |
+| 53    | Admin Reports                     | ⏳ Pending |
+| 60    | Super Admin Dashboard             | ⏳ Pending |
+| 61    | Role Management                   | ⏳ Pending |
+| 62    | Platform Settings                 | ⏳ Pending |
+
+---
+
+## Open Questions
+
+1. **Map integration**: Should the property map use a free tile provider (Leaflet + OpenStreetMap) or Google Maps? (Affects dependencies.)
+2. **Property image placeholder**: Should we use a generated placeholder image or a real estate stock image for mock listings?
+3. **Agent role self-registration**: Can users self-register as agents, or does an admin assign the agent role?
+4. **About / Contact pages**: Are these in scope for Phase 1 or deferred?
+
+---
+
+## Architecture Decisions
+
+- Stack is Next.js 16 App Router + TypeScript + Tailwind CSS v4 + shadcn/ui + Lucide React.
+- Backend (MongoDB + API routes) is deferred to Phase 2.
+- All data during Phase 1 is mocked via typed interfaces in `lib/types.ts` and `lib/mock-data.ts`.
+- Color tokens: affsflow.com-inspired — navy `#080D16`, primary blue `#0067D2`, white `#FFFFFF`.
+- Fonts: Playfair Display (headings) + Montserrat (body/UI).
+- Admin/dashboard pages use the dark theme variant; public pages use the light theme.
+
+---
+
+## Session Notes
+
+- Context files completely rewritten on 2026-06-06 to reflect Brand Estate real estate SaaS.
+- Previous context was for "Alien AI" (system design canvas app) — fully replaced.
+- Design system spec (`01`) needs to be updated to match the new color palette and fonts.
