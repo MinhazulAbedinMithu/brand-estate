@@ -50,12 +50,31 @@ Set up the design system foundation: design tokens, global CSS, fonts (Playfair 
   - [x] Redesigned the `WhyChooseUs` component using a 4-column, 2-row asymmetrical grid matching the layout image screenshot, styled with a deep dark navy background (`bg-accent-navy`) matching the CTA section, with 5 consolidated benefit cards and dynamic HSL glassmorphic color themes (Rose, Sky, Amber, Slate).
   - [x] Developed the `CtaSection` component containing a marketing banner and buttons utilizing animated conic rotating-gradient border outlines.
   - [x] Maintained 100% build stability with Next.js Turbopack compilation.
+- [x] **Spec 00 — Mock Data Schema Upgraded (2026-06-08)** ✅
+  - [x] Completely redesigned the mock data schema to the full production-ready specification.
+  - [x] `src/mocks/propertyTypes.ts` — new master type file: `BaseProperty`, 4 discriminator interfaces, `GeoPoint` (_geo for Meilisearch), `TaxHistoryEntry`, `PriceHistoryEntry`, `PropertySEO`, `ListerProfile`, `ApartmentAttributes`, `HouseAttributes`, `RoomShareAttributes`, `CommercialAttributes`, and all enums.
+  - [x] `src/mocks/apartmentsMock.ts` — 6 entries (NYC buy, Tokyo rent, Dubai buy, London rent, Singapore rent, Paris buy).
+  - [x] `src/mocks/housesMock.ts` — 5 entries (Malibu buy, Toronto buy, Hamptons rent, Melbourne buy, Austin buy). All roofType/foundationType/heatingCoolingSystem/backyardArea attributes populated.
+  - [x] `src/mocks/roomSharesMock.ts` — 5 entries (London, Sydney, NYC, Berlin, Singapore). All roomType/bathroomType/preferredGender/utilitiesIncluded/minimumLeasePeriod attributes populated.
+  - [x] `src/mocks/commercialMock.ts` — 5 entries covering all 4 zoning codes (retail×2, office, industrial, warehouse). All ceilingHeight/loadingDocks/electricalCapacity attributes populated.
+  - [x] `src/mocks/propertiesMock.ts` — Barrel re-export with aggregated `mockProperties` (21 total) + `mockFeaturedProperties`, `mockPropertiesForSale`, `mockPropertiesForRent`, `mockActiveProperties` convenience filters.
+- [x] **Spec 11 — Property Search Page COMPLETE** ✅
+  - [x] Integrated client-side filters sidebar with immediate router-driven URL param updates.
+  - [x] Created `PropertySortBar` providing sort options, list/grid toggle, and results count.
+  - [x] Designed `PropertyGrid` supporting grid/list card templates, with `EmptyState` fallback.
+  - [x] Wired pagination and parsed RawSearchParams using dynamic Next.js 16 routing conventions.
+- [x] **Spec 12 — Property Detail Page COMPLETE** ✅
+  - [x] Created `PropertyGallery` displaying full viewport hero images, navigation, and dialogs for YouTube and Matterport 3D Tours.
+  - [x] Created `PropertySpecs` rendering general features and category-specific (discriminator) tables.
+  - [x] Created `PropertyPriceHistory` showing Realtor.com vertical event timelines and Redfin tax histories.
+  - [x] Created `AgentContactCard` offering quick call/email triggers and validation-hardened inquiry forms.
+  - [x] Integrated `RelatedListings` to show up to 4 active similar listings.
 
 ---
 
 ## In Progress
 
-- [ ] **Spec 11 — Property Search Page**
+- [ ] **Spec 13 — Agent Directory Page**
 
 ---
 
@@ -69,8 +88,8 @@ Phase 1 specs to be defined and implemented in order:
 | 01    | Design System & Tokens            | ✅ Done |
 | 02    | Root Layout & Navigation (Navbar, Footer) | ✅ Done |
 | 10    | Homepage                          | ✅ Done |
-| 11    | Property Search Page              | ⏳ Pending |
-| 12    | Property Detail Page              | ⏳ Pending |
+| 11    | Property Search Page              | ✅ Done |
+| 12    | Property Detail Page              | ✅ Done |
 | 13    | Agent Directory Page              | ⏳ Pending |
 | 14    | Agent Public Profile Page         | ⏳ Pending |
 | 20    | Login Page                        | ⏳ Pending |

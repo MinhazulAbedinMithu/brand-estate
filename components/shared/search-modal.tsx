@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { COUNTRIES } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 
 interface SearchModalProps {
@@ -28,6 +29,7 @@ export function SearchModal({
   selectedCountry,
   onSelectCountry,
 }: SearchModalProps) {
+  const router = useRouter();
   const [activeTab, setActiveTab] = React.useState<"search" | "location">(defaultTab);
   const [searchQuery, setSearchQuery] = React.useState("");
   const [isFocused, setIsFocused] = React.useState(false);
@@ -52,6 +54,15 @@ export function SearchModal({
   const handleCountrySelect = (country: string) => {
     if (onSelectCountry) {
       onSelectCountry(country);
+    }
+    onClose();
+  };
+
+  const handleSearchSubmit = () => {
+    if (searchQuery.trim()) {
+      router.push(`/properties?q=${encodeURIComponent(searchQuery.trim())}`);
+    } else {
+      router.push("/properties");
     }
     onClose();
   };
@@ -120,6 +131,11 @@ export function SearchModal({
                 onFocus={() => setIsFocused(true)}
                 onBlur={() => setIsFocused(false)}
                 onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    handleSearchSubmit();
+                  }
+                }}
               />
             </div>
 
@@ -135,7 +151,8 @@ export function SearchModal({
                       variant="outline"
                       className="rounded-full text-xs font-semibold border-border-default/60 bg-bg-surface/80 hover:bg-bg-elevated hover:text-text-primary hover:border-border-default text-text-secondary transition-all duration-200 px-4 py-1.5 h-auto cursor-pointer"
                       onClick={() => {
-                        setSearchQuery(tag);
+                        router.push(`/properties?q=${encodeURIComponent(tag)}`);
+                        onClose();
                       }}
                     >
                       {tag}
@@ -148,7 +165,7 @@ export function SearchModal({
             <div className="pt-2 flex justify-end">
               <Button
                 className="bg-accent-primary hover:bg-accent-primary-hov text-white rounded-full px-6 py-5 h-auto font-semibold shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 cursor-pointer"
-                onClick={onClose}
+                onClick={handleSearchSubmit}
               >
                 Search Properties
               </Button>

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Search, MapPin, Building2, Bed, Bath, ChevronLeft, ChevronRight, Sparkles, Building, Key, Landmark, Eye } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { mockProperties } from "@/src/mocks/propertiesMock";
+import { mockFeaturedProperties } from "@/src/mocks/propertiesMock";
 import { buttonVariants } from "@/components/ui/button";
 import { PRICE_RANGES_SALE, PRICE_RANGES_RENT } from "@/lib/constants";
 
@@ -21,7 +21,7 @@ const BACKGROUND_IMAGES: Record<TabType, string> = {
 const PROPERTY_TYPE_MAP: Record<string, string> = {
   apartment: "Apartment",
   house: "House",
-  roomshare: "Room Share",
+  room_share: "Room Share",
   commercial: "Commercial",
 };
 
@@ -38,9 +38,7 @@ export function HeroSection() {
 
   // Slider State (Right 1/4 Column) - Filter mockProperties for slider (e.g. premium ones)
   const bestDeals = React.useMemo(() => {
-    return mockProperties.filter(
-      (p) => p.id === "mock-prop-apt-1" || p.id === "mock-prop-house-1" || p.id === "mock-prop-comm-1"
-    );
+    return mockFeaturedProperties.slice(0, 3);
   }, []);
 
   const [currentSlide, setCurrentSlide] = React.useState(0);
@@ -85,14 +83,14 @@ export function HeroSection() {
       return;
     }
 
-    params.set("type", activeTab === "buy" ? "sale" : "rent");
+    params.set("type", activeTab);
 
     if (location) {
-      params.set("query", location);
+      params.set("q", location);
     }
 
     if (propertyType !== "all") {
-      params.set("propertyType", propertyType);
+      params.set("category", propertyType);
     }
 
     if (priceRange !== "all") {
@@ -287,7 +285,7 @@ export function HeroSection() {
           {bestDeals.map((property, idx) => (
             <div
               key={property.id}
-              onClick={() => router.push(`/property/${property.id}`)}
+              onClick={() => router.push(`/property/${property.slug}`)}
               className={cn(
                 "absolute inset-0 bg-cover bg-center transition-all duration-1000 ease-in-out cursor-pointer",
                 currentSlide === idx ? "opacity-100 scale-100 visible" : "opacity-0 scale-105 invisible pointer-events-none"
@@ -325,7 +323,7 @@ export function HeroSection() {
 
           {/* Content Info Card Overlay */}
           <div
-            onClick={() => router.push(`/property/${bestDeals[currentSlide].id}`)}
+            onClick={() => router.push(`/property/${bestDeals[currentSlide].slug}`)}
             className="relative bg-white/10 dark:bg-black/25 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-2xl p-4 cursor-pointer hover:bg-white/15 dark:hover:bg-black/35 hover:scale-[1.01] transition-all duration-300 z-10 space-y-3 shadow-lg select-none"
           >
             {/* Quick Specs */}
@@ -340,11 +338,11 @@ export function HeroSection() {
 
             <div className="space-y-1">
               <h3 className="font-heading text-sm sm:text-base font-bold text-white truncate drop-shadow-md">
-                {bestDeals[currentSlide].title}
+                {mockFeaturedProperties[currentSlide].title}
               </h3>
               <p className="text-[11px] text-white/80 flex items-center gap-1 font-medium truncate">
                 <MapPin className="h-3.5 w-3.5 shrink-0 text-accent-primary" />
-                {bestDeals[currentSlide].location.city}, {bestDeals[currentSlide].location.state}
+                {mockFeaturedProperties[currentSlide].city}, {mockFeaturedProperties[currentSlide].state}
               </p>
             </div>
 
@@ -352,11 +350,11 @@ export function HeroSection() {
             <div className="flex justify-between items-center text-[10px] sm:text-xs text-white/90 pt-2 border-t border-white/15">
               <span className="flex items-center gap-1.5 font-semibold">
                 <Bed className="h-3.5 w-3.5 text-accent-primary" />
-                {bestDeals[currentSlide].rooms} Rooms
+                {bestDeals[currentSlide].bedrooms} Rooms
               </span>
               <span className="flex items-center gap-1.5 font-semibold">
                 <Bath className="h-3.5 w-3.5 text-accent-primary" />
-                {bestDeals[currentSlide].washrooms} Baths
+                {bestDeals[currentSlide].bathrooms} Baths
               </span>
               <span className="flex items-center gap-1.5 font-semibold">
                 <Eye className="h-3.5 w-3.5 text-accent-primary" />
