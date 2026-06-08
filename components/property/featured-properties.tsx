@@ -20,8 +20,8 @@ export function FeaturedProperties() {
   }, []);
 
   return (
-    <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 sm:space-y-12">
-      
+    <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 sm:space-y-12 pt-20 pb-10">
+
       {/* Header Bar */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div className="space-y-3">
@@ -36,9 +36,9 @@ export function FeaturedProperties() {
             Explore our collection of top-tier listings selected for outstanding location, high-performance commission splits, and premium design.
           </p>
         </div>
-        
-        <Link 
-          href="/properties" 
+
+        <Link
+          href="/properties"
           className="group flex items-center gap-1.5 text-sm font-bold text-accent-primary hover:text-accent-primary-hov transition-colors duration-200 shrink-0"
         >
           View All Listings
@@ -49,21 +49,21 @@ export function FeaturedProperties() {
       {/* Grid of properties */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {featuredListings.map((property) => (
-          <Link 
-            key={property.id} 
+          <Link
+            key={property.id}
             href={`/property/${property.id}`}
             className="group flex flex-col bg-bg-surface border border-border-default/45 rounded-2xl overflow-hidden hover:-translate-y-1 hover:shadow-xl hover:border-border-default/80 transition-all duration-300"
           >
             {/* Image Container */}
             <div className="relative aspect-4/3 w-full overflow-hidden bg-bg-elevated">
-              <img 
-                src={property.images[0]} 
+              <img
+                src={property.images[0]}
                 alt={property.title}
                 className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500"
                 loading="lazy"
               />
               {/* Floating Favorite Action */}
-              <div 
+              <div
                 className="absolute top-3 right-3 flex items-center justify-center h-8 w-8 rounded-full bg-white/70 hover:bg-white border border-white/20 backdrop-blur-md text-text-secondary hover:text-state-error shadow-sm transition-all duration-200 cursor-pointer"
                 onClick={(e) => {
                   e.preventDefault();
@@ -72,7 +72,7 @@ export function FeaturedProperties() {
               >
                 <Heart className="h-4.5 w-4.5" />
               </div>
-              
+
               {/* Bottom tag row */}
               <div className="absolute bottom-3 left-3 flex gap-1.5">
                 <span className="bg-accent-navy/85 backdrop-blur-md text-white text-[10px] px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider">
@@ -94,17 +94,17 @@ export function FeaturedProperties() {
                       <span className="text-xs text-text-muted font-body font-medium">/mo</span>
                     )}
                   </span>
-                  
+
                   {/* Commission Indicator */}
                   <span className="text-[10px] bg-state-success/10 border border-state-success/20 text-state-success px-2 py-0.5 rounded-md font-semibold select-none">
                     {property.agentCommissionPercent}% Comm.
                   </span>
                 </div>
-                
+
                 <h3 className="text-text-primary text-sm sm:text-base font-bold font-body line-clamp-1 group-hover:text-accent-primary transition-colors duration-200">
                   {property.title}
                 </h3>
-                
+
                 <p className="text-text-muted text-xs flex items-center gap-1 font-medium truncate">
                   <MapPin className="h-3.5 w-3.5 shrink-0 text-accent-primary/80" />
                   {property.location.street}, {property.location.city}

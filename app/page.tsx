@@ -11,8 +11,8 @@ export const metadata = {
 
 export default function Homepage() {
   return (
-    <div className="bg-bg-base min-h-screen pb-16 space-y-16 sm:space-y-24 overflow-hidden">
-      
+    <div className="bg-bg-base min-h-screen pb-16 overflow-hidden">
+
       {/* 1. HERO SECTION */}
       <HeroSection />
 

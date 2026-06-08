@@ -10,7 +10,8 @@ interface CategoryCard {
   title: string;
   description: string;
   icon: React.ComponentType<{ className?: string }>;
-  color: string; // Gradient background/accent colors
+  color: string; // Icon wrapper accent color
+  bgImage: string; // Unsplash background image URL
   href: string;
 }
 
@@ -20,7 +21,8 @@ const CATEGORIES: CategoryCard[] = [
     title: "Recommended Homes",
     description: "Curated specifically for your lifestyle and preferences.",
     icon: Heart,
-    color: "from-rose-500/20 to-pink-500/20 border-rose-500/35",
+    color: "from-rose-500/20 to-pink-500/20 border-rose-500/35 text-rose-300",
+    bgImage: "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=600&q=80",
     href: "/properties?tag=recommended",
   },
   {
@@ -28,7 +30,8 @@ const CATEGORIES: CategoryCard[] = [
     title: "New Listings",
     description: "Fresh properties published onto our index within 24 hours.",
     icon: Sparkles,
-    color: "from-amber-500/20 to-yellow-500/20 border-amber-500/35",
+    color: "from-amber-500/20 to-yellow-500/20 border-amber-500/35 text-amber-300",
+    bgImage: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=600&q=80",
     href: "/properties?tag=new",
   },
   {
@@ -36,7 +39,8 @@ const CATEGORIES: CategoryCard[] = [
     title: "New Constructions",
     description: "Brand new homes featuring modern materials and smart systems.",
     icon: Building2,
-    color: "from-blue-500/20 to-sky-500/20 border-blue-500/35",
+    color: "from-blue-500/20 to-sky-500/20 border-blue-500/35 text-sky-300",
+    bgImage: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=600&q=80",
     href: "/properties?tag=construction",
   },
   {
@@ -44,7 +48,8 @@ const CATEGORIES: CategoryCard[] = [
     title: "Price Reduced",
     description: "Properties with recent price drops offering superb value.",
     icon: TrendingDown,
-    color: "from-emerald-500/20 to-teal-500/20 border-emerald-500/35",
+    color: "from-emerald-500/20 to-teal-500/20 border-emerald-500/35 text-emerald-300",
+    bgImage: "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=600&q=80",
     href: "/properties?tag=reduced",
   },
   {
@@ -52,7 +57,8 @@ const CATEGORIES: CategoryCard[] = [
     title: "Luxury Estates",
     description: "Elite level homes, penthouses, and private coastal villas.",
     icon: Gem,
-    color: "from-purple-500/20 to-indigo-500/20 border-purple-500/35",
+    color: "from-purple-500/20 to-indigo-500/20 border-purple-500/35 text-purple-300",
+    bgImage: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=600&q=80",
     href: "/properties?tag=luxury",
   },
   {
@@ -60,7 +66,8 @@ const CATEGORIES: CategoryCard[] = [
     title: "Foreclosures",
     description: "Bank-owned properties listing below standard market rate.",
     icon: Landmark,
-    color: "from-red-500/20 to-orange-500/20 border-red-500/35",
+    color: "from-red-500/20 to-orange-500/20 border-red-500/35 text-red-300",
+    bgImage: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=600&q=80",
     href: "/properties?tag=foreclosure",
   },
 ];
@@ -112,46 +119,94 @@ export function CategorySlider() {
   };
 
   return (
-    <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6 sm:space-y-8">
-      {/* Section Header */}
-      <div className="flex items-center justify-between">
-        <div className="space-y-2">
-          <h2 className="text-2xl sm:text-3xl text-text-primary font-heading font-extrabold tracking-tight">
-            Explore by Category
-          </h2>
-          <p className="text-text-muted text-xs sm:text-sm font-body font-normal">
-            Quickly browse properties filtering on exclusive segments and listing tags.
-          </p>
-        </div>
+    <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative group/slider-container">
+      {/* Self-contained Magic UI Border Beam conic gradient animation */}
+      <style dangerouslySetInnerHTML={{
+        __html: `
+          @keyframes beam-rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+          .border-beam-card {
+            position: relative;
+            padding: 1.5px;
+            overflow: hidden;
+            border-radius: 1.5rem; /* rounded-2xl */
+            display: flex;
+            flex-direction: column;
+            height: 12rem; /* h-48 */
+            z-index: 0;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+          }
+          .dark .border-beam-card {
+            background: rgba(1, 6, 17, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+          }
+          
+          .border-beam-card::before {
+            content: '';
+            position: absolute;
+            z-index: -2;
+            left: -50%;
+            top: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(
+              from 0deg,
+              transparent 75%,
+              #1d8cff 88%,
+              #38bdf8 95%,
+              transparent 100%
+            );
+            animation: beam-rotate 4s linear infinite;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+          }
+          .border-beam-card:hover::before {
+            opacity: 1;
+          }
+          .border-beam-inner {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            height: 100%;
+            border-radius: calc(1.5rem - 1.5px);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 1.5rem; /* p-6 */
+            background: rgba(15, 23, 42, 0.6); /* dark overlay base */
+          }
+        `
+      }} />
 
-        {/* Navigation Arrows */}
-        <div className="flex gap-2 shrink-0">
-          <button
-            onClick={() => handleScroll("left")}
-            disabled={!canScrollLeft}
-            className={cn(
-              "h-10 w-10 rounded-full border border-border-default/45 flex items-center justify-center text-text-secondary hover:text-accent-primary hover:border-accent-primary backdrop-blur-md transition-all duration-200 cursor-pointer disabled:opacity-30 disabled:pointer-events-none",
-              "bg-white/40 dark:bg-accent-navy/40"
-            )}
-            aria-label="Slide left"
-          >
-            <ChevronLeft className="h-5 w-5" />
-          </button>
-          <button
-            onClick={() => handleScroll("right")}
-            disabled={!canScrollRight}
-            className={cn(
-              "h-10 w-10 rounded-full border border-border-default/45 flex items-center justify-center text-text-secondary hover:text-accent-primary hover:border-accent-primary backdrop-blur-md transition-all duration-200 cursor-pointer disabled:opacity-30 disabled:pointer-events-none",
-              "bg-white/40 dark:bg-accent-navy/40"
-            )}
-            aria-label="Slide right"
-          >
-            <ChevronRight className="h-5 w-5" />
-          </button>
-        </div>
-      </div>
+      {/* Floating Navigation Chevrons on Hover */}
+      <button
+        onClick={() => handleScroll("left")}
+        disabled={!canScrollLeft}
+        className={cn(
+          "absolute left-6 top-1/2 -translate-y-1/2 z-20 h-11 w-11 rounded-full border border-white/20 bg-accent-navy/60 hover:bg-accent-primary text-white flex items-center justify-center transition-all duration-300 cursor-pointer shadow-lg opacity-0 group-hover/slider-container:opacity-100 disabled:pointer-events-none disabled:opacity-0"
+        )}
+        aria-label="Slide left"
+      >
+        <ChevronLeft className="h-5 w-5" />
+      </button>
 
-      {/* Horizontal Carousel */}
+      <button
+        onClick={() => handleScroll("right")}
+        disabled={!canScrollRight}
+        className={cn(
+          "absolute right-6 top-1/2 -translate-y-1/2 z-20 h-11 w-11 rounded-full border border-white/20 bg-accent-navy/60 hover:bg-accent-primary text-white flex items-center justify-center transition-all duration-300 cursor-pointer shadow-lg opacity-0 group-hover/slider-container:opacity-100 disabled:pointer-events-none disabled:opacity-0"
+        )}
+        aria-label="Slide right"
+      >
+        <ChevronRight className="h-5 w-5" />
+      </button>
+
+      {/* Horizontal Carousel Snap Container */}
       <div
         ref={scrollRef}
         className="flex gap-4 overflow-x-auto snap-x snap-mandatory scrollbar-none pb-4 px-0.5"
@@ -161,36 +216,45 @@ export function CategorySlider() {
             key={category.id}
             href={category.href}
             data-card
-            className={cn(
-              "snap-start shrink-0 w-[80%] sm:w-[47%] lg:w-[calc(25%-12px)] relative rounded-2xl p-6 border transition-all duration-300 hover:scale-[1.02] flex flex-col justify-between h-48",
-              "backdrop-blur-md bg-white/10 dark:bg-accent-navy/40 border-white/20 dark:border-white/10 hover:bg-white/15 dark:hover:bg-accent-navy/55 shadow-lg group"
-            )}
+            className="snap-start shrink-0 w-[80%] sm:w-[47%] lg:w-[calc(25%-12px)] border-beam-card group"
           >
-            {/* Top Row: Icon Box */}
-            <div className="flex justify-between items-start">
-              <div
-                className={cn(
-                  "h-12 w-12 rounded-xl flex items-center justify-center bg-linear-to-br border shadow-sm",
-                  category.color
-                )}
-              >
-                <category.icon className="h-6 w-6 text-text-primary dark:text-white group-hover:scale-110 transition-transform duration-300" />
-              </div>
+            {/* The outer container holds the border-beam styling. The inner holds the card content */}
+            <div className="border-beam-inner">
+              {/* Unsplash Background Image with hover zoom */}
+              <div 
+                className="absolute inset-0 bg-cover bg-center group-hover:scale-110 transition-transform duration-700 -z-20"
+                style={{ backgroundImage: `url('${category.bgImage}')` }}
+              />
               
-              {/* Micro badge */}
-              <span className="text-[10px] font-bold text-accent-primary uppercase tracking-wider opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                Explore &rarr;
-              </span>
-            </div>
+              {/* Card Contrast Overlay */}
+              <div className="absolute inset-0 bg-linear-to-t from-accent-navy/95 via-accent-navy/70 to-accent-navy/35 -z-10" />
+              
+              {/* Top Row: Icon Box */}
+              <div className="flex justify-between items-start">
+                <div
+                  className={cn(
+                    "h-11 w-11 rounded-xl flex items-center justify-center bg-linear-to-br border shadow-sm",
+                    category.color
+                  )}
+                >
+                  <category.icon className="h-5.5 w-5.5 transition-transform duration-300 group-hover:scale-110" />
+                </div>
+                
+                {/* Micro badge */}
+                <span className="text-[10px] font-bold text-sky-400 uppercase tracking-wider opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  Explore &rarr;
+                </span>
+              </div>
 
-            {/* Bottom Row: Text content */}
-            <div className="space-y-1 mt-4">
-              <h3 className="font-heading text-base font-bold text-text-primary group-hover:text-accent-primary transition-colors duration-200">
-                {category.title}
-              </h3>
-              <p className="text-xs text-text-muted font-body leading-relaxed line-clamp-2">
-                {category.description}
-              </p>
+              {/* Bottom Row: Text content */}
+              <div className="space-y-1 relative z-10">
+                <h3 className="font-heading text-base font-bold text-white group-hover:text-sky-300 transition-colors duration-200 drop-shadow-sm">
+                  {category.title}
+                </h3>
+                <p className="text-xs text-white/80 font-body leading-relaxed line-clamp-2 drop-shadow-sm">
+                  {category.description}
+                </p>
+              </div>
             </div>
           </Link>
         ))}

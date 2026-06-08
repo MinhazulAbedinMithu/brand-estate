@@ -46,7 +46,7 @@ Set up the design system foundation: design tokens, global CSS, fonts (Playfair 
   - [x] Refined `HeroSection` with a floating glassmorphic container overlay on the left background image.
   - [x] Developed the `CategorySlider` component featuring a scroll-snap horizontal list with manual chevron navigation and responsive touch swipe.
   - [x] Developed the `FeaturedProperties` grid rendering 4 dynamic cards aligned with base and discriminator properties.
-  - [x] Developed the `WhyChooseUs` component using a customized asymmetrical 5-column grid layout for desktop with clean hover glows.
+  - [x] Redesigned the `WhyChooseUs` component using a 4-column, 2-row asymmetrical grid matching the layout image screenshot, styled with a deep dark navy background (`bg-accent-navy`) matching the CTA section, with 5 consolidated benefit cards and dynamic HSL glassmorphic color themes (Rose, Sky, Amber, Slate).
   - [x] Developed the `CtaSection` component containing a marketing banner and buttons utilizing animated conic rotating-gradient border outlines.
   - [x] Maintained 100% build stability with Next.js Turbopack compilation.
 
