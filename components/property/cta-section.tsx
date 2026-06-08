@@ -3,74 +3,30 @@
 import * as React from "react";
 import Link from "next/link";
 import { ArrowUpRight, ShieldCheck, Mail } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 export function CtaSection() {
   return (
     <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      {/* Self-contained premium conic border animation styles */}
       <style dangerouslySetInnerHTML={{
         __html: `
-          @keyframes rotate-border {
+          @keyframes beam-rotate-cta {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
           }
-          .glow-border-btn {
+          .border-beam-section {
             position: relative;
-            padding: 1.5px;
+            padding: 2px;
             overflow: hidden;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 9999px;
+            border-radius: 1.875rem; /* 30px */
             z-index: 0;
+            background: var(--border-default);
+            transition: all 0.3s ease;
           }
-          .glow-border-btn::before {
-            content: '';
-            position: absolute;
-            z-index: -2;
-            left: -50%;
-            top: -50%;
-            width: 200%;
-            height: 200%;
-            background: conic-gradient(
-              from 0deg,
-              transparent 20%,
-              #1d8cff 40%,
-              #0067d2 60%,
-              transparent 80%,
-              #1d8cff 100%
-            );
-            animation: rotate-border 4s linear infinite;
-          }
-          .glow-border-btn::after {
-            content: '';
-            position: absolute;
-            z-index: -1;
-            left: 1.5px;
-            top: 1.5px;
-            width: calc(100% - 3px);
-            height: calc(100% - 3px);
-            background: #010611;
-            border-radius: 9999px;
-            transition: background 0.3s ease;
-          }
-          .glow-border-btn:hover::after {
-            background: #0d1829;
+          .dark .border-beam-section {
+            background: var(--border-default);
           }
           
-          /* Success variant (for contact) */
-          .glow-border-success {
-            position: relative;
-            padding: 1.5px;
-            overflow: hidden;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 9999px;
-            z-index: 0;
-          }
-          .glow-border-success::before {
+          .border-beam-section::before {
             content: '';
             position: absolute;
             z-index: -2;
@@ -80,79 +36,69 @@ export function CtaSection() {
             height: 200%;
             background: conic-gradient(
               from 0deg,
-              transparent 20%,
-              #16a34a 40%,
-              #22c55e 60%,
-              transparent 80%,
-              #16a34a 100%
+              transparent 70%,
+              var(--accent-primary) 85%,
+              #38bdf8 97%,
+              transparent 100%
             );
-            animation: rotate-border 4s linear infinite;
+            animation: beam-rotate-cta 8s linear infinite;
+            pointer-events: none;
           }
-          .glow-border-success::after {
-            content: '';
-            position: absolute;
-            z-index: -1;
-            left: 1.5px;
-            top: 1.5px;
-            width: calc(100% - 3px);
-            height: calc(100% - 3px);
-            background: #010611;
-            border-radius: 9999px;
-            transition: background 0.3s ease;
+          
+          .border-beam-section:hover {
+            box-shadow: 0 20px 40px -15px rgba(0, 103, 210, 0.12);
           }
-          .glow-border-success:hover::after {
-            background: #0b2214;
+          .dark .border-beam-section:hover {
+            box-shadow: 0 20px 40px -15px rgba(29, 140, 255, 0.15);
           }
         `
       }} />
 
-      <div className="relative rounded-3xl overflow-hidden bg-accent-navy text-white py-16 px-6 sm:px-12 lg:px-16 shadow-2xl border border-white/10 flex flex-col lg:flex-row items-center justify-between gap-8 sm:gap-12">
-        
-        {/* Decorative glass bubbles */}
-        <div className="absolute top-0 right-0 -mt-16 -mr-16 w-80 h-80 rounded-full bg-accent-primary/15 blur-3xl -z-10" />
-        <div className="absolute bottom-0 left-0 -mb-16 -ml-16 w-80 h-80 rounded-full bg-state-info/10 blur-3xl -z-10" />
-        
-        {/* Left Side Copy */}
-        <div className="space-y-4 max-w-xl text-center lg:text-left">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/5 border border-white/10 backdrop-blur-md text-[10px] sm:text-xs font-bold uppercase tracking-wider text-accent-primary">
-            <ShieldCheck className="h-4 w-4" />
-            Join the Network
-          </div>
-          <h2 className="text-3xl sm:text-4xl text-white font-heading font-extrabold leading-tight">
-            Ready to List Your Property?
-          </h2>
-          <p className="text-white/80 text-sm sm:text-base font-body leading-relaxed">
-            Gain immediate exposure. Showcase your apartments, villas, and commercial spaces on our high-speed real estate SaaS platform connecting clients globally.
-          </p>
-        </div>
+      <div className="border-beam-section shadow-md">
+        <div className="relative rounded-[calc(1.875rem-2px)] overflow-hidden bg-bg-alt dark:bg-accent-navy text-text-primary dark:text-white py-16 px-6 sm:px-12 lg:px-16 flex flex-col lg:flex-row items-center justify-between gap-8 sm:gap-12 transition-colors duration-300">
 
-        {/* Right Side Buttons (With Conic Animated Borders) */}
-        <div className="flex flex-col sm:flex-row gap-4 shrink-0 w-full sm:w-auto items-center justify-center">
-          
-          {/* Button 1: Conic Animated Primary Border */}
-          <div className="glow-border-btn w-full sm:w-auto group">
-            <Link 
+          {/* Decorative glass bubbles */}
+          <div className="absolute top-0 right-0 -mt-16 -mr-16 w-80 h-80 rounded-full bg-accent-primary/10 dark:bg-accent-primary/15 blur-3xl -z-10" />
+          <div className="absolute bottom-0 left-0 -mb-16 -ml-16 w-80 h-80 rounded-full bg-state-info/5 dark:bg-state-info/10 blur-3xl -z-10" />
+
+          {/* Left Side Copy */}
+          <div className="space-y-4 max-w-xl text-center lg:text-left">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-accent-primary/5 dark:bg-white/5 border border-accent-primary/10 dark:border-white/10 backdrop-blur-md text-[10px] sm:text-xs font-bold uppercase tracking-wider text-accent-primary">
+              <ShieldCheck className="h-4 w-4" />
+              Join the Network
+            </div>
+            <h2 className="text-3xl sm:text-4xl text-text-primary dark:text-white font-heading font-extrabold leading-tight">
+              Ready to List Your Property?
+            </h2>
+            <p className="text-text-muted dark:text-white/80 text-sm sm:text-base font-body leading-relaxed">
+              Gain immediate exposure. Showcase your apartments, villas, and commercial spaces on our high-speed real estate SaaS platform connecting clients globally.
+            </p>
+          </div>
+
+          {/* Right Side Buttons */}
+          <div className="flex flex-col sm:flex-row gap-4 shrink-0 w-full sm:w-auto items-center justify-center">
+
+            {/* Button 1: Solid Premium Accent */}
+            <Link
               href="/register?role=agent"
-              className="relative z-10 px-8 py-4 text-sm font-bold uppercase tracking-wider text-white flex items-center justify-center gap-2 font-body"
+              className="w-full sm:w-auto px-8 py-4 text-sm font-bold uppercase tracking-wider text-white bg-accent-primary hover:bg-accent-primary-hov rounded-full flex items-center justify-center gap-2 font-body shadow-md transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg group"
             >
               Get Started as Agent
-              <ArrowUpRight className="h-4.5 w-4.5 text-accent-primary group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-200" />
+              <ArrowUpRight className="h-4.5 w-4.5 text-white/90 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-200" />
             </Link>
-          </div>
 
-          {/* Button 2: Conic Animated Success Border */}
-          <div className="glow-border-success w-full sm:w-auto group">
-            <Link 
+            {/* Button 2: Glassmorphic / Outlined dynamic color */}
+            <Link
               href="/contact"
-              className="relative z-10 px-8 py-4 text-sm font-bold uppercase tracking-wider text-white flex items-center justify-center gap-2 font-body"
+              className="w-full sm:w-auto px-8 py-4 text-sm font-bold uppercase tracking-wider text-text-primary dark:text-white bg-white hover:bg-bg-elevated border border-border-default dark:bg-white/10 dark:hover:bg-white/20 dark:border-white/20 dark:hover:border-white/40 rounded-full flex items-center justify-center gap-2 font-body shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md group"
             >
               Contact Office
-              <Mail className="h-4.5 w-4.5 text-state-success group-hover:scale-110 transition-transform duration-200" />
+              <Mail className="h-4.5 w-4.5 text-text-primary/95 dark:text-white/90 group-hover:scale-110 transition-transform duration-200" />
             </Link>
+
           </div>
 
         </div>
-
       </div>
     </section>
   );

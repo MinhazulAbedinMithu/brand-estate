@@ -112,7 +112,7 @@ export function Navbar() {
           </div>
 
           {/* Middle: Navigation Links (Desktop) */}
-          <nav aria-label="Main Navigation" className="hidden md:flex items-center justify-center flex-1">
+          <nav aria-label="Main Navigation" className="hidden lg:flex items-center justify-center flex-1">
             <ul className="flex items-center space-x-1">
               {PUBLIC_NAV_LINKS.map((link) => {
                 const isDropdown = link.type === "dropdown";
@@ -138,7 +138,7 @@ export function Navbar() {
                           setActiveDropdown(isOpen ? null : link.label);
                         }}
                         className={cn(
-                          "relative px-4 py-2 text-sm font-medium transition-all duration-200 rounded-full hover:bg-bg-elevated flex items-center gap-1 cursor-pointer",
+                          "relative px-2 lg:px-2.5 xl:px-4 py-2 text-xs xl:text-sm font-medium transition-all duration-200 rounded-full hover:bg-bg-elevated flex items-center gap-1 cursor-pointer",
                           isCurrentlyActive
                             ? "text-accent-primary font-semibold"
                             : "text-text-secondary hover:text-text-primary",
@@ -159,7 +159,7 @@ export function Navbar() {
                       <Link
                         href={link.href || "#"}
                         className={cn(
-                          "relative px-4 py-2 text-sm font-medium transition-all duration-200 rounded-full hover:bg-bg-elevated block",
+                          "relative px-2 lg:px-2.5 xl:px-4 py-2 text-xs xl:text-sm font-medium transition-all duration-200 rounded-full hover:bg-bg-elevated block",
                           isCurrentlyActive
                             ? "text-accent-primary font-semibold"
                             : "text-text-secondary hover:text-text-primary"
@@ -248,7 +248,7 @@ export function Navbar() {
             </div>
 
             {/* Mobile Navigation Trigger (Hamburger Menu) */}
-            <div className="md:hidden">
+            <div className="lg:hidden">
               <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
                 <SheetTrigger render={
                   <Button
@@ -261,7 +261,7 @@ export function Navbar() {
                   <Menu className="h-[1.1rem] w-[1.1rem]" />
                 </SheetTrigger>
 
-                <SheetContent side="right" className="bg-bg-surface border-l border-border-default p-6 w-80 max-w-sm flex flex-col justify-between transition-all duration-300">
+                <SheetContent side="right" className="bg-bg-surface border-l border-border-default p-5 sm:p-6 w-[85vw] sm:w-80 max-w-sm flex flex-col justify-between transition-all duration-300">
                   <div>
                     <SheetHeader className="p-0 border-b border-border-default/50 pb-4 mb-6">
                       <SheetTitle className="font-heading text-lg font-bold text-text-primary flex items-center gap-2">

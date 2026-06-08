@@ -64,30 +64,30 @@ const BENEFITS: BenefitCard[] = [
 
 const THEME_CLASSES = {
   rose: {
-    card: "from-rose-500/10 via-rose-500/5 to-pink-500/5 border-rose-500/20 hover:border-rose-500/40 hover:bg-rose-500/15 hover:shadow-rose-500/10",
-    iconBg: "bg-rose-500/10 border border-rose-500/20 text-rose-400",
-    badge: "bg-rose-500/10 border border-rose-500/20 text-rose-400"
+    card: "from-rose-50/50 to-pink-50/30 border-rose-200/60 hover:from-rose-50/70 hover:to-pink-50/50 hover:border-rose-300 hover:shadow-rose-500/5 dark:from-rose-950/20 dark:to-pink-950/10 dark:border-rose-500/25 dark:hover:border-rose-400/50 dark:hover:shadow-rose-500/15",
+    iconBg: "bg-rose-100/80 border border-rose-200/80 text-rose-600 dark:bg-rose-900/30 dark:border-rose-800/40 dark:text-rose-400",
+    badge: "bg-rose-100/80 border border-rose-200/80 text-rose-600 dark:bg-rose-900/30 dark:border-rose-800/40 dark:text-rose-400"
   },
   sky: {
-    card: "from-sky-500/10 via-sky-500/5 to-teal-500/5 border-sky-500/20 hover:border-sky-500/40 hover:bg-sky-500/15 hover:shadow-sky-500/10",
-    iconBg: "bg-sky-500/10 border border-sky-500/20 text-sky-400",
-    badge: "bg-sky-500/10 border border-sky-500/20 text-sky-400"
+    card: "from-sky-50/50 to-teal-50/30 border-sky-200/60 hover:from-sky-50/70 hover:to-teal-50/50 hover:border-sky-300 hover:shadow-sky-500/5 dark:from-sky-950/20 dark:to-teal-950/10 dark:border-sky-500/25 dark:hover:border-sky-400/50 dark:hover:shadow-sky-500/15",
+    iconBg: "bg-sky-100/80 border border-sky-200/80 text-sky-600 dark:bg-sky-900/30 dark:border-sky-800/40 dark:text-sky-400",
+    badge: "bg-sky-100/80 border border-sky-200/80 text-sky-600 dark:bg-sky-900/30 dark:border-sky-800/40 dark:text-sky-400"
   },
   amber: {
-    card: "from-amber-500/10 via-amber-500/5 to-yellow-500/5 border-amber-500/20 hover:border-amber-500/40 hover:bg-amber-500/15 hover:shadow-amber-500/10",
-    iconBg: "bg-amber-500/10 border border-amber-500/20 text-amber-400",
-    badge: "bg-amber-500/10 border border-amber-500/20 text-amber-400"
+    card: "from-amber-50/50 to-yellow-50/30 border-amber-200/60 hover:from-amber-50/70 hover:to-yellow-50/50 hover:border-amber-300 hover:shadow-amber-500/5 dark:from-amber-950/20 dark:to-yellow-950/10 dark:border-amber-500/25 dark:hover:border-amber-400/50 dark:hover:shadow-amber-500/15",
+    iconBg: "bg-amber-100/80 border border-amber-200/80 text-amber-600 dark:bg-amber-900/30 dark:border-amber-800/40 dark:text-amber-400",
+    badge: "bg-amber-100/80 border border-amber-200/80 text-amber-600 dark:bg-amber-900/30 dark:border-amber-800/40 dark:text-amber-400"
   },
   slate: {
-    card: "from-slate-200/10 via-slate-100/5 to-slate-200/5 border-slate-700/50 hover:border-slate-500 hover:bg-slate-800/20 hover:shadow-slate-500/5",
-    iconBg: "bg-slate-800/30 border border-slate-700/50 text-slate-300",
-    badge: "bg-slate-800/30 border border-slate-700/50 text-slate-300"
+    card: "from-slate-50/60 to-slate-100/40 border-slate-200/80 hover:from-slate-50/80 hover:to-slate-100/60 hover:border-slate-300 hover:shadow-slate-500/5 dark:from-slate-900/20 dark:to-slate-950/10 dark:border-slate-800/80 dark:hover:border-slate-700 dark:hover:shadow-slate-500/10",
+    iconBg: "bg-slate-100 border border-slate-200 text-slate-700 dark:bg-slate-800 dark:border-slate-700/50 dark:text-slate-300",
+    badge: "bg-slate-100 border border-slate-200 text-slate-700 dark:bg-slate-800 dark:border-slate-700/50 dark:text-slate-300"
   }
 };
 
 export function WhyChooseUs() {
   return (
-    <section className="bg-accent-navy text-white border-y border-white/10 py-16 sm:py-24">
+    <section className="bg-bg-alt/45 dark:bg-accent-navy text-text-primary dark:text-white border-y border-border-default/35 dark:border-white/10 py-16 sm:py-24 transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12 sm:space-y-16">
         
         {/* Section Header */}
@@ -96,10 +96,10 @@ export function WhyChooseUs() {
             <Shield className="h-3.5 w-3.5" />
             Security & Performance
           </div>
-          <h2 className="text-3xl sm:text-4xl text-white font-heading font-extrabold tracking-tight">
+          <h2 className="text-3xl sm:text-4xl text-text-primary dark:text-white font-heading font-extrabold tracking-tight">
             Why Choose Brand Estate?
           </h2>
-          <p className="text-white/70 text-sm sm:text-base font-body font-normal">
+          <p className="text-text-muted dark:text-white/70 text-sm sm:text-base font-body font-normal">
             We merge sophisticated property management analytics, certified agent channels, and client-centric features to deliver a seamless real estate SaaS experience.
           </p>
         </div>
@@ -128,13 +128,13 @@ export function WhyChooseUs() {
                   </div>
                   
                   {/* Title */}
-                  <h3 className="text-white text-base sm:text-lg font-bold font-body tracking-tight">
+                  <h3 className="text-text-primary dark:text-white text-base sm:text-lg font-bold font-body tracking-tight">
                     {benefit.title}
                   </h3>
                   
                   {/* Description */}
                   <p className={cn(
-                    "text-white/60 text-xs sm:text-sm font-body font-normal leading-relaxed",
+                    "text-text-muted dark:text-white/60 text-xs sm:text-sm font-body font-normal leading-relaxed",
                     benefit.isBig ? "lg:line-clamp-6" : "line-clamp-4"
                   )}>
                     {benefit.description}

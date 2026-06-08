@@ -116,7 +116,7 @@ export function HeroSection() {
   const currentPriceOptions = activeTab === "buy" ? PRICE_RANGES_SALE : PRICE_RANGES_RENT;
 
   return (
-    <section className="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 lg:py-8">
+    <section className="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 lg:py-4">
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 lg:gap-4 items-stretch">
 
         {/* ── LEFT COLUMN (3/4 on Desktop) ── */}
