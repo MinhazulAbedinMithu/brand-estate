@@ -160,3 +160,37 @@ export interface AdminStats {
   totalInquiries: number;
   newUsersThisMonth: number;
 }
+
+// ─────────────────────────────────────────────
+// Navigation Menu / Dropdowns
+// ─────────────────────────────────────────────
+
+export interface NavMegaMenuItem {
+  label: string;
+  href: string;
+  description?: string;
+}
+
+export interface NavMegaMenuColumn {
+  title: string;
+  items: NavMegaMenuItem[];
+}
+
+export interface NavMegaMenuPromo {
+  title: string;
+  description: string;
+  ctaText: string;
+  ctaHref: string;
+  tag?: string;
+  image?: string;
+}
+
+export interface NavLinkWithDropdown {
+  label: string;
+  href?: string;
+  type: 'link' | 'dropdown';
+  columns?: NavMegaMenuColumn[];
+  promo?: NavMegaMenuPromo;
+  items?: NavMegaMenuItem[];
+}
+

@@ -87,6 +87,13 @@ A professional, content-rich footer reflecting the site's authority and providin
 - [ ] Appropriate `aria-label` tags applied to `<nav>`, mobile menu, and icon-only buttons.
 - [ ] Responsive navigation menu toggles between visible desktop list and mobile `Sheet` trigger smoothly.
 
+### Nav menu items: Buy, Sell, Rent, Find Agent, About us, Blogs, Contact.
+- Need to create mega menu dropdown for Buy, Sell, Rent. 
+- In header nav, keep items centered. apply your creativity and professionalism for styling. 
+- make a dropdown others and show them: about us, Blogs, Contact
+
+
+
 ### Visual & Polish Standards
 - [ ] Font pairings applied correctly: Header Brand Logo uses Playfair Display (`font-heading`), all list links and buttons use Montserrat (`font-body`).
 - [ ] Buttons use exact border-radius: Action buttons are pill-shaped (`rounded-full`).

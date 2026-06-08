@@ -37,16 +37,24 @@ Set up the design system foundation: design tokens, global CSS, fonts (Playfair 
   - [x] Created `ThemeToggle` dropdown using shadcn primitives.
   - [x] Created unified `SearchModal` supporting tabbed search & country filtering.
   - [x] Created geolocating `LocationSelector` using client-side lookup.
-  - [x] Created responsive `Navbar` and mobile navigation drawer.
-  - [x] Created content-rich semantic `Footer` with social icon SVGs.
+  - [x] Created responsive Navbar and mobile navigation drawer.
+  - [x] Upgraded Navbar with interactive hover-triggered glassmorphic mega menus (Buy, Rent, Sell) and collapsible mobile drawer accordions.
+  - [x] Created content-rich semantic Footer with social icon SVGs.
   - [x] Integrated header, footer, and FOUC prevention in `app/layout.tsx`.
-  - [x] Build and lint clean checks ✅.
+  - [x] **Spec 10 — Homepage COMPLETE** ✅
+  - [x] Swapped data usage to the high-fidelity `src/mocks/propertiesMock.ts` database.
+  - [x] Refined `HeroSection` with a floating glassmorphic container overlay on the left background image.
+  - [x] Developed the `CategorySlider` component featuring a scroll-snap horizontal list with manual chevron navigation and responsive touch swipe.
+  - [x] Developed the `FeaturedProperties` grid rendering 4 dynamic cards aligned with base and discriminator properties.
+  - [x] Developed the `WhyChooseUs` component using a customized asymmetrical 5-column grid layout for desktop with clean hover glows.
+  - [x] Developed the `CtaSection` component containing a marketing banner and buttons utilizing animated conic rotating-gradient border outlines.
+  - [x] Maintained 100% build stability with Next.js Turbopack compilation.
 
 ---
 
 ## In Progress
 
-- [ ] **Spec 10 — Homepage**
+- [ ] **Spec 11 — Property Search Page**
 
 ---
 
@@ -56,9 +64,10 @@ Phase 1 specs to be defined and implemented in order:
 
 | Spec  | Name                              | Status  |
 | ----- | --------------------------------- | ------- |
+| 00    | Mock Listing Data                 | ✅ Done |
 | 01    | Design System & Tokens            | ✅ Done |
 | 02    | Root Layout & Navigation (Navbar, Footer) | ✅ Done |
-| 10    | Homepage                          | ⏳ Pending |
+| 10    | Homepage                          | ✅ Done |
 | 11    | Property Search Page              | ⏳ Pending |
 | 12    | Property Detail Page              | ⏳ Pending |
 | 13    | Agent Directory Page              | ⏳ Pending |
