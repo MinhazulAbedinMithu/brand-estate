@@ -22,7 +22,7 @@ const CATEGORIES: CategoryCard[] = [
     description: "Curated specifically for your lifestyle and preferences.",
     icon: Heart,
     color: "from-rose-500/20 to-pink-500/20 border-rose-500/35 text-rose-300",
-    bgImage: "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=600&q=80",
+    bgImage: "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=600&q=80",
     href: "/properties?tag=recommended",
   },
   {
@@ -31,7 +31,7 @@ const CATEGORIES: CategoryCard[] = [
     description: "Fresh properties published onto our index within 24 hours.",
     icon: Sparkles,
     color: "from-amber-500/20 to-yellow-500/20 border-amber-500/35 text-amber-300",
-    bgImage: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=600&q=80",
+    bgImage: "https://images.unsplash.com/photo-1570129477492-45c003edd2be?auto=format&fit=crop&w=600&q=80",
     href: "/properties?tag=new",
   },
   {
@@ -40,7 +40,7 @@ const CATEGORIES: CategoryCard[] = [
     description: "Brand new homes featuring modern materials and smart systems.",
     icon: Building2,
     color: "from-blue-500/20 to-sky-500/20 border-blue-500/35 text-sky-300",
-    bgImage: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=600&q=80",
+    bgImage: "https://images.unsplash.com/photo-1598228723793-52759bba239c?auto=format&fit=crop&w=600&q=80",
     href: "/properties?tag=construction",
   },
   {
@@ -49,7 +49,7 @@ const CATEGORIES: CategoryCard[] = [
     description: "Properties with recent price drops offering superb value.",
     icon: TrendingDown,
     color: "from-emerald-500/20 to-teal-500/20 border-emerald-500/35 text-emerald-300",
-    bgImage: "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=600&q=80",
+    bgImage: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=600&q=80",
     href: "/properties?tag=reduced",
   },
   {
@@ -58,7 +58,7 @@ const CATEGORIES: CategoryCard[] = [
     description: "Elite level homes, penthouses, and private coastal villas.",
     icon: Gem,
     color: "from-purple-500/20 to-indigo-500/20 border-purple-500/35 text-purple-300",
-    bgImage: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=600&q=80",
+    bgImage: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=600&q=80",
     href: "/properties?tag=luxury",
   },
   {
@@ -67,14 +67,14 @@ const CATEGORIES: CategoryCard[] = [
     description: "Bank-owned properties listing below standard market rate.",
     icon: Landmark,
     color: "from-red-500/20 to-orange-500/20 border-red-500/35 text-red-300",
-    bgImage: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=600&q=80",
+    bgImage: "https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?auto=format&fit=crop&w=600&q=80",
     href: "/properties?tag=foreclosure",
   },
 ];
 
 export function CategorySlider() {
   const scrollRef = React.useRef<HTMLDivElement>(null);
-  
+
   // Disable arrows if scrolled to the absolute start/end
   const [canScrollLeft, setCanScrollLeft] = React.useState(false);
   const [canScrollRight, setCanScrollRight] = React.useState(true);
@@ -92,7 +92,7 @@ export function CategorySlider() {
     if (el) {
       el.addEventListener("scroll", checkScrollLimits, { passive: true });
       window.addEventListener("resize", checkScrollLimits);
-      
+
       // Initial check
       checkScrollLimits();
     }
@@ -110,7 +110,7 @@ export function CategorySlider() {
       const cardWidth = el.querySelector("[data-card]")?.getBoundingClientRect().width || 280;
       const gap = 16; // gap-4 = 16px
       const scrollAmount = (cardWidth + gap) * (direction === "left" ? -1 : 1);
-      
+
       el.scrollBy({
         left: scrollAmount,
         behavior: "smooth",
@@ -178,7 +178,7 @@ export function CategorySlider() {
             flex-direction: column;
             justify-content: space-between;
             padding: 1.5rem; /* p-6 */
-            background: rgba(15, 23, 42, 0.6); /* dark overlay base */
+            background: rgba(15, 23, 42, 0.35); /* dark overlay base */
           }
         `
       }} />
@@ -221,14 +221,14 @@ export function CategorySlider() {
             {/* The outer container holds the border-beam styling. The inner holds the card content */}
             <div className="border-beam-inner">
               {/* Unsplash Background Image with hover zoom */}
-              <div 
+              <div
                 className="absolute inset-0 bg-cover bg-center group-hover:scale-110 transition-transform duration-700 -z-20"
                 style={{ backgroundImage: `url('${category.bgImage}')` }}
               />
-              
-              {/* Card Contrast Overlay */}
-              <div className="absolute inset-0 bg-linear-to-t from-accent-navy/95 via-accent-navy/70 to-accent-navy/35 -z-10" />
-              
+
+              {/* Card Contrast Overlay — strong at the bottom where text is, clear at top */}
+              <div className="absolute inset-0 bg-linear-to-t from-black/85 via-black/50 to-transparent -z-10" />
+
               {/* Top Row: Icon Box */}
               <div className="flex justify-between items-start">
                 <div
@@ -239,19 +239,19 @@ export function CategorySlider() {
                 >
                   <category.icon className="h-5.5 w-5.5 transition-transform duration-300 group-hover:scale-110" />
                 </div>
-                
-                {/* Micro badge */}
-                <span className="text-[10px] font-bold text-sky-400 uppercase tracking-wider opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  Explore &rarr;
+
+                {/* Micro badge — pill so it reads on any background */}
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/95 text-[10px] font-bold text-slate-800 uppercase tracking-wider shadow-md opacity-0 group-hover:opacity-100 translate-y-1 group-hover:translate-y-0 transition-all duration-300">
+                  Explore →
                 </span>
               </div>
 
               {/* Bottom Row: Text content */}
               <div className="space-y-1 relative z-10">
-                <h3 className="font-heading text-base font-bold text-white group-hover:text-sky-300 transition-colors duration-200 drop-shadow-sm">
+                <h3 className="font-heading text-base font-bold text-white group-hover:text-sky-300 transition-colors duration-200 drop-shadow-[0_1px_6px_rgba(0,0,0,0.9)]">
                   {category.title}
                 </h3>
-                <p className="text-xs text-white/80 font-body leading-relaxed line-clamp-2 drop-shadow-sm">
+                <p className="text-xs text-white/90 font-body leading-relaxed line-clamp-2 drop-shadow-[0_1px_4px_rgba(0,0,0,0.9)]">
                   {category.description}
                 </p>
               </div>

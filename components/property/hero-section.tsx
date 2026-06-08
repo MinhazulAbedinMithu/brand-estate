@@ -13,9 +13,9 @@ type TabType = "buy" | "rent" | "sell";
 
 // Background images for the left 3/4 section
 const BACKGROUND_IMAGES: Record<TabType, string> = {
-  buy: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
-  rent: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
-  sell: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
+  buy: "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=1200&q=80",
+  rent: "https://images.unsplash.com/photo-1570129477492-45c003edd2be?auto=format&fit=crop&w=1200&q=80",
+  sell: "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?auto=format&fit=crop&w=1200&q=80",
 };
 
 const PROPERTY_TYPE_MAP: Record<string, string> = {
@@ -134,23 +134,32 @@ export function HeroSection() {
             />
           ))}
 
-          {/* Dark Glassmorphic/Navy Overlay for Text Contrast */}
-          <div className="absolute inset-0 bg-linear-to-r from-accent-navy/85 via-accent-navy/55 to-transparent z-0" />
+          {/* Focused left-side gradient scrim — keeps bright images visible on the right */}
+          <div className="absolute inset-0 bg-linear-to-r from-black/70 via-black/40 to-transparent z-0" />
 
-          {/* Top Label & Headline */}
+          {/* Top Label & Headline — wrapped in a localized glass backdrop for daylight contrast */}
           <div className="max-w-2xl space-y-4 sm:space-y-6 relative z-10">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/10 backdrop-blur-md">
+            {/* Soft radial scrim — fades to transparent at all edges, no visible box border */}
+            <div
+              className="absolute -z-10 pointer-events-none"
+              style={{
+                inset: "-2rem -3rem",
+                background: "radial-gradient(ellipse at 30% 50%, rgba(0,0,0,0.32) 0%, rgba(0,0,0,0.15) 55%, transparent 80%)",
+              }}
+            />
+
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-black/35 border border-white/20 backdrop-blur-md">
               <Sparkles className="h-3.5 w-3.5 text-sky-400" />
               <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-sky-300">
                 Introducing Brand Estate
               </span>
             </div>
 
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl text-white font-heading font-extrabold leading-tight tracking-tight drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
-              Find Your <span className="text-sky-400 drop-shadow-[0_2px_10px_rgba(56,189,248,0.3)]">Dream Home</span>
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl text-white font-heading font-extrabold leading-tight tracking-tight drop-shadow-[0_2px_12px_rgba(0,0,0,0.9)]">
+              Find Your <span className="text-sky-300 drop-shadow-[0_2px_12px_rgba(56,189,248,0.5)]">Dream Home</span>
             </h1>
 
-            <p className="text-base sm:text-lg text-white/95 leading-relaxed font-body max-w-xl drop-shadow-[0_1.5px_6px_rgba(0,0,0,0.85)] font-normal">
+            <p className="text-base sm:text-lg text-white leading-relaxed font-body max-w-xl drop-shadow-[0_2px_8px_rgba(0,0,0,0.95)] font-normal">
               Discover a curated selection of premium properties. Seamlessly connect with elite agents, and leverage state-of-the-art tools to secure your future.
             </p>
           </div>
@@ -286,7 +295,7 @@ export function HeroSection() {
               style={{ backgroundImage: `url('${property.images[0]}')` }}
             >
               {/* Bottom gradient overlay of the slide */}
-              <div className="absolute inset-0 bg-linear-to-t from-accent-navy/95 via-accent-navy/40 to-black/10" />
+              <div className="absolute inset-0 bg-linear-to-t from-accent-navy/80 via-accent-navy/20 to-transparent" />
             </div>
           ))}
 
