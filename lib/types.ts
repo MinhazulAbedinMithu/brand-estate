@@ -194,3 +194,41 @@ export interface NavLinkWithDropdown {
   items?: NavMegaMenuItem[];
 }
 
+// ─────────────────────────────────────────────
+// Blog & SEO
+// ─────────────────────────────────────────────
+
+export interface BlogAuthor {
+  name: string;
+  avatar: string; // URL
+  role: string;   // e.g. "Senior Market Analyst", "Head of Content"
+  bio?: string;
+}
+
+export interface BlogSEO {
+  title: string;           // Custom SEO title tag
+  metaDescription: string; // Meta description optimized for search engine CTR
+  keywords: string[];      // Relevant target keywords
+  ogImage: string;         // Open Graph image URL
+  ogType?: 'article' | 'website'; // Defaults to 'article'
+  canonicalUrl?: string;   // Canonical URL redirect
+}
+
+export interface BlogPost {
+  id: string;
+  title: string;
+  slug: string;
+  content: string;         // Rich Markdown formatting
+  excerpt: string;         // Short excerpt (150-160 characters)
+  coverImage: string;      // Featured image URL
+  category: 'market-trends' | 'buying-guide' | 'selling-guide' | 'investment' | 'lifestyle';
+  tags: string[];          // List of tag topics
+  author: BlogAuthor;
+  publishedAt: string;     // ISO Date
+  updatedAt?: string;      // ISO Date
+  readTimeMinutes: number;
+  isFeatured: boolean;
+  seo: BlogSEO;
+}
+
+

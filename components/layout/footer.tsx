@@ -121,7 +121,7 @@ export function Footer() {
 
   return (
     <footer className="bg-bg-alt dark:bg-linear-to-b dark:from-bg-surface dark:to-bg-base border-t border-border-default/30 transition-all duration-300">
-      
+
       {/* 1. Upper Newsletter/CTA Strip */}
       <section className="bg-bg-alt/45 dark:bg-bg-surface/20 border-b border-border-default/15 py-10 lg:py-14">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -134,7 +134,7 @@ export function Footer() {
                 Subscribe to our newsletter to receive curated property updates, market trends, and exclusive insights directly in your inbox.
               </p>
             </div>
-            
+
             <div className="w-full lg:max-w-md shrink-0">
               {subscribed ? (
                 <div className="flex items-center gap-3 bg-state-success/10 border border-state-success/35 text-state-success rounded-2xl p-4 animate-fade-in">
@@ -173,7 +173,7 @@ export function Footer() {
       {/* 2. Main Directory Grid */}
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-12">
-          
+
           {/* Col 1: Logo & Brand Identity */}
           <div className="space-y-5 lg:col-span-1">
             <Link
@@ -186,7 +186,7 @@ export function Footer() {
             <p className="text-sm text-text-secondary leading-relaxed">
               {APP_TAGLINE}. We offer premium properties and professional services connecting property buyers, renters, and agents worldwide.
             </p>
-            
+
             {/* Social Icons */}
             <div className="flex items-center space-x-2.5">
               {[
@@ -270,7 +270,7 @@ export function Footer() {
               {[
                 { label: "About Us", href: "/about" },
                 { label: "Press Room", href: "/press" },
-                { label: "Blog & Insights", href: "/blog" },
+                { label: "Blog & Insights", href: "/blogs" },
                 { label: "Contact Us", href: "/contact" },
               ].map((link) => (
                 <li key={link.label}>
@@ -313,7 +313,7 @@ export function Footer() {
           <div>
             <p>© {new Date().getFullYear()} Brand Estate. All rights reserved.</p>
           </div>
-          
+
           <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
             {[
               { label: "Privacy Policy", href: "/privacy" },

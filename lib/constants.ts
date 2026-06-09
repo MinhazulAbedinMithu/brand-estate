@@ -222,10 +222,10 @@ export const PUBLIC_NAV_LINKS: NavLinkWithDropdown[] = [
       {
         title: 'Seller Resources',
         items: [
-          { label: 'Seller Success Guide', href: '/blog/seller-guide' },
-          { label: 'Global Market Reports', href: '/blog/market-reports' },
-          { label: 'Cost of Selling Guide', href: '/blog/selling-costs' },
-          { label: 'Seller FAQs', href: '/blog/seller-faq' },
+          { label: 'Seller Success Guide', href: '/blogs/seller-guide' },
+          { label: 'Global Market Reports', href: '/blogs/market-reports' },
+          { label: 'Cost of Selling Guide', href: '/blogs/selling-costs' },
+          { label: 'Seller FAQs', href: '/blogs/seller-faq' },
         ]
       },
       {

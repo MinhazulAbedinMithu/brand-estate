@@ -71,6 +71,7 @@
 .dark {
   /* === Brand Palette — Dark (dashboards / admin) === */
   --bg-base: #080d16;
+  --bg-alt: #0d1829;
   --bg-surface: #010611;
   --bg-elevated: #131e33;
   --bg-subtle: #0d1829;

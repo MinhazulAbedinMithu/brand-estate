@@ -2,6 +2,8 @@ import { HeroSection } from "@/components/property/hero-section";
 import { CategorySlider } from "@/components/property/category-slider";
 import { FeaturedProperties } from "@/components/property/featured-properties";
 import { WhyChooseUs } from "@/components/property/why-choose-us";
+import { InvestmentCalculator } from "@/components/property/investment-calculator";
+import { BlogsSection } from "@/components/shared/blogs-section";
 import { CtaSection } from "@/components/property/cta-section";
 
 export const metadata = {
@@ -22,12 +24,22 @@ export default function Homepage() {
       {/* 3. FEATURED PROPERTIES GRID (using propertiesMock base/discriminator model) */}
       <FeaturedProperties />
 
+      {/* 5. PROPERTY INVESTMENT & ROI CALCULATOR GRID */}
+      <InvestmentCalculator />
+
+
       {/* 4. WHY CHOOSE BRAND ESTATE ASYMMETRICAL GRID */}
       <WhyChooseUs />
 
-      {/* 5. CALL TO ACTION SECTION */}
+
+      {/* BLOGS AND INSIGHTS SECTION */}
+      <BlogsSection />
+
+
+      {/* 6. CALL TO ACTION SECTION */}
       <CtaSection />
 
     </div>
   );
 }
+

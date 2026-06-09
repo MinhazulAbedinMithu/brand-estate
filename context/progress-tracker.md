@@ -70,6 +70,23 @@ Set up the design system foundation: design tokens, global CSS, fonts (Playfair 
   - [x] Created `PropertyPriceHistory` showing Realtor.com vertical event timelines and Redfin tax histories.
   - [x] Created `AgentContactCard` offering quick call/email triggers and validation-hardened inquiry forms.
   - [x] Integrated `RelatedListings` to show up to 4 active similar listings.
+- [x] **Spec 04 — Property Investment Calculator COMPLETE** ✅
+  - [x] Created `components/property/investment-calculator.tsx` with dynamic price/rent/appreciation sliders.
+  - [x] Implemented 10-year asset projections and cumulative yield outputs.
+  - [x] Connected closing cost estimators (taxes, title, legal) that scale dynamically with the selected purchase price.
+  - [x] Added clickable zoning reference tabs supporting MU-R, O-C, I-L, and W-D zoning codes.
+  - [x] Integrated component on the homepage `app/page.tsx` directly above `CtaSection`.
+  - [x] Verified full light and dark mode responsive compatibility.
+- [x] **Spec 05 — Blog Post Schema, Mock Data & UI Components COMPLETE** ✅
+  - [x] Created [blogTypes.ts](file:///Users/minhaz/Documents/projects/brand/brand-estate/src/mocks/blogTypes.ts) defining core interfaces for `BlogPost`, `BlogAuthor`, and `BlogSEO`.
+  - [x] Updated [types.ts](file:///Users/minhaz/Documents/projects/brand/brand-estate/lib/types.ts) to export blog structures for application-wide accessibility.
+  - [x] Created [blogPostsMock.ts](file:///Users/minhaz/Documents/projects/brand/brand-estate/src/mocks/blogPostsMock.ts) exporting 5 highly detailed and realistic real estate mock articles.
+  - [x] Implemented Schema.org compliant structured data generator `generateBlogPostJsonLd` for search engine compatibility.
+  - [x] Developed [blog-card.tsx](file:///Users/minhaz/Documents/projects/brand/brand-estate/components/shared/blog-card.tsx) with responsive structures and HSL category themes.
+  - [x] Integrated [blogs-section.tsx](file:///Users/minhaz/Documents/projects/brand/brand-estate/components/shared/blogs-section.tsx) on the homepage.
+  - [x] Built [page.tsx](file:///Users/minhaz/Documents/projects/brand/brand-estate/app/blogs/page.tsx) listings page with tab filtering and [blog-search-input.tsx](file:///Users/minhaz/Documents/projects/brand/brand-estate/app/blogs/blog-search-input.tsx).
+  - [x] Built [page.tsx](file:///Users/minhaz/Documents/projects/brand/brand-estate/app/blogs/%5Bslug%5D/page.tsx) reader page with a custom Markdown & formula parser, related recommendations, and sidebar widgets ([share-buttons.tsx](file:///Users/minhaz/Documents/projects/brand/brand-estate/components/blog/share-buttons.tsx), [newsletter-form.tsx](file:///Users/minhaz/Documents/projects/brand/brand-estate/components/blog/newsletter-form.tsx)).
+  - [x] Hardened light and dark mode colors across the entire blog reader page.
 
 ---
 
@@ -88,6 +105,7 @@ Phase 1 specs to be defined and implemented in order:
 | 00    | Mock Listing Data                 | ✅ Done |
 | 01    | Design System & Tokens            | ✅ Done |
 | 02    | Root Layout & Navigation (Navbar, Footer) | ✅ Done |
+| 05    | Blog Post Schema & Mock Data      | ✅ Done |
 | 10    | Homepage                          | ✅ Done |
 | 11    | Property Search Page              | ✅ Done |
 | 12    | Property Detail Page              | ✅ Done |
