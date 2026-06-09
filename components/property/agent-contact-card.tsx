@@ -140,7 +140,7 @@ export function AgentContactCard({ lister, propertyTitle, className }: AgentCont
             <CheckCircle2 className="h-8 w-8 text-state-success mx-auto mb-2.5" />
             <h6 className="text-sm font-bold text-state-success mb-1">Inquiry Submitted!</h6>
             <p className="text-xs text-text-secondary font-medium leading-relaxed">
-              We've dispatched your interest to {lister.name}. They will reach out to you directly as soon as possible.
+              We&apos;ve dispatched your interest to {lister.name}. They will reach out to you directly as soon as possible.
             </p>
             <Button
               onClick={() => setSubmitted(false)}

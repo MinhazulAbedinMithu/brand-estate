@@ -60,6 +60,7 @@ Set up the design system foundation: design tokens, global CSS, fonts (Playfair 
   - [x] `src/mocks/propertiesMock.ts` — Barrel re-export with aggregated `mockProperties` (21 total) + `mockFeaturedProperties`, `mockPropertiesForSale`, `mockPropertiesForRent`, `mockActiveProperties` convenience filters.
 - [x] **Spec 11 — Property Search Page COMPLETE** ✅
   - [x] Integrated client-side filters sidebar with immediate router-driven URL param updates.
+  - [x] Enhanced filters sidebar: added independent scrolling container with `overscroll-contain`, smooth custom scrollbars, animated accordion collapse transitions, and polished premium styles.
   - [x] Created `PropertySortBar` providing sort options, list/grid toggle, and results count.
   - [x] Designed `PropertyGrid` supporting grid/list card templates, with `EmptyState` fallback.
   - [x] Wired pagination and parsed RawSearchParams using dynamic Next.js 16 routing conventions.

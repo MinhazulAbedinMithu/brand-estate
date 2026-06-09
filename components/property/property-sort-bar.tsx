@@ -63,7 +63,7 @@ export function PropertySortBar({ total, params }: PropertySortBarProps) {
       </form>
 
       {/* Right controls */}
-      <div className="flex items-center gap-3 shrink-0">
+      <div className="flex items-center justify-between md:justify-start gap-3 shrink-0">
         {/* Result count */}
         <p className="text-sm text-text-muted font-medium hidden sm:block">
           <span className="text-text-primary font-bold">{total}</span>{" "}

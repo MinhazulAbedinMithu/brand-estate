@@ -277,4 +277,24 @@
   .input-focus {
     @apply focus:outline-none focus:ring-2 focus:ring-accent-primary focus:ring-offset-2;
   }
+
+  /* Fancy slim scrollbar matching theme colors */
+  .fancy-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-default) transparent;
+  }
+  .fancy-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+  .fancy-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .fancy-scrollbar::-webkit-scrollbar-thumb {
+    background-color: var(--border-default);
+    border-radius: 20px;
+    border: 1px solid transparent;
+  }
+  .fancy-scrollbar::-webkit-scrollbar-thumb:hover {
+    background-color: var(--border-subtle);
+  }
 }
