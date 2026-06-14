@@ -54,6 +54,7 @@ export const roomSharesMock: RoomShareProperty[] = [
       email: "david.chen@brandestate.co.uk",
       agencyName: "Brand Estate London",
       licenseNumber: "NAEA-UK-104527",
+      agentSlug: "james-okafor",
     },
     seo: {
       seoTitle: "Private En-Suite Room to Rent in Shoreditch, London | £1,650/mo — Brand Estate",
@@ -120,6 +121,7 @@ export const roomSharesMock: RoomShareProperty[] = [
       email: "james.whitmore@brandestate.com.au",
       agencyName: "Brand Estate Sydney",
       licenseNumber: "NSW-REAA-2024-06421",
+      agentSlug: "marco-rossi",
     },
     seo: {
       seoTitle: "Master Bedroom Room Share Near Bondi Beach, Sydney | AUD 1,950/mo — Brand Estate",
@@ -184,6 +186,7 @@ export const roomSharesMock: RoomShareProperty[] = [
       email: "tara.mitchell@brandestate.com",
       agencyName: "Brand Estate Manhattan",
       licenseNumber: "NY-RE-0091228",
+      agentSlug: "sophia-chen",
     },
     seo: {
       seoTitle: "Shared Room for Rent in Midtown Manhattan | $1,100/mo — Brand Estate",
@@ -248,6 +251,7 @@ export const roomSharesMock: RoomShareProperty[] = [
       email: "elena.rostova@brandestate.de",
       agencyName: "Brand Estate Berlin",
       licenseNumber: "DE-IVD-2024-B0041",
+      agentSlug: "lena-hoffmann",
     },
     seo: {
       seoTitle: "Private Room to Rent in Berlin Mitte | €1,150/mo — Brand Estate",
@@ -312,6 +316,7 @@ export const roomSharesMock: RoomShareProperty[] = [
       email: "grace.teo@brandestate.sg",
       agencyName: "Brand Estate Singapore",
       licenseNumber: "CEA-SG-R052183I",
+      agentSlug: "fatima-al-rashidi",
     },
     seo: {
       seoTitle: "Female-Only Room Share in Tiong Bahru Heritage Shophouse | SGD 2,200/mo — Brand Estate",

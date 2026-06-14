@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { Phone, Mail, FileText, Send, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -105,7 +106,16 @@ export function AgentContactCard({ lister, propertyTitle, className }: AgentCont
           </AvatarFallback>
         </Avatar>
         <div className="min-w-0">
-          <h4 className="font-body text-base font-bold text-text-primary truncate">{lister.name}</h4>
+          {lister.agentSlug ? (
+            <Link
+              href={`/agents/${lister.agentSlug}`}
+              className="font-body text-base font-bold text-text-primary hover:text-accent-primary transition-colors hover:underline block truncate"
+            >
+              {lister.name}
+            </Link>
+          ) : (
+            <h4 className="font-body text-base font-bold text-text-primary truncate">{lister.name}</h4>
+          )}
           <p className="text-xs text-text-muted font-medium truncate">{lister.agencyName}</p>
           {lister.licenseNumber && (
             <p className="text-[10px] text-text-faint font-semibold flex items-center gap-1 mt-1">

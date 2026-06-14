@@ -10,7 +10,7 @@ Update this file whenever the current phase, active feature, or implementation s
 
 ## Current Goal
 
-Set up the design system foundation: design tokens, global CSS, fonts (Playfair Display + Montserrat), shadcn/ui component installation, and the root layout.
+All dashboard workspace panels and public pages successfully built, type-checked, and pre-rendered in production.
 
 ---
 
@@ -87,7 +87,6 @@ Set up the design system foundation: design tokens, global CSS, fonts (Playfair 
   - [x] Built [page.tsx](file:///Users/minhaz/Documents/projects/brand/brand-estate/app/blogs/page.tsx) listings page with tab filtering and [blog-search-input.tsx](file:///Users/minhaz/Documents/projects/brand/brand-estate/app/blogs/blog-search-input.tsx).
   - [x] Built [page.tsx](file:///Users/minhaz/Documents/projects/brand/brand-estate/app/blogs/%5Bslug%5D/page.tsx) reader page with a custom Markdown & formula parser, related recommendations, and sidebar widgets ([share-buttons.tsx](file:///Users/minhaz/Documents/projects/brand/brand-estate/components/blog/share-buttons.tsx), [newsletter-form.tsx](file:///Users/minhaz/Documents/projects/brand/brand-estate/components/blog/newsletter-form.tsx)).
   - [x] Hardened light and dark mode colors across the entire blog reader page.
-
 - [x] **Spec 20 — Auth Pages (Login, Register, Forgot/Reset Password) COMPLETE** ✅
   - [x] Created `lib/auth-context.tsx` with mock AuthProvider + useAuth hook (localStorage session, 4 demo roles)
   - [x] Created `components/layout/conditional-layout.tsx` — conditionally hides Navbar/Footer on auth routes
@@ -100,12 +99,43 @@ Set up the design system foundation: design tokens, global CSS, fonts (Playfair 
   - [x] Updated `components/layout/navbar.tsx` — authenticated user avatar dropdown with role badge, dashboard link, logout; mobile drawer parity
   - [x] Installed and fixed `components/ui/sonner.tsx` — patched to use custom useTheme instead of next-themes
   - [x] `npm run build` ✅ — zero TypeScript errors, zero lint errors, all 10 routes generated
+- [x] **Spec 13 — Agent Directory Page (`/agents`) COMPLETE** ✅
+  - [x] Created `src/mocks/agentsMock.ts` — 8 rich mock agents (NYC, London, Dubai, Berlin, LA, Singapore, Sydney, Toronto) with bios, reviews, certifications, specializations, cover images, Unsplash avatars
+  - [x] Created `app/agents/page.tsx` — server component with SEO metadata
+  - [x] Created `app/agents/agents-client.tsx` — dark hero with animated search, specialty filter pills, sort dropdown, 4-column responsive agent card grid, trust stats bar, empty state, CTA banner
+  - [x] `npm run build` ✅ — 19 routes, zero TypeScript errors
+- [x] **Spec 14 — Agent Public Profile Page (`/agents/[slug]`) COMPLETE** ✅
+  - [x] Created `app/agents/[slug]/page.tsx` — server component with `generateStaticParams` (8 static paths) and per-agent OpenGraph metadata
+  - [x] Created `app/agents/[slug]/agent-profile-client.tsx` — hero cover with back/share/save actions, bridging avatar + verified badge, 4 stat cards, full bio section, specializations + languages chips, certifications + license, reviews with rating breakdown bars, sticky sidebar contact form (validation + sonner toasts), quick contact info, social links, related agents row
+  - [x] All 8 agent profiles statically pre-rendered at build time
+- [x] **Specs 30-33 — User Dashboard COMPLETE** ✅
+  - [x] Home `/dashboard` — Stats grid, saved trends chart, list of active inquiries
+  - [x] Saved Listings `/dashboard/saved` — Active properties grid, unsave buttons with toast indicators
+  - [x] Inquiries `/dashboard/inquiries` — Split filter table, slide-over details drawer showing conversation threads, Mark as Resolved action
+  - [x] Profile `/dashboard/profile` — Multi-section form validation, password update dialog, notifications settings toggle list
+- [x] **Specs 40-43 — Agent Workspace COMPLETE** ✅
+  - [x] Home `/agent/dashboard` — Leads mailbox preview, active listings stats, Recharts visual analytics
+  - [x] Listings `/agent/listings` — Interactive status tabular list, edit links, archive/delete triggers mapped to sold/rented status
+  - [x] New Listing `/agent/listings/new` — 5-step interactive wizard form (Basic details, Location, Amenities, Upload assets mockup, Publish)
+  - [x] Leads Registry `/agent/leads` — Master-detail mailbox panels, inline quick-response textareas with success notifications
+- [x] **Specs 50-53 — Moderator Admin Workspace COMPLETE** ✅
+  - [x] Home `/admin/dashboard` — Registration trend charts, pending approvals queue, operational counters
+  - [x] Users `/admin/users` — Role-based directory, account ban/unban toggles, detail inspector modals
+  - [x] Queue `/admin/listings` — Review submissions, Approve / Reject inline action controls
+  - [x] Disputes `/admin/reports` — Violations list, detailed slide-over report drawer with dismissal action
+- [x] **Specs 60-62 — Super Admin Platform Console COMPLETE** ✅
+  - [x] Home `/super-admin/dashboard` — Security audit logs, terminal events registry, configuration summaries
+  - [x] Roles Registry `/super-admin/roles` — Role upgrade selectors, mandatory audit justification textareas
+  - [x] Configs `/super-admin/settings` — Feature flag toggle switchboard, country regions directories manager, danger operations console
+- [x] **Public Pages (About & Contact) COMPLETE** ✅
+  - [x] About `/about` — Modern light-themed timeline, core company vision, interactive team profiles
+  - [x] Contact `/contact` — Leaflet style mapping dashboard card, support inquiry forms validation
 
 ---
 
 ## In Progress
 
-- [ ] **Spec 13 — Agent Directory Page**
+None. All Phase 1 views are implemented and verified.
 
 ---
 
@@ -122,26 +152,26 @@ Phase 1 specs to be defined and implemented in order:
 | 10    | Homepage                          | ✅ Done |
 | 11    | Property Search Page              | ✅ Done |
 | 12    | Property Detail Page              | ✅ Done |
-| 13    | Agent Directory Page              | ⏳ Pending |
-| 14    | Agent Public Profile Page         | ⏳ Pending |
+| 13    | Agent Directory Page              | ✅ Done |
+| 14    | Agent Public Profile Page         | ✅ Done |
 | 20    | Login Page                        | ✅ Done |
 | 21    | Register Page                     | ✅ Done |
 | 22    | Forgot / Reset Password Pages     | ✅ Done |
-| 30    | User Dashboard Home               | ⏳ Pending |
-| 31    | Saved Properties Page             | ⏳ Pending |
-| 32    | My Inquiries Page                 | ⏳ Pending |
-| 33    | Profile Settings Page             | ⏳ Pending |
-| 40    | Agent Dashboard Home              | ⏳ Pending |
-| 41    | My Listings Page                  | ⏳ Pending |
-| 42    | Create / Edit Listing Form        | ⏳ Pending |
-| 43    | Agent Leads / Inquiry Inbox       | ⏳ Pending |
-| 50    | Admin Dashboard Home              | ⏳ Pending |
-| 51    | Admin User Management             | ⏳ Pending |
-| 52    | Admin Listing Management          | ⏳ Pending |
-| 53    | Admin Reports                     | ⏳ Pending |
-| 60    | Super Admin Dashboard             | ⏳ Pending |
-| 61    | Role Management                   | ⏳ Pending |
-| 62    | Platform Settings                 | ⏳ Pending |
+| 30    | User Dashboard Home               | ✅ Done |
+| 31    | Saved Properties Page             | ✅ Done |
+| 32    | My Inquiries Page                 | ✅ Done |
+| 33    | Profile Settings Page             | ✅ Done |
+| 40    | Agent Dashboard Home              | ✅ Done |
+| 41    | My Listings Page                  | ✅ Done |
+| 42    | Create / Edit Listing Form        | ✅ Done |
+| 43    | Agent Leads / Inquiry Inbox       | ✅ Done |
+| 50    | Admin Dashboard Home              | ✅ Done |
+| 51    | Admin User Management             | ✅ Done |
+| 52    | Admin Listing Management          | ✅ Done |
+| 53    | Admin Reports                     | ✅ Done |
+| 60    | Super Admin Dashboard             | ✅ Done |
+| 61    | Role Management                   | ✅ Done |
+| 62    | Platform Settings                 | ✅ Done |
 
 ---
 
@@ -172,3 +202,6 @@ Phase 1 specs to be defined and implemented in order:
 - Design system spec (`01`) needs to be updated to match the new color palette and fonts.
 - Fixed hydration mismatch error on `InvestmentCalculator` component by rounding style width percentages to 4 decimal places.
 - Replaced the plain `Square` icon with a `rotate-90` rotated `Ruler` icon in `PropertyCard` for high-fidelity size representation.
+- Resolved workspace TypeScript compiler issues: fixed the `DropdownMenuItem` `asChild` -> `render` prop mapping in `DashboardShell`, fixed the missing `Link`, `cn`, `toast`, and `Zap` imports, resolved the `UserRole` mismatch in `RolesClient` state, and mapped `"archived"` listings filter to `"sold"` / `"rented"` statuses to match `PropertyStatus`.
+- Fixed a Base UI runtime error by updating `DropdownMenuLabel` in `components/ui/dropdown-menu.tsx` to render as a native HTML `div` instead of `MenuPrimitive.GroupLabel`, avoiding the strict `MenuGroupContext` constraints.
+- Verified production build compile stability (`npm run build`) with zero TypeScript/lint compile errors across all 36 routes.

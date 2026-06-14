@@ -63,6 +63,7 @@ export interface ListerProfile {
   email: string;
   agencyName: string;
   licenseNumber?: string;
+  agentSlug?: string; // Links to /agents/[slug] public profile
 }
 
 // ─── Class-Specific Attribute Blocks ─────────────────────────────────────────

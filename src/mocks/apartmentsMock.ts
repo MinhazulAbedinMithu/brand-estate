@@ -61,6 +61,7 @@ export const apartmentsMock: ApartmentProperty[] = [
       email: "sarah.jenkins@brandestate.com",
       agencyName: "Brand Estate Manhattan",
       licenseNumber: "NY-RE-0082341",
+      agentSlug: "sophia-chen",
     },
     seo: {
       seoTitle: "Penthouse for Sale in Park Avenue NYC | 4BD/4.5BA | $9.85M — Brand Estate",
@@ -126,6 +127,7 @@ export const apartmentsMock: ApartmentProperty[] = [
       email: "kenji.nakamura@brandestate.jp",
       agencyName: "Brand Estate Tokyo",
       licenseNumber: "JP-RE-T2024-0541",
+      agentSlug: "james-okafor",
     },
     seo: {
       seoTitle: "Studio for Rent in Shibuya Nanpeidai, Tokyo | $3,200/mo — Brand Estate",
@@ -196,6 +198,7 @@ export const apartmentsMock: ApartmentProperty[] = [
       email: "aisha.mansoori@brandestate.ae",
       agencyName: "Brand Estate Dubai",
       licenseNumber: "RERA-AE-2024-18742",
+      agentSlug: "amara-patel",
     },
     seo: {
       seoTitle: "3-Bed Waterfront Apartment for Sale in Dubai Marina | AED 4.25M — Brand Estate",
@@ -261,6 +264,7 @@ export const apartmentsMock: ApartmentProperty[] = [
       email: "david.chen@brandestate.co.uk",
       agencyName: "Brand Estate London",
       licenseNumber: "NAEA-UK-104527",
+      agentSlug: "james-okafor",
     },
     seo: {
       seoTitle: "2-Bed Warehouse Loft to Rent in Shoreditch | £4,200/mo — Brand Estate",
@@ -325,6 +329,7 @@ export const apartmentsMock: ApartmentProperty[] = [
       email: "grace.teo@brandestate.sg",
       agencyName: "Brand Estate Singapore",
       licenseNumber: "CEA-SG-R052183I",
+      agentSlug: "fatima-al-rashidi",
     },
     seo: {
       seoTitle: "4-Bed Apartment for Rent at Marina Bay Suites, Singapore | SGD 18,500/mo — Brand Estate",
@@ -394,6 +399,7 @@ export const apartmentsMock: ApartmentProperty[] = [
       email: "isabelle.moreau@brandestate.fr",
       agencyName: "Brand Estate Paris",
       licenseNumber: "FR-CPI-75-2024-000182",
+      agentSlug: "sophia-chen",
     },
     seo: {
       seoTitle: "Haussmannian Apartment for Sale in Saint-Germain, Paris 7ème | €5.8M — Brand Estate",

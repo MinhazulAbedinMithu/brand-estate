@@ -62,6 +62,7 @@ export const housesMock: HouseProperty[] = [
       email: "sarah.jenkins@brandestate.com",
       agencyName: "Brand Estate Beverly Hills",
       licenseNumber: "CA-DRE-02184732",
+      agentSlug: "daniel-kowalski",
     },
     seo: {
       seoTitle: "Oceanfront Villa for Sale in Malibu | 6BD/7.5BA | $28.5M — Brand Estate",
@@ -136,6 +137,7 @@ export const housesMock: HouseProperty[] = [
       email: "priya.sharma@brandestate.ca",
       agencyName: "Brand Estate Toronto",
       licenseNumber: "RECO-ON-4892017",
+      agentSlug: "ashley-brooks",
     },
     seo: {
       seoTitle: "Craftsman Home for Sale in High Park, Toronto | 4BD/3.5BA | CAD 2.15M — Brand Estate",
@@ -203,6 +205,7 @@ export const housesMock: HouseProperty[] = [
       email: "sarah.jenkins@brandestate.com",
       agencyName: "Brand Estate Beverly Hills",
       licenseNumber: "CA-DRE-02184732",
+      agentSlug: "sophia-chen",
     },
     seo: {
       seoTitle: "7-Bed Modern Farmhouse for Rent in East Hampton | $75K/mo — Brand Estate",
@@ -273,6 +276,7 @@ export const housesMock: HouseProperty[] = [
       email: "james.whitmore@brandestate.com.au",
       agencyName: "Brand Estate Melbourne",
       licenseNumber: "VIC-REAA-2024-08821",
+      agentSlug: "marco-rossi",
     },
     seo: {
       seoTitle: "Victorian Terrace for Sale in South Yarra, Melbourne | 5BD | AUD 4.8M — Brand Estate",
@@ -344,6 +348,7 @@ export const housesMock: HouseProperty[] = [
       email: "marcus.webb@brandestate.com",
       agencyName: "Brand Estate Austin",
       licenseNumber: "TX-TREC-0841293",
+      agentSlug: "daniel-kowalski",
     },
     seo: {
       seoTitle: "Limestone Ranch for Sale in Austin Hill Country | 5BD/6BA | $14.75M — Brand Estate",
