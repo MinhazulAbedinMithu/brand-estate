@@ -2,18 +2,65 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { Search, Menu, ArrowRight, Building, ChevronDown } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { Search, Menu, ArrowRight, Building, ChevronDown, LogOut, Settings, Heart, LayoutDashboard } from "lucide-react";
+import { toast } from "sonner";
 
 import { cn } from "@/lib/utils";
 import { PUBLIC_NAV_LINKS, APP_NAME } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetHeader } from "@/components/ui/sheet";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { ThemeToggle } from "./theme-toggle";
 import { LocationSelector } from "./location-selector";
 import { SearchModal } from "@/components/shared/search-modal";
+import { useAuth, getDashboardRoute } from "@/lib/auth-context";
+import type { UserRole } from "@/lib/types";
+
+// ─── Role badge color helper ──────────────────────────────────────────────────
+function getRoleBadgeColor(role: UserRole): string {
+  switch (role) {
+    case "agent": return "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400";
+    case "admin": return "bg-violet-500/10 text-violet-600 dark:text-violet-400";
+    case "super_admin": return "bg-amber-500/10 text-amber-600 dark:text-amber-400";
+    default: return "bg-accent-primary-dim text-accent-primary";
+  }
+}
+
+function getRoleLabel(role: UserRole): string {
+  switch (role) {
+    case "auth_user": return "Member";
+    case "agent": return "Agent";
+    case "admin": return "Admin";
+    case "super_admin": return "Super Admin";
+    default: return "Guest";
+  }
+}
+
+function getDashboardLabel(role: UserRole): string {
+  switch (role) {
+    case "agent": return "Agent Panel";
+    case "admin": return "Admin Panel";
+    case "super_admin": return "Super Admin Panel";
+    default: return "My Dashboard";
+  }
+}
 
 export function Navbar() {
+  const router = useRouter();
+  const { currentUser, isAuthenticated, logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+    toast.success("Signed out successfully", { description: "See you next time! 👋" });
+    router.push("/");
+  };
+
+  // Get user initials for avatar fallback
+  const userInitials = currentUser?.name
+    ? currentUser.name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase()
+    : "U";
   const pathname = usePathname();
 
   // Geolocation & Search Modal state
@@ -230,21 +277,90 @@ export function Navbar() {
 
             {/* Auth Buttons (Desktop) */}
             <div className="hidden lg:flex items-center gap-2">
-              <Link href="/register">
-                <Button
-                  variant="outline"
-                  className="rounded-full h-9 px-4 font-semibold border-border-default/80 hover:bg-bg-elevated hover:text-text-primary text-text-secondary text-xs transition-all duration-200"
-                >
-                  Join
-                </Button>
-              </Link>
-              <Link href="/login">
-                <Button
-                  className="rounded-full h-9 px-4 font-semibold bg-accent-primary text-white hover:bg-accent-primary-hov text-xs shadow-sm hover:shadow transition-all duration-200"
-                >
-                  Sign In
-                </Button>
-              </Link>
+              {isAuthenticated && currentUser ? (
+                <DropdownMenu>
+                  <DropdownMenuTrigger
+                    className="flex items-center gap-2 pl-1 pr-3 py-1 rounded-full border border-border-default/60 bg-transparent hover:bg-bg-elevated transition-all duration-200 cursor-pointer"
+                    aria-label="User menu"
+                  >
+                    <Avatar className="h-7 w-7">
+                      <AvatarFallback className="bg-accent-primary text-white text-[11px] font-bold">
+                        {userInitials}
+                      </AvatarFallback>
+                    </Avatar>
+                    <span className="text-xs font-semibold text-text-primary max-w-[90px] truncate">
+                      {currentUser.name.split(" ")[0]}
+                    </span>
+                    <ChevronDown className="h-3.5 w-3.5 text-text-muted transition-colors" />
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-64 rounded-2xl border-border-default/60 shadow-xl bg-bg-surface p-2">
+                    <DropdownMenuLabel className="px-2 pb-2">
+                      <div className="flex items-center gap-3">
+                        <Avatar className="h-9 w-9">
+                          <AvatarFallback className="bg-accent-primary text-white text-sm font-bold">{userInitials}</AvatarFallback>
+                        </Avatar>
+                        <div className="min-w-0">
+                          <p className="text-sm font-bold text-text-primary truncate">{currentUser.name}</p>
+                          <p className="text-xs text-text-muted truncate">{currentUser.email}</p>
+                          <span className={cn("inline-flex mt-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide", getRoleBadgeColor(currentUser.role))}>
+                            {getRoleLabel(currentUser.role)}
+                          </span>
+                        </div>
+                      </div>
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator className="bg-border-default/50 my-1" />
+                    <DropdownMenuItem
+                      onClick={() => router.push(getDashboardRoute(currentUser.role))}
+                      className="rounded-xl cursor-pointer flex items-center gap-2.5 px-2 py-2 text-sm"
+                    >
+                      <LayoutDashboard className="h-4 w-4 text-accent-primary" />
+                      {getDashboardLabel(currentUser.role)}
+                    </DropdownMenuItem>
+                    {currentUser.role === "auth_user" && (
+                      <DropdownMenuItem
+                        onClick={() => router.push("/dashboard/saved")}
+                        className="rounded-xl cursor-pointer flex items-center gap-2.5 px-2 py-2 text-sm"
+                      >
+                        <Heart className="h-4 w-4 text-rose-500" />
+                        Saved Properties
+                      </DropdownMenuItem>
+                    )}
+                    <DropdownMenuItem
+                      onClick={() => router.push("/dashboard/profile")}
+                      className="rounded-xl cursor-pointer flex items-center gap-2.5 px-2 py-2 text-sm"
+                    >
+                      <Settings className="h-4 w-4 text-text-muted" />
+                      Profile Settings
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator className="bg-border-default/50 my-1" />
+                    <DropdownMenuItem
+                      onClick={handleLogout}
+                      className="rounded-xl cursor-pointer flex items-center gap-2.5 px-2 py-2 text-sm text-state-error"
+                    >
+                      <LogOut className="h-4 w-4" />
+                      Sign Out
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : (
+                <>
+                  <Link href="/register">
+                    <Button
+                      variant="outline"
+                      className="rounded-full h-9 px-4 font-semibold border-border-default/80 hover:bg-bg-elevated hover:text-text-primary text-text-secondary text-xs transition-all duration-200"
+                    >
+                      Join
+                    </Button>
+                  </Link>
+                  <Link href="/login">
+                    <Button
+                      className="rounded-full h-9 px-4 font-semibold bg-accent-primary text-white hover:bg-accent-primary-hov text-xs shadow-sm hover:shadow transition-all duration-200"
+                    >
+                      Sign In
+                    </Button>
+                  </Link>
+                </>
+              )}
             </div>
 
             {/* Mobile Navigation Trigger (Hamburger Menu) */}
@@ -404,22 +520,61 @@ export function Navbar() {
 
                   {/* Auth Actions Group (Mobile Bottom) */}
                   <div className="border-t border-border-default/50 pt-6 mt-auto space-y-3">
-                    <Link href="/register" onClick={() => setMobileMenuOpen(false)} className="block w-full">
-                      <Button
-                        variant="outline"
-                        className="w-full rounded-full h-11 font-semibold border-border-default hover:bg-bg-elevated text-text-secondary text-sm"
-                      >
-                        Join Now
-                      </Button>
-                    </Link>
-                    <Link href="/login" onClick={() => setMobileMenuOpen(false)} className="block w-full">
-                      <Button
-                        className="w-full rounded-full h-11 font-semibold bg-accent-primary text-white hover:bg-accent-primary-hov text-sm shadow-sm"
-                      >
-                        Sign In
-                        <ArrowRight className="h-4 w-4 ml-2" />
-                      </Button>
-                    </Link>
+                    {isAuthenticated && currentUser ? (
+                      <>
+                        <div className="flex items-center gap-3 px-2 py-2">
+                          <Avatar className="h-10 w-10">
+                            <AvatarFallback className="bg-accent-primary text-white font-bold">{userInitials}</AvatarFallback>
+                          </Avatar>
+                          <div className="min-w-0 flex-1">
+                            <p className="text-sm font-bold text-text-primary truncate">{currentUser.name}</p>
+                            <span className={cn("inline-flex px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide", getRoleBadgeColor(currentUser.role))}>
+                              {getRoleLabel(currentUser.role)}
+                            </span>
+                          </div>
+                        </div>
+                        <Link href={getDashboardRoute(currentUser.role)} onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-2.5 px-4 py-3 rounded-full text-sm font-medium text-text-secondary hover:bg-bg-alt hover:text-text-primary transition-all duration-200">
+                          <LayoutDashboard className="h-4 w-4 text-accent-primary" />
+                          {getDashboardLabel(currentUser.role)}
+                        </Link>
+                        {currentUser.role === "auth_user" && (
+                          <Link href="/dashboard/saved" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-2.5 px-4 py-3 rounded-full text-sm font-medium text-text-secondary hover:bg-bg-alt hover:text-text-primary transition-all duration-200">
+                            <Heart className="h-4 w-4 text-rose-500" />
+                            Saved Properties
+                          </Link>
+                        )}
+                        <Link href="/dashboard/profile" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-2.5 px-4 py-3 rounded-full text-sm font-medium text-text-secondary hover:bg-bg-alt hover:text-text-primary transition-all duration-200">
+                          <Settings className="h-4 w-4 text-text-muted" />
+                          Profile Settings
+                        </Link>
+                        <button
+                          onClick={() => { handleLogout(); setMobileMenuOpen(false); }}
+                          className="flex w-full items-center gap-2.5 px-4 py-3 rounded-full text-sm font-medium text-state-error hover:bg-state-error/5 transition-all duration-200 cursor-pointer"
+                        >
+                          <LogOut className="h-4 w-4" />
+                          Sign Out
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <Link href="/register" onClick={() => setMobileMenuOpen(false)} className="block w-full">
+                          <Button
+                            variant="outline"
+                            className="w-full rounded-full h-11 font-semibold border-border-default hover:bg-bg-elevated text-text-secondary text-sm"
+                          >
+                            Join Now
+                          </Button>
+                        </Link>
+                        <Link href="/login" onClick={() => setMobileMenuOpen(false)} className="block w-full">
+                          <Button
+                            className="w-full rounded-full h-11 font-semibold bg-accent-primary text-white hover:bg-accent-primary-hov text-sm shadow-sm"
+                          >
+                            Sign In
+                            <ArrowRight className="h-4 w-4 ml-2" />
+                          </Button>
+                        </Link>
+                      </>
+                    )}
                   </div>
                 </SheetContent>
               </Sheet>

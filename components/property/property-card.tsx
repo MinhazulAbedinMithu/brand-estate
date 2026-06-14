@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { MapPin, Bed, Bath, Square, Star, ArrowUpRight, Heart } from "lucide-react";
+import { MapPin, Bed, Bath, Ruler, Star, ArrowUpRight, Heart } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { MockProperty } from "@/src/mocks/propertyTypes";
 
@@ -173,14 +173,14 @@ function GridCard({ property, className }: { property: MockProperty; className?:
               </span>
               <div className="h-3 w-px bg-border-default/80" />
               <span className="flex items-center gap-1.5 font-medium">
-                <Square className="h-3.5 w-3.5 text-accent-primary/80" />
+                <Ruler className="h-3.5 w-3.5 text-accent-primary/80 rotate-90" />
                 <span className="font-bold text-text-primary">{property.squareFeet.toLocaleString()}</span> ft²
               </span>
             </>
           ) : (
             <>
               <span className="flex items-center gap-1.5 font-medium">
-                <Square className="h-3.5 w-3.5 text-accent-primary/80" />
+                <Ruler className="h-3.5 w-3.5 text-accent-primary/80 rotate-90" />
                 <span className="font-bold text-text-primary">{property.squareFeet.toLocaleString()}</span> ft²
               </span>
               <div className="h-3 w-px bg-border-default/80" />
@@ -297,7 +297,7 @@ function ListCard({ property, className }: { property: MockProperty; className?:
               </>
             )}
             <span className="flex items-center gap-1 font-medium">
-              <Square className="h-4 w-4 text-accent-primary/80" />
+              <Ruler className="h-4 w-4 text-accent-primary/80 rotate-90" />
               <span className="font-bold text-text-primary">{property.squareFeet.toLocaleString()}</span> ft²
             </span>
           </div>

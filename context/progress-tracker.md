@@ -88,6 +88,19 @@ Set up the design system foundation: design tokens, global CSS, fonts (Playfair 
   - [x] Built [page.tsx](file:///Users/minhaz/Documents/projects/brand/brand-estate/app/blogs/%5Bslug%5D/page.tsx) reader page with a custom Markdown & formula parser, related recommendations, and sidebar widgets ([share-buttons.tsx](file:///Users/minhaz/Documents/projects/brand/brand-estate/components/blog/share-buttons.tsx), [newsletter-form.tsx](file:///Users/minhaz/Documents/projects/brand/brand-estate/components/blog/newsletter-form.tsx)).
   - [x] Hardened light and dark mode colors across the entire blog reader page.
 
+- [x] **Spec 20 — Auth Pages (Login, Register, Forgot/Reset Password) COMPLETE** ✅
+  - [x] Created `lib/auth-context.tsx` with mock AuthProvider + useAuth hook (localStorage session, 4 demo roles)
+  - [x] Created `components/layout/conditional-layout.tsx` — conditionally hides Navbar/Footer on auth routes
+  - [x] Updated `app/layout.tsx` — wrapped with AuthProvider + Sonner Toaster
+  - [x] Created `components/layout/auth-layout-shell.tsx` — premium split-panel shell with testimonial carousel, trust stats, animated glow orbs
+  - [x] Created `app/(auth)/login/page.tsx` — demo account tiles, form validation, password toggle, Google OAuth mock, sonner toasts
+  - [x] Created `app/(auth)/register/page.tsx` — interactive role selector cards (Buyer/Agent), password strength meter, confirm match indicator, sonner toasts
+  - [x] Created `app/(auth)/forgot-password/page.tsx` — 60s resend countdown, animated MailCheck success card, sonner toasts
+  - [x] Created `app/(auth)/reset-password/page.tsx` — token validation, invalid/success states, auto-redirect, sonner toasts
+  - [x] Updated `components/layout/navbar.tsx` — authenticated user avatar dropdown with role badge, dashboard link, logout; mobile drawer parity
+  - [x] Installed and fixed `components/ui/sonner.tsx` — patched to use custom useTheme instead of next-themes
+  - [x] `npm run build` ✅ — zero TypeScript errors, zero lint errors, all 10 routes generated
+
 ---
 
 ## In Progress
@@ -111,9 +124,9 @@ Phase 1 specs to be defined and implemented in order:
 | 12    | Property Detail Page              | ✅ Done |
 | 13    | Agent Directory Page              | ⏳ Pending |
 | 14    | Agent Public Profile Page         | ⏳ Pending |
-| 20    | Login Page                        | ⏳ Pending |
-| 21    | Register Page                     | ⏳ Pending |
-| 22    | Forgot / Reset Password Pages     | ⏳ Pending |
+| 20    | Login Page                        | ✅ Done |
+| 21    | Register Page                     | ✅ Done |
+| 22    | Forgot / Reset Password Pages     | ✅ Done |
 | 30    | User Dashboard Home               | ⏳ Pending |
 | 31    | Saved Properties Page             | ⏳ Pending |
 | 32    | My Inquiries Page                 | ⏳ Pending |
@@ -157,3 +170,5 @@ Phase 1 specs to be defined and implemented in order:
 - Context files completely rewritten on 2026-06-06 to reflect Brand Estate real estate SaaS.
 - Previous context was for "Alien AI" (system design canvas app) — fully replaced.
 - Design system spec (`01`) needs to be updated to match the new color palette and fonts.
+- Fixed hydration mismatch error on `InvestmentCalculator` component by rounding style width percentages to 4 decimal places.
+- Replaced the plain `Square` icon with a `rotate-90` rotated `Ruler` icon in `PropertyCard` for high-fidelity size representation.

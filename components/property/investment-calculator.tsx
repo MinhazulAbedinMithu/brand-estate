@@ -367,7 +367,7 @@ export function InvestmentCalculator() {
                       </span>
                     </div>
                     <div className="w-full h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-                      <div className="bg-accent-primary h-full rounded-full transition-all duration-300" style={{ width: `${Math.min((tenYearAppreciationProfit / purchasePrice) * 100, 100)}%` }} />
+                      <div className="bg-accent-primary h-full rounded-full transition-all duration-300" style={{ width: `${Math.min((tenYearAppreciationProfit / purchasePrice) * 100, 100).toFixed(4)}%` }} />
                     </div>
                   </div>
 
@@ -379,7 +379,7 @@ export function InvestmentCalculator() {
                       </span>
                     </div>
                     <div className="w-full h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-                      <div className="bg-state-success h-full rounded-full transition-all duration-300" style={{ width: `${Math.min((tenYearAccumulatedRent / purchasePrice) * 100, 100)}%` }} />
+                      <div className="bg-state-success h-full rounded-full transition-all duration-300" style={{ width: `${Math.min((tenYearAccumulatedRent / purchasePrice) * 100, 100).toFixed(4)}%` }} />
                     </div>
                   </div>
 

@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import { Playfair_Display, Montserrat } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/layout/theme-provider";
-import { Navbar } from "@/components/layout/navbar";
-import { Footer } from "@/components/layout/footer";
+import { AuthProvider } from "@/lib/auth-context";
+import { Toaster } from "@/components/ui/sonner";
+import { ConditionalLayout } from "@/components/layout/conditional-layout";
 
 // ── Headings: Playfair Display ──────────────────────────
 const playfair = Playfair_Display({
@@ -71,16 +72,18 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="min-h-full flex flex-col bg-bg-base text-text-primary transition-colors duration-300" suppressHydrationWarning >
+      <body
+        className="min-h-full flex flex-col bg-bg-base text-text-primary transition-colors duration-300"
+        suppressHydrationWarning
+      >
         <ThemeProvider>
-          <Navbar />
-          <main className="flex-1">
-            {children}
-          </main>
-          <Footer />
+          <AuthProvider>
+            {/* ConditionalLayout shows/hides Navbar+Footer based on route */}
+            <ConditionalLayout>{children}</ConditionalLayout>
+            <Toaster richColors position="top-right" />
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>
   );
 }
-
