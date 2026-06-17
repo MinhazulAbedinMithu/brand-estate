@@ -260,6 +260,26 @@ Dashboard layouts for agents. Theme: **Dark**. Allowed Roles: `agent`, `admin`, 
     - `POST /api/agent/inquiries/[id]/reply` (Sends notification alert to buyer/renter).
   - **Auth Guards**: Session role must be `agent` or higher.
 
+### 4.6 Pricing Tiers / Packages Subscriptions
+* **Route**: `/agent/packages`
+* **File Entry**: [app/agent/packages/page.tsx](file:///Users/minhaz/Documents/projects/brand/brand-estate/app/agent/packages/page.tsx)
+* **Live Preview**: [https://brandestate.vercel.app/agent/packages](https://brandestate.vercel.app/agent/packages)
+* **Key UI Components**: `AgentPackagesClient` (pricing package cards, subscription details dialog, mock upgrade triggers).
+* **Phase 2 Backend Goals**:
+  - **Database Mutations**: Update active pricing package subscription on the agent user's document.
+  - **API Endpoints**: `POST /api/agent/subscribe` (integrates Stripe or other payment processing gateways).
+  - **Auth Guards**: Session role must be `agent` or higher.
+
+### 4.7 Legal Verification Submission
+* **Route**: `/agent/submit-docs`
+* **File Entry**: [app/agent/submit-docs/page.tsx](file:///Users/minhaz/Documents/projects/brand/brand-estate/app/agent/submit-docs/page.tsx)
+* **Live Preview**: [https://brandestate.vercel.app/agent/submit-docs](https://brandestate.vercel.app/agent/submit-docs)
+* **Key UI Components**: `SubmitDocsClient` (licensing validation inputs, file upload simulator).
+* **Phase 2 Backend Goals**:
+  - **Database Mutations**: Write licensing documentation parameters to `legalDocs` nested object on the agent user document and transition status to `pending`.
+  - **API Endpoints**: `POST /api/agent/submit-docs` (including actual S3/Cloud Storage upload triggers).
+  - **Auth Guards**: Session role must be `agent` or higher.
+
 ---
 
 ## 5. Moderator Admin Workspace
@@ -307,6 +327,19 @@ Moderation metrics and queues. Theme: **Dark**. Allowed Roles: `admin`, `super_a
   - **API Endpoints**: 
     - `GET /api/admin/reports`
     - `PATCH /api/admin/reports/[id]` (Resolve dispute).
+  - **Auth Guards**: Session role must be `admin` or higher.
+
+### 5.5 Platform Packages Management
+* **Route**: `/admin/packages`
+* **File Entry**: [app/admin/packages/page.tsx](file:///Users/minhaz/Documents/projects/brand/brand-estate/app/admin/packages/page.tsx)
+* **Live Preview**: [https://brandestate.vercel.app/admin/packages](https://brandestate.vercel.app/admin/packages)
+* **Key UI Components**: `AdminPackagesClient` (pricing tiers table, add/edit packages modal, features tags inputs, activate/deactivate toggles).
+* **Phase 2 Backend Goals**:
+  - **Database Mutations**: Create, edit, and modify global platform pricing tiers in the `packages` collection.
+  - **API Endpoints**:
+    - `GET /api/admin/packages`
+    - `POST /api/admin/packages`
+    - `PUT /api/admin/packages/[id]`
   - **Auth Guards**: Session role must be `admin` or higher.
 
 ---
