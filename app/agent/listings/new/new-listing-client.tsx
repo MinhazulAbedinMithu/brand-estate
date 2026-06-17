@@ -3,20 +3,41 @@
 import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Building, Plus, ArrowLeft, ArrowRight, Check, MapPin, UploadCloud, FileText, CheckCircle2 } from "lucide-react";
+import { Building, Plus, ArrowLeft, ArrowRight, Check, MapPin, CheckCircle2, Trash } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
 import { useAuth } from "@/lib/auth-context";
+import { ImageUploader } from "@/components/blog/image-uploader";
+import { TagInput } from "@/components/blog/tag-input";
 
 const WIZARD_STEPS = [
   { id: 1, name: "Basic Info", desc: "Title, description, category and price" },
   { id: 2, name: "Location", desc: "Address, city, region and maps" },
   { id: 3, name: "Details & Specs", desc: "Beds, baths, size and amenities" },
-  { id: 4, name: "Media Assets", desc: "Drag-and-drop images mockup" },
-  { id: 5, name: "Review & Publish", desc: "Inspect summary and publish" },
+  { id: 4, name: "Media Assets", desc: "Drag-and-drop cover & gallery" },
+  { id: 5, name: "SEO Settings", desc: "Optimize title, tags, and social cards" },
+  { id: 6, name: "Review & Publish", desc: "Inspect summary and publish" },
+];
+
+const BEDROOM_OPTIONS = [
+  { label: "Studio", value: "0" },
+  { label: "1 Bed", value: "1" },
+  { label: "2 Beds", value: "2" },
+  { label: "3 Beds", value: "3" },
+  { label: "4 Beds", value: "4" },
+  { label: "5+ Beds", value: "5" },
+];
+
+const BATHROOM_OPTIONS = [
+  { label: "1 Bath", value: "1" },
+  { label: "1.5 Baths", value: "1.5" },
+  { label: "2 Baths", value: "2" },
+  { label: "2.5 Baths", value: "2.5" },
+  { label: "3 Baths", value: "3" },
+  { label: "4+ Baths", value: "4" },
 ];
 
 export function NewListingClient() {
@@ -43,7 +64,13 @@ export function NewListingClient() {
     squareFeet: "1200",
     yearBuilt: "2020",
     amenities: [] as string[],
-    images: [] as string[],
+    coverImage: "",
+    images: [] as string[], // gallery images
+    seoTitle: "",
+    seoDescription: "",
+    seoKeywords: "",
+    ogImageUrl: "",
+    useCoverAsOg: true,
   });
 
   if (currentUser && currentUser.role === "agent" && currentUser.status !== "active") {
@@ -109,9 +136,14 @@ export function NewListingClient() {
         toast.error("Validation error", { description: "Address, city, and state/region are required." });
         return;
       }
+    } else if (step === 4) {
+      if (!form.coverImage.trim()) {
+        toast.error("Validation error", { description: "Please upload or link a Cover Image in Step 4 before proceeding." });
+        return;
+      }
     }
     
-    setStep(s => Math.min(5, s + 1));
+    setStep(s => Math.min(6, s + 1));
   };
 
   const handleBack = () => {
@@ -153,7 +185,7 @@ export function NewListingClient() {
       </div>
 
       {/* ── Wizard Progress Bar ── */}
-      <div className="grid grid-cols-5 gap-2.5 sm:gap-4 select-none">
+      <div className="grid grid-cols-6 gap-2.5 sm:gap-4 select-none">
         {WIZARD_STEPS.map((ws) => {
           const isCompleted = ws.id < step;
           const isActive = ws.id === step;
@@ -180,7 +212,7 @@ export function NewListingClient() {
       {/* ── Active Wizard Panel Card ── */}
       <div className="rounded-2xl border border-border-default bg-bg-surface p-5 sm:p-8 shadow-xl space-y-6">
         <div>
-          <span className="text-[10px] font-bold text-accent-primary uppercase tracking-widest block font-mono">Step {step} of 5</span>
+          <span className="text-[10px] font-bold text-accent-primary uppercase tracking-widest block font-mono">Step {step} of 6</span>
           <h2 className="text-base sm:text-lg font-bold text-text-primary mt-1">{WIZARD_STEPS[step - 1].name}</h2>
           <p className="text-xs text-text-muted font-semibold font-body mt-0.5">{WIZARD_STEPS[step - 1].desc}</p>
         </div>
@@ -331,27 +363,57 @@ export function NewListingClient() {
         {/* STEP 3: Details */}
         {step === 3 && (
           <div className="space-y-6 animate-fade-in">
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              <div className="space-y-1.5">
-                <label className="text-[11px] font-bold text-text-muted uppercase tracking-wider">Bedrooms</label>
-                <Input
-                  type="number"
-                  value={form.bedrooms}
-                  onChange={(e) => setForm(p => ({ ...p, bedrooms: e.target.value }))}
-                  className="h-10 border-border-default bg-bg-base text-text-primary text-sm rounded-xl"
-                />
-              </div>
-              
-              <div className="space-y-1.5">
-                <label className="text-[11px] font-bold text-text-muted uppercase tracking-wider">Bathrooms</label>
-                <Input
-                  type="number"
-                  value={form.bathrooms}
-                  onChange={(e) => setForm(p => ({ ...p, bathrooms: e.target.value }))}
-                  className="h-10 border-border-default bg-bg-base text-text-primary text-sm rounded-xl"
-                />
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <label className="text-[11px] font-bold text-text-muted uppercase tracking-wider block">Bedrooms</label>
+                <div className="flex flex-wrap gap-2">
+                  {BEDROOM_OPTIONS.map((opt) => {
+                    const isSelected = form.bedrooms === opt.value;
+                    return (
+                      <button
+                        key={opt.value}
+                        type="button"
+                        onClick={() => setForm(p => ({ ...p, bedrooms: opt.value }))}
+                        className={cn(
+                          "h-10 px-4 rounded-xl border text-xs font-bold transition-all cursor-pointer select-none",
+                          isSelected
+                            ? "bg-accent-primary border-accent-primary text-white shadow-md shadow-accent-primary/20 scale-[1.02]"
+                            : "bg-bg-base border-border-default text-text-secondary hover:border-border-subtle"
+                        )}
+                      >
+                        {opt.label}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
 
+              <div className="space-y-2">
+                <label className="text-[11px] font-bold text-text-muted uppercase tracking-wider block">Bathrooms</label>
+                <div className="flex flex-wrap gap-2">
+                  {BATHROOM_OPTIONS.map((opt) => {
+                    const isSelected = form.bathrooms === opt.value;
+                    return (
+                      <button
+                        key={opt.value}
+                        type="button"
+                        onClick={() => setForm(p => ({ ...p, bathrooms: opt.value }))}
+                        className={cn(
+                          "h-10 px-4 rounded-xl border text-xs font-bold transition-all cursor-pointer select-none",
+                          isSelected
+                            ? "bg-accent-primary border-accent-primary text-white shadow-md shadow-accent-primary/20 scale-[1.02]"
+                            : "bg-bg-base border-border-default text-text-secondary hover:border-border-subtle"
+                        )}
+                      >
+                        {opt.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
                 <label className="text-[11px] font-bold text-text-muted uppercase tracking-wider">Size (sq ft)</label>
                 <Input
@@ -400,43 +462,204 @@ export function NewListingClient() {
           </div>
         )}
 
-        {/* STEP 4: Media Mock */}
+        {/* STEP 4: Media Assets */}
         {step === 4 && (
-          <div className="space-y-4 animate-fade-in">
-            <div className="border-2 border-dashed border-border-default rounded-2xl p-8 bg-bg-alt/30 text-center flex flex-col items-center justify-center gap-3 cursor-pointer hover:border-border-subtle transition-colors">
-              <div className="h-12 w-12 rounded-full bg-bg-elevated flex items-center justify-center text-text-muted">
-                <UploadCloud className="h-6 w-6" />
-              </div>
-              <div className="space-y-1">
-                <h4 className="text-xs font-bold text-text-primary">Drag and drop photos here</h4>
-                <p className="text-[10px] text-text-muted leading-normal max-w-xs font-semibold">
-                  Support JPEG, PNG, or WebP. Aspect ratio 4:3 recommended. Limit 10MB per file.
-                </p>
-              </div>
-              <Button size="sm" variant="outline" className="h-8 rounded-xl border-border-default hover:bg-bg-elevated text-xs text-text-secondary px-4 mt-2">
-                Browse Files
-              </Button>
+          <div className="space-y-6 animate-fade-in">
+            <div className="space-y-1.5">
+              <ImageUploader
+                value={form.coverImage}
+                onChange={(val) => setForm(p => ({ ...p, coverImage: val }))}
+                label="Property Cover Image (Primary Display Photo)"
+                required
+              />
             </div>
-
-            <div className="grid grid-cols-3 gap-4">
-              {[
-                "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=400&q=80",
-                "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=400&q=80",
-                "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=400&q=80"
-              ].map((img, idx) => (
-                <div key={idx} className="relative aspect-video rounded-xl overflow-hidden border border-border-default group shadow-inner">
-                  <img src={img} alt="Preview" className="h-full w-full object-cover" />
-                  <div className="absolute top-2 left-2 bg-black/60 text-white text-[9px] font-bold px-1.5 py-0.5 rounded uppercase backdrop-blur-sm">
-                    {idx === 0 ? "Cover" : `Photo ${idx + 1}`}
+            
+            <div className="space-y-3 pt-2">
+              <div className="flex justify-between items-center">
+                <label className="text-xs font-bold text-text-secondary">Property Photo Gallery</label>
+                <span className="text-[10px] text-text-muted font-bold">{form.images.length} {form.images.length === 1 ? 'photo' : 'photos'} added</span>
+              </div>
+              
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                {/* Render existing gallery images */}
+                {form.images.map((img, idx) => (
+                  <div key={idx} className="relative aspect-video rounded-xl overflow-hidden border border-border-default group shadow-inner bg-bg-base">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={img} alt={`Gallery ${idx + 1}`} className="h-full w-full object-cover transition-transform group-hover:scale-105" />
+                    <div className="absolute top-2 left-2 bg-black/60 text-white text-[9px] font-bold px-1.5 py-0.5 rounded uppercase backdrop-blur-sm">
+                      Photo {idx + 1}
+                    </div>
+                    {/* Delete trigger */}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setForm(p => ({ ...p, images: p.images.filter((_, i) => i !== idx) }));
+                        toast.success("Photo removed", { description: `Gallery photo ${idx + 1} deleted.` });
+                      }}
+                      className="absolute top-2 right-2 h-7 w-7 rounded-full bg-rose-600 hover:bg-rose-700 text-white flex items-center justify-center shadow-md opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer active:scale-95"
+                      title="Delete Image"
+                    >
+                      <Trash className="h-3.5 w-3.5" />
+                    </button>
                   </div>
+                ))}
+
+                {/* File adder cell */}
+                <div 
+                  onClick={() => {
+                    const input = document.createElement("input");
+                    input.type = "file";
+                    input.accept = "image/*";
+                    input.multiple = true;
+                    input.onchange = (e) => {
+                      const files = (e.target as HTMLInputElement).files;
+                      if (!files || files.length === 0) return;
+                      
+                      const newUrls: string[] = [];
+                      for (let i = 0; i < files.length; i++) {
+                        newUrls.push(URL.createObjectURL(files[i]));
+                      }
+                      
+                      setForm(p => ({ ...p, images: [...p.images, ...newUrls] }));
+                      toast.success("Photos added", { description: `Successfully added ${files.length} photos to gallery.` });
+                    };
+                    input.click();
+                  }}
+                  className="border-2 border-dashed border-border-default hover:border-accent-primary rounded-xl flex flex-col items-center justify-center gap-1.5 cursor-pointer bg-bg-base transition-all aspect-video group hover:shadow-sm"
+                >
+                  <div className="h-7 w-7 rounded-full bg-accent-primary/10 flex items-center justify-center text-accent-primary group-hover:scale-115 transition-transform">
+                    <Plus className="h-4 w-4" />
+                  </div>
+                  <span className="text-[10px] font-bold text-text-secondary">Add Photo(s)</span>
                 </div>
-              ))}
+              </div>
+              
+              {/* Preseed Mock button to quickly populate with beautiful Unsplash listings images */}
+              {form.images.length === 0 && (
+                <div className="pt-1.5 text-left">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const mockPhotos = [
+                        "https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=800&q=80",
+                        "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=800&q=80",
+                        "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=800&q=80",
+                        "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=800&q=80"
+                      ];
+                      setForm(p => ({ ...p, images: mockPhotos }));
+                      toast.info("Mock gallery populated", { description: "Added 4 premium real estate gallery photos." });
+                    }}
+                    className="text-[10px] text-accent-primary hover:underline font-bold cursor-pointer"
+                  >
+                    ⚡ Auto-populate with beautiful real estate demo photos
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         )}
 
-        {/* STEP 5: Review */}
+        {/* STEP 5: SEO Settings */}
         {step === 5 && (
+          <div className="space-y-6 animate-fade-in">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div className="space-y-1.5">
+                <div className="flex justify-between items-center">
+                  <label className="text-[11px] font-bold text-text-muted uppercase tracking-wider">SEO Title Tag *</label>
+                  <span className={cn(
+                    "text-[10px] font-bold font-mono",
+                    form.seoTitle.length >= 50 && form.seoTitle.length <= 60
+                      ? "text-emerald-500"
+                      : "text-text-muted"
+                  )}>
+                    {form.seoTitle.length}/60 chars
+                  </span>
+                </div>
+                <Input
+                  placeholder="e.g. Modern Penthouse with City Views for Sale | Brand Estate"
+                  value={form.seoTitle}
+                  onChange={(e) => setForm(p => ({ ...p, seoTitle: e.target.value.slice(0, 70) }))}
+                  className="h-10 border-border-default bg-bg-base text-text-primary text-sm rounded-xl"
+                />
+                <p className="text-[10px] text-text-muted leading-tight">
+                  Recommended length is 50-60 characters. This appears as the blue clickable header in search engines.
+                </p>
+              </div>
+
+              <div className="space-y-1.5">
+                <div className="flex justify-between items-center">
+                  <label className="text-[11px] font-bold text-text-muted uppercase tracking-wider">Meta Description *</label>
+                  <span className={cn(
+                    "text-[10px] font-bold font-mono",
+                    form.seoDescription.length >= 150 && form.seoDescription.length <= 160
+                      ? "text-emerald-500"
+                      : "text-text-muted"
+                  )}>
+                    {form.seoDescription.length}/160 chars
+                  </span>
+                </div>
+                <textarea
+                  placeholder="Summarize key features, amenities, and layout advantages to drive search result clicks..."
+                  value={form.seoDescription}
+                  onChange={(e) => setForm(p => ({ ...p, seoDescription: e.target.value.slice(0, 200) }))}
+                  rows={3}
+                  className="w-full text-sm border bg-bg-base text-text-primary border-border-default rounded-xl p-3 focus:outline-none focus:ring-1 focus:ring-accent-primary transition-all resize-none font-medium"
+                />
+                <p className="text-[10px] text-text-muted leading-tight">
+                  Recommended length is 150-160 characters. It highlights summary details in search result listings.
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <TagInput
+                value={form.seoKeywords}
+                onChange={(val) => setForm(p => ({ ...p, seoKeywords: val }))}
+                placeholder="Type keywords (e.g. luxury, penthouse, central park) and press comma or enter..."
+                label="Target Search Keywords"
+                labelInfo="(for search engine relevance indexing)"
+                suggestions={["luxury", "modern", "penthouse", "sea-view", "garden", "pool", "renovated", "investment", "near-subway", "quiet", "waterfront"]}
+              />
+            </div>
+
+            <div className="border border-border-default/80 rounded-xl p-4.5 space-y-4 bg-bg-alt/10">
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <span className="text-xs font-bold text-text-primary">Sync Social Graph Card</span>
+                  <p className="text-[10px] text-text-muted leading-tight">Use property cover image as the OpenGraph preview thumbnail</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setForm(p => ({ ...p, useCoverAsOg: !p.useCoverAsOg }))}
+                  className={cn(
+                    "relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none",
+                    form.useCoverAsOg ? "bg-accent-primary" : "bg-border-default"
+                  )}
+                >
+                  <span
+                    className={cn(
+                      "pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out",
+                      form.useCoverAsOg ? "translate-x-5" : "translate-x-0"
+                    )}
+                  />
+                </button>
+              </div>
+
+              {!form.useCoverAsOg && (
+                <div className="pt-2 border-t border-border-default/45 animate-fade-in">
+                  <ImageUploader
+                    value={form.ogImageUrl}
+                    onChange={(val) => setForm(p => ({ ...p, ogImageUrl: val }))}
+                    label="Custom OpenGraph Social Preview Image"
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* STEP 6: Review & Publish */}
+        {step === 6 && (
           <div className="space-y-6 animate-fade-in">
             <div className="p-4 rounded-xl bg-bg-alt/40 border border-border-default flex gap-4 items-start">
               <div className="h-10 w-10 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 flex items-center justify-center shrink-0">
@@ -445,34 +668,87 @@ export function NewListingClient() {
               <div>
                 <h4 className="text-xs font-bold text-text-primary">Listing Ready for Review</h4>
                 <p className="text-[11px] text-text-muted mt-1 leading-relaxed font-semibold">
-                  Please confirm that the pricing details and address details listed below are correct before submitting to administration reviewers.
+                  Please review the details below. Once approved, the property listing will be published and indexable by search engine bots.
+                </p>
+              </div>
+            </div>
+
+            {/* Google Search Engine Preview Snippet */}
+            <div className="space-y-2">
+              <label className="text-[11px] font-bold text-text-muted uppercase tracking-wider block">Google Search Preview</label>
+              <div className="border border-border-default bg-bg-base rounded-xl p-4.5 space-y-1.5 font-sans select-none shadow-sm">
+                <div className="flex items-center gap-1.5">
+                  <div className="h-4.5 w-4.5 rounded-full bg-accent-primary/10 border border-accent-primary/20 flex items-center justify-center text-[9px] text-accent-primary font-bold">
+                    BE
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-[11px] text-text-primary font-semibold leading-tight">Brand Estate</span>
+                    <span className="text-[9px] text-text-muted leading-tight truncate max-w-[280px]">
+                      https://brand-estate.com/property/{form.title.toLowerCase().replace(/[^a-z0-9]+/g, "-") || "new-listing"}
+                    </span>
+                  </div>
+                </div>
+                <h4 className="text-base font-medium text-[#1a0dab] dark:text-[#8ab4f8] hover:underline cursor-pointer leading-snug break-words">
+                  {form.seoTitle || form.title || "Untitled Property Listing | Brand Estate"}
+                </h4>
+                <p className="text-xs text-text-secondary leading-relaxed break-words font-normal">
+                  {form.seoDescription || form.description || "Add a meta description to preview search engine results here..."}
                 </p>
               </div>
             </div>
 
             {/* Summary details list */}
             <div className="rounded-xl border border-border-default bg-bg-alt/30 p-5 space-y-4 text-xs font-medium">
-              <div className="flex justify-between items-center py-1.5 border-b border-border-default">
-                <span className="text-text-muted">Property Title</span>
-                <span className="font-bold text-text-primary truncate max-w-[200px]">{form.title}</span>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center py-1.5 border-b border-border-default">
+                    <span className="text-text-muted">Property Title</span>
+                    <span className="font-bold text-text-primary truncate max-w-[180px]">{form.title}</span>
+                  </div>
+                  <div className="flex justify-between items-center py-1.5 border-b border-border-default">
+                    <span className="text-text-muted">Zoning Category</span>
+                    <span className="font-bold text-text-primary capitalize">{form.category}</span>
+                  </div>
+                  <div className="flex justify-between items-center py-1.5 border-b border-border-default">
+                    <span className="text-text-muted">Financial Price</span>
+                    <span className="font-bold text-accent-primary font-mono">{form.currency} {Number(form.price).toLocaleString()}</span>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center py-1.5 border-b border-border-default">
+                    <span className="text-text-muted">Street Location</span>
+                    <span className="font-bold text-text-primary truncate max-w-[180px]">{form.address}, {form.city}</span>
+                  </div>
+                  <div className="flex justify-between items-center py-1.5 border-b border-border-default">
+                    <span className="text-text-muted">Layout Metrics</span>
+                    <span className="font-bold text-text-primary">
+                      {form.bedrooms === "0" ? "Studio" : `${form.bedrooms} Bed`} · {form.bathrooms} Bath · {form.squareFeet} sq ft
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center py-1.5 border-b border-border-default">
+                    <span className="text-text-muted">Media Photos</span>
+                    <span className="font-bold text-text-primary">
+                      Cover + {form.images.length} gallery {form.images.length === 1 ? "photo" : "photos"}
+                    </span>
+                  </div>
+                </div>
               </div>
-              <div className="flex justify-between items-center py-1.5 border-b border-border-default">
-                <span className="text-text-muted">Zoning Category</span>
-                <span className="font-bold text-text-primary capitalize">{form.category}</span>
-              </div>
-              <div className="flex justify-between items-center py-1.5 border-b border-border-default">
-                <span className="text-text-muted">Financial Price</span>
-                <span className="font-bold text-accent-primary font-mono">{form.currency} {Number(form.price).toLocaleString()}</span>
-              </div>
-              <div className="flex justify-between items-center py-1.5 border-b border-border-default">
-                <span className="text-text-muted">Street Location</span>
-                <span className="font-bold text-text-primary">{form.address}, {form.city}</span>
-              </div>
-              <div className="flex justify-between items-center py-1.5 border-b border-border-default">
-                <span className="text-text-muted">Layout Metrics</span>
-                <span className="font-bold text-text-primary">{form.bedrooms} Bed · {form.bathrooms} Bath · {form.squareFeet} sq ft</span>
-              </div>
-              <div className="flex flex-wrap gap-1.5 pt-1">
+
+              {form.seoKeywords && (
+                <div className="pt-2 border-t border-border-default">
+                  <span className="text-[10px] text-text-muted font-bold block uppercase tracking-wider mb-1">Target SEO Keywords</span>
+                  <div className="flex flex-wrap gap-1">
+                    {form.seoKeywords.split(",").map(k => k.trim()).filter(Boolean).map(k => (
+                      <span key={k} className="bg-bg-elevated border border-border-default text-text-secondary text-[9px] font-bold px-2 py-0.5 rounded-md">
+                        {k}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div className="flex flex-wrap gap-1.5 pt-2 border-t border-border-default">
                 {form.amenities.map(a => (
                   <span key={a} className="bg-accent-primary/8 text-accent-primary border border-accent-primary/15 text-[9px] font-bold px-2 py-0.5 rounded-md">
                     {a}
@@ -495,7 +771,7 @@ export function NewListingClient() {
             <ArrowLeft className="mr-1.5 h-4 w-4" /> Back
           </Button>
           
-          {step < 5 ? (
+          {step < 6 ? (
             <Button
               type="button"
               onClick={handleNext}

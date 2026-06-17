@@ -52,6 +52,7 @@ export interface PropertySEO {
   seoTitle: string;
   metaDescription: string;
   ogImageUrl: string; // AWS S3 public key or full URL
+  keywords?: string[];
 }
 
 // ─── Lister / Agent Profile ──────────────────────────────────────────────────

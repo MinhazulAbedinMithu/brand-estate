@@ -6,7 +6,7 @@ import { PropertySpecs } from "@/components/property/property-specs";
 import { PropertyPriceHistory } from "@/components/property/property-price-history";
 import { AgentContactCard } from "@/components/property/agent-contact-card";
 import { RelatedListings } from "@/components/property/related-listings";
-import { MapPin, Bed, Bath, Square, Calendar, Eye, Heart, Share2, Compass, AlertCircle } from "lucide-react";
+import { MapPin, Bed, Bath, Ruler, Calendar, Compass, Check } from "lucide-react";
 import { Metadata } from "next";
 
 interface DetailPageProps {
@@ -76,13 +76,25 @@ export default async function PropertyDetailPage({ params }: DetailPageProps) {
             <div className="space-y-4">
               <div className="flex flex-wrap items-center gap-2">
                 {property.isFeatured && (
-                  <span className="bg-state-warning/10 text-state-warning border border-state-warning/20 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
-                    Featured Property
+                  <span className="bg-gradient-to-r from-amber-500 to-orange-500 text-white text-[9px] font-extrabold px-3 py-1 rounded-full shadow-sm tracking-wider select-none uppercase">
+                    Featured
                   </span>
                 )}
-                <span className="bg-bg-elevated border border-border-default/80 text-text-secondary text-[10px] font-bold px-3 py-1 rounded-full tracking-wider capitalize">
+                <span className="bg-bg-elevated border border-border-default/80 text-text-secondary text-[9px] font-bold px-3 py-1 rounded-full tracking-wider uppercase select-none">
                   {property.status.replace("_", " ")}
                 </span>
+                {property.seo?.keywords && property.seo.keywords.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5 ml-1">
+                    {property.seo.keywords.map((tag) => (
+                      <span
+                        key={tag}
+                        className="bg-accent-primary/8 text-accent-primary border border-accent-primary/15 text-[9px] font-extrabold px-2.5 py-0.5 rounded-md uppercase tracking-wider transition-colors hover:bg-accent-primary/12"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
 
               <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold font-heading text-text-primary tracking-tight leading-tight">
@@ -108,7 +120,7 @@ export default async function PropertyDetailPage({ params }: DetailPageProps) {
                   </>
                 )}
                 <span className="flex items-center gap-1.5">
-                  <Square className="h-4 w-4 text-accent-primary" />
+                  <Ruler className="h-4 w-4 text-accent-primary rotate-90" />
                   {property.squareFeet.toLocaleString()} sq ft ({property.squareMeters.toLocaleString()} m²)
                 </span>
                 <span className="flex items-center gap-1.5">
@@ -119,16 +131,16 @@ export default async function PropertyDetailPage({ params }: DetailPageProps) {
             </div>
 
             {/* Price Block */}
-            <div className="p-6 rounded-2xl border border-border-default bg-bg-surface flex items-center justify-between gap-4 shadow-sm">
+            <div className="p-6 rounded-2xl border border-border-default/60 bg-gradient-to-br from-bg-surface to-bg-alt/30 flex items-center justify-between gap-4 shadow-md shadow-accent-primary/2 hover:border-accent-primary/20 transition-all duration-300">
               <div className="space-y-1">
-                <span className="text-xs font-bold text-text-muted uppercase tracking-wider">Listing Price</span>
-                <p className="text-3xl sm:text-4xl font-extrabold font-heading text-accent-primary">
+                <span className="text-xs font-bold text-text-muted uppercase tracking-wider block">Listing Price</span>
+                <p className="text-3xl sm:text-4xl font-extrabold font-body text-accent-primary tracking-tight">
                   {formattedPrice}
                 </p>
               </div>
-              <div className="text-right">
+              <div className="text-right space-y-1">
                 <span className="text-xs font-bold text-text-muted uppercase tracking-wider block">Estimated Value</span>
-                <p className="text-lg font-bold text-text-primary mt-1">
+                <p className="text-lg font-bold text-text-primary mt-1 font-body">
                   {symbol}{(property.price * 1.02).toLocaleString()}
                 </p>
               </div>
@@ -153,6 +165,28 @@ export default async function PropertyDetailPage({ params }: DetailPageProps) {
                   <p className="text-sm text-text-secondary leading-relaxed font-body font-medium">
                     {property.neighborhoodNotes}
                   </p>
+                </div>
+              )}
+
+              {/* Amenities List */}
+              {property.amenities && property.amenities.length > 0 && (
+                <div className="pt-6 border-t border-border-default/45 space-y-4">
+                  <h3 className="text-lg font-bold font-heading text-text-primary">
+                    Amenities & Facilities
+                  </h3>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                    {property.amenities.map((amenity) => (
+                      <div
+                        key={amenity}
+                        className="flex items-center gap-2.5 px-4 py-3 rounded-xl border border-border-default/50 bg-bg-surface text-xs font-semibold text-text-secondary select-none"
+                      >
+                        <span className="h-4.5 w-4.5 rounded-full bg-accent-primary/10 flex items-center justify-center text-accent-primary shrink-0">
+                          <Check className="h-3 w-3" />
+                        </span>
+                        <span>{amenity}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>

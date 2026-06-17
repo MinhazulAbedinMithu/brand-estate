@@ -49,6 +49,13 @@ export interface PropertyLocation {
   lng?: number;
 }
 
+export interface PropertySEO {
+  seoTitle: string;
+  metaDescription: string;
+  ogImageUrl: string;
+  keywords?: string[];
+}
+
 export interface Property {
   id: string;
   title: string;
@@ -69,6 +76,7 @@ export interface Property {
   parkingSpaces?: number;
   createdAt: string;
   updatedAt?: string;
+  seo?: PropertySEO;
 }
 
 // ─────────────────────────────────────────────

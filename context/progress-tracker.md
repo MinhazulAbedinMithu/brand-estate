@@ -130,6 +130,19 @@ All dashboard workspace panels and public pages successfully built, type-checked
 - [x] **Public Pages (About & Contact) COMPLETE** ✅
   - [x] About `/about` — Modern light-themed timeline, core company vision, interactive team profiles
   - [x] Contact `/contact` — Leaflet style mapping dashboard card, support inquiry forms validation
+- [x] **Property Listing Schema, Creation Wizard & Details Page Modernization COMPLETE** ✅
+  - [x] Reviewed property listing schema and added optional keywords list attribute to `PropertySEO` across models and mocks.
+  - [x] Expanded the new listing creation wizard form from 5 to 6 steps to introduce a dedicated **SEO Settings** panel.
+  - [x] Replaced Beds and Baths raw text typing inputs in Step 3 with horizontal **Chip Button Toggles** (Studio to 5+ beds, 1 to 4+ baths).
+  - [x] Integrated premium `<ImageUploader>` media component for the Cover Image, and built a dynamic gallery builder grid in Step 4 with delete overlays and file input loaders.
+  - [x] Added Title and Meta Description inputs with character counter limits, TagInput search keyword tags, and an automated Cover-to-OG Image sync switch in Step 5.
+  - [x] Created a realistic **Google Search snippet SERP visual preview widget** and extended the final review details card in Step 6.
+  - [x] Modernized the public **Property Details Page** (`app/property/[slug]/page.tsx`):
+    - Synchronized the area/size icon to use the `<Ruler className="rotate-90" />` component matching the listing `<PropertyCard>`.
+    - Displayed dynamic search tag badges (keywords) directly under the title category row.
+    - Integrated a dynamic "Amenities & Facilities" section rendering checkboxes with the `<Check>` icon.
+    - Polished the pricing details card with glassmorphism gradients, shadows, and clean sans-serif Montserrat typography for the price elements.
+  - [x] Completed TypeScript compilation checks (`npx tsc --noEmit`), lint checks (`npm run lint`), and Next.js production builds (`npm run build`) successfully with zero compile errors.
 
 ---
 
@@ -214,10 +227,9 @@ Phase 1 specs to be defined and implemented in order:
 - Resolved 20 ESLint, React Hook order violations, and TypeScript errors across 11 files (including conditional hook declarations, unescaped entity bugs, unexpected `any` casts, and synchronous state setting in effects). Also resolved CSS display conflicts (`hidden xs:flex` to `hidden sm:flex` and removing redundant `block` from `block flex`) and fixed a class name typography syntax error (`text-accent-primaryshrink-0` to `text-accent-primary shrink-0`). Verified that `npx tsc --noEmit` and `npm run lint` compile successfully with zero errors, and successfully generated all 39 static and dynamic routes during a production build.
 - Resolved two React 19 / Next.js layout errors: replaced the raw `<script>` tag inside `<head>` with the Next.js `Script` component with `strategy="beforeInteractive"` in `app/layout.tsx` to fix the client rendering script warning, and introduced an `isMounted` client-side guard in `components/layout/navbar.tsx` to prevent server-client hydration mismatch for authenticated/guest views.
 - Implemented complete blog creation, moderation review, and reaction system (Spec 05 upgrade) across the public pages, member dashboard, agent workspace, and admin panel, supported by a localStorage-persisted blog store and verified type-safe and lint-safe.
-- Consolidated blog composition inputs, state variables, and SEO configurations across Member, Agent, and Admin dashboard panels into a shared, reusable `BlogForm` component (saving ~900 lines of duplicate logic). Hardened lints, TypeScript constraints, and resolved React 19 cascading rendering guidelines. Verified build compile and static routes generation stability.
-- Increased the slide-over Sheet drawer layout widths (Compose, Edit, and Admin Queue Inspector drawers) from `sm:max-w-2xl` to `sm:max-w-2xl lg:max-w-3xl xl:max-w-4xl` to provide optimized space and structure for editing long content and auditing extensive SEO metadata fields.
 - Extracted the visual tag editor into a reusable `TagInput` component ([tag-input.tsx](file:///Users/minhaz/Documents/projects/brand/brand-estate/components/blog/tag-input.tsx)) and integrated it for both the Core Tags input and the SEO Target Keywords input inside `BlogForm`. Unifies the pro-UX tag editing (visual chip badges, inline typing, blur-save, paste-parsing, and search suggested checklist dropdowns) across both forms, reducing duplicate helper code and passing validation tests.
 - Created reusable `ImageUploader` component ([image-uploader.tsx](file:///Users/minhaz/Documents/projects/brand/brand-estate/components/blog/image-uploader.tsx)) that supports drag-and-drop file selections (producing instant client previews with simulated loading states) as well as text URL link inputs. Integrated it for both Cover Image and OpenGraph (OG) Image fields inside `BlogForm`.
 - Added an automated toggle: "Use Cover Photo as Social Preview". By default, this is active and hides the OG Image selector, automatically syncing the Cover Image to the social metadata upon form submission. Toggling this off displays a custom `ImageUploader` for uploading/entering a unique OG preview thumbnail.
+- Added agent profile linking to blog reader views ([blog-detail-client.tsx](file:///Users/minhaz/Documents/projects/brand/brand-estate/app/blogs/[slug]/blog-detail-client.tsx)). If the author is an agent, matches them in the agent database. Logged-in users can click their name or card button to view their public profile `/agents/[slug]`. Guest users are blocked from viewing the profile, warned via a toast, and redirected to log in/register.
 
 

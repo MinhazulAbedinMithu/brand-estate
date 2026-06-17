@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, useRouter } from "next/navigation";
 import { Calendar, Clock, ChevronLeft, ArrowRight, ThumbsUp, Loader2, Lock, Eye } from "lucide-react";
 import { useBlogs } from "@/lib/blog-context";
 import { useAuth } from "@/lib/auth-context";
@@ -10,6 +10,8 @@ import { BlogCard } from "@/components/shared/blog-card";
 import { ShareButtons } from "@/components/blog/share-buttons";
 import { NewsletterForm } from "@/components/blog/newsletter-form";
 import { cn } from "@/lib/utils";
+import { agentsMock } from "@/src/mocks/agentsMock";
+import { toast } from "sonner";
 
 interface BlogDetailClientProps {
   slug: string;
@@ -20,6 +22,7 @@ const EMOJIS = ["🔥", "❤️", "👏", "💡", "😮", "🚀"];
 export function BlogDetailClient({ slug }: BlogDetailClientProps) {
   const { posts, reactToPost, isLoading } = useBlogs();
   const { currentUser } = useAuth();
+  const router = useRouter();
 
   // Track client-side clicked emojis to prevent spamming (or highlight selected)
   const [clickedEmojis, setClickedEmojis] = React.useState<Record<string, boolean>>({});
@@ -59,6 +62,23 @@ export function BlogDetailClient({ slug }: BlogDetailClientProps) {
   if (!post) {
     notFound();
   }
+
+  const matchingAgent = agentsMock.find(
+    (a) =>
+      a.name.toLowerCase() === post.author.name.toLowerCase() ||
+      a.id === post.authorId ||
+      post.authorRole === "agent"
+  ) ?? null;
+
+  const handleAgentProfileClick = (e: React.MouseEvent, agentSlug: string) => {
+    if (!currentUser) {
+      e.preventDefault();
+      toast.warning("Authentication Required", {
+        description: "Please sign in or register to view full agent profile details.",
+      });
+      router.push(`/login?redirect=/agents/${agentSlug}`);
+    }
+  };
 
   // Check access permission for drafts, pending, or rejected blogs
   const isAuthor = currentUser && currentUser.id === post.authorId;
@@ -239,7 +259,17 @@ export function BlogDetailClient({ slug }: BlogDetailClientProps) {
                   className="h-12 w-12 rounded-full border border-border-default object-cover"
                 />
                 <div>
-                  <h5 className="text-sm font-bold text-text-primary">{post.author.name}</h5>
+                  {matchingAgent ? (
+                    <Link
+                      href={`/agents/${matchingAgent.slug}`}
+                      onClick={(e) => handleAgentProfileClick(e, matchingAgent.slug)}
+                      className="text-sm font-bold text-text-primary hover:text-accent-primary hover:underline transition-colors block cursor-pointer"
+                    >
+                      {post.author.name}
+                    </Link>
+                  ) : (
+                    <h5 className="text-sm font-bold text-text-primary">{post.author.name}</h5>
+                  )}
                   <span className="text-[10px] text-accent-primary font-bold uppercase tracking-wider block mt-0.5">
                     {post.author.role}
                   </span>
@@ -249,6 +279,17 @@ export function BlogDetailClient({ slug }: BlogDetailClientProps) {
                 <p className="text-xs text-text-secondary leading-relaxed font-body font-medium">
                   {post.author.bio}
                 </p>
+              )}
+              {matchingAgent && (
+                <div className="pt-2 border-t border-border-default/40">
+                  <Link
+                    href={`/agents/${matchingAgent.slug}`}
+                    onClick={(e) => handleAgentProfileClick(e, matchingAgent.slug)}
+                    className="text-xs font-bold text-accent-primary hover:text-accent-primary-hov flex items-center gap-1 cursor-pointer transition-colors"
+                  >
+                    View Agent Profile →
+                  </Link>
+                </div>
               )}
             </div>
 

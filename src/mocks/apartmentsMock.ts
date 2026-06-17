@@ -69,7 +69,9 @@ export const apartmentsMock: ApartmentProperty[] = [
         "Full-floor penthouse at 742 Park Avenue, Manhattan. 6,800 sq ft, 4 bedrooms, wrap-around terrace, 360° skyline views. Listed at $9.85M.",
       ogImageUrl:
         "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=1200&q=80",
+      keywords: ["penthouse", "luxury", "skyline", "park-avenue", "new-york"],
     },
+    amenities: ["Swimming Pool", "Fitness Gym", "Rooftop Terrace", "Security System", "Smart Home Integration", "Elevator"],
     apartment: {
       floorNumber: 52,
       totalBuildingFloors: 52,
