@@ -125,10 +125,11 @@ function ResetPasswordForm() {
   const [showConfirm, setShowConfirm] = React.useState(false);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [done, setDone] = React.useState(false);
+  const [invalidToken, setInvalidToken] = React.useState(false);
   const [errors, setErrors] = React.useState<{ password?: string; confirm?: string }>({});
 
-  // If no token, render the invalid card
-  if (!token) {
+  // If no token in URL or API said invalid — render the invalid card
+  if (!token || invalidToken) {
     return <InvalidTokenCard />;
   }
 
@@ -139,7 +140,8 @@ function ResetPasswordForm() {
   const validate = () => {
     const errs: typeof errors = {};
     if (!password) errs.password = "New password is required.";
-    else if (password.length < 6) errs.password = "Minimum 6 characters required.";
+    else if (password.length < 8) errs.password = "Minimum 8 characters required.";
+    else if (!/\d/.test(password)) errs.password = "Password must include at least one number.";
     if (!confirm) errs.confirm = "Please confirm your new password.";
     else if (confirm !== password) errs.confirm = "Passwords do not match.";
     return errs;
@@ -151,15 +153,39 @@ function ResetPasswordForm() {
     if (Object.keys(errs).length > 0) { setErrors(errs); return; }
     setErrors({});
     setIsSubmitting(true);
-    // Simulate API call
-    await new Promise((r) => setTimeout(r, 800));
-    setIsSubmitting(false);
-    setDone(true);
-    toast.success("Password reset successful!", {
-      description: "You can now sign in with your new password.",
-    });
-    // Auto redirect after a delay
-    setTimeout(() => router.push("/login"), 3000);
+
+    try {
+      const res = await fetch("/api/auth/reset-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token, password, confirmPassword: confirm }),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        if (data.error === "PasswordMismatch") {
+          setErrors({ confirm: "Passwords do not match." });
+        } else if (data.error === "InvalidOrExpiredToken") {
+          setInvalidToken(true);
+          return;
+        } else {
+          setErrors({ password: data.message ?? "An error occurred. Please try again." });
+        }
+        toast.error("Reset failed", { description: data.message });
+        return;
+      }
+
+      setDone(true);
+      toast.success("Password reset successful!", {
+        description: "You can now sign in with your new password.",
+      });
+      setTimeout(() => router.push("/login"), 3000);
+    } catch {
+      setErrors({ password: "Network error. Please check your connection and try again." });
+      toast.error("Network error", { description: "Could not reach the server." });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (

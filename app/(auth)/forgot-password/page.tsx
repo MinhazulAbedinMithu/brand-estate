@@ -134,8 +134,14 @@ export default function ForgotPasswordPage() {
     return "";
   };
 
-  const simulateSend = async () => {
-    await new Promise((r) => setTimeout(r, 800));
+  const callForgotPasswordAPI = async (emailValue: string): Promise<{ ok: boolean; message?: string }> => {
+    const res = await fetch("/api/auth/forgot-password", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: emailValue.trim().toLowerCase() }),
+    });
+    const data = await res.json();
+    return { ok: res.ok, message: data.message };
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -144,19 +150,33 @@ export default function ForgotPasswordPage() {
     if (err) { setEmailError(err); return; }
     setEmailError("");
     setIsSubmitting(true);
-    await simulateSend();
-    setIsSubmitting(false);
-    setSubmitted(true);
-    startCountdown();
-    toast.success("Reset link sent!", { description: `Check your inbox at ${email}` });
+    try {
+      const result = await callForgotPasswordAPI(email);
+      if (!result.ok) {
+        toast.error("Failed to send", { description: result.message ?? "Please try again." });
+        return;
+      }
+      setSubmitted(true);
+      startCountdown();
+      toast.success("Reset link sent!", { description: `Check your inbox at ${email}` });
+    } catch {
+      toast.error("Network error", { description: "Could not reach the server. Please try again." });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleResend = async () => {
     setIsResending(true);
-    await simulateSend();
-    setIsResending(false);
-    startCountdown();
-    toast.success("Email resent!", { description: "A fresh reset link has been sent." });
+    try {
+      await callForgotPasswordAPI(email);
+      startCountdown();
+      toast.success("Email resent!", { description: "A fresh reset link has been sent." });
+    } catch {
+      toast.error("Network error", { description: "Could not reach the server." });
+    } finally {
+      setIsResending(false);
+    }
   };
 
   return (

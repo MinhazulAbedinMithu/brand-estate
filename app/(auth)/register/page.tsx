@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import {
   Mail,
@@ -15,13 +14,13 @@ import {
   CheckCircle2,
   Home,
   Briefcase,
+  MailCheck,
 } from "lucide-react";
 
 import { AuthLayoutShell } from "@/components/layout/auth-layout-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { useAuth, getDashboardRoute } from "@/lib/auth-context";
 import type { UserRole } from "@/lib/types";
 
 // ─────────────────────────────────────────────────────────
@@ -126,12 +125,53 @@ function PasswordStrength({ password }: { password: string }) {
 }
 
 // ─────────────────────────────────────────────────────────
+// Email sent confirmation card
+// ─────────────────────────────────────────────────────────
+function EmailSentCard({ email }: { email: string }) {
+  return (
+    <div className="text-center space-y-6 animate-fade-in">
+      <div className="flex justify-center">
+        <div className="relative">
+          <div className="h-20 w-20 rounded-full bg-emerald-100 dark:bg-emerald-500/10 flex items-center justify-center">
+            <MailCheck className="h-10 w-10 text-emerald-600 dark:text-emerald-400" />
+          </div>
+          <div className="absolute inset-0 rounded-full border-2 border-emerald-400/30 animate-ping" />
+        </div>
+      </div>
+      <div className="space-y-2">
+        <h2 className="text-2xl font-bold text-text-primary font-heading">Check your inbox!</h2>
+        <p className="text-sm text-text-muted leading-relaxed">
+          We&apos;ve sent a verification link to
+        </p>
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-bg-elevated border border-border-default">
+          <Mail className="h-3.5 w-3.5 text-accent-primary shrink-0" />
+          <span className="text-sm font-semibold text-text-primary truncate max-w-[220px]">{email}</span>
+        </div>
+        <p className="text-xs text-text-faint mt-2">
+          Click the link in your email to activate your account. The link expires in 24 hours.
+        </p>
+      </div>
+      <div className="flex items-start gap-3 px-4 py-3 rounded-xl bg-accent-primary/6 border border-accent-primary/20 text-left">
+        <CheckCircle2 className="h-4 w-4 text-accent-primary shrink-0 mt-0.5" />
+        <p className="text-xs text-text-secondary leading-relaxed">
+          Didn&apos;t receive it? Check your spam folder, or{" "}
+          <Link href="/register" className="font-semibold text-accent-primary hover:underline">register again</Link>{" "}
+          to resend.
+        </p>
+      </div>
+      <Link href="/login">
+        <Button className="w-full h-11 rounded-xl bg-accent-primary text-white hover:bg-accent-primary-hov font-semibold text-[13px] shadow-sm shadow-accent-primary/20 transition-all duration-200">
+          <span className="flex items-center gap-2">Go to Sign In <ArrowRight className="h-4 w-4" /></span>
+        </Button>
+      </Link>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────
 // Page
 // ─────────────────────────────────────────────────────────
 export default function RegisterPage() {
-  const router = useRouter();
-  const { register } = useAuth();
-
   const [selectedRole, setSelectedRole] = React.useState<UserRole>("auth_user");
   const [name, setName] = React.useState("");
   const [email, setEmail] = React.useState("");
@@ -140,6 +180,7 @@ export default function RegisterPage() {
   const [showPassword, setShowPassword] = React.useState(false);
   const [showConfirm, setShowConfirm] = React.useState(false);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [registered, setRegistered] = React.useState(false);
   const [errors, setErrors] = React.useState<{
     name?: string;
     email?: string;
@@ -148,20 +189,21 @@ export default function RegisterPage() {
     root?: string;
   }>({});
 
-  // ── Validation ─────────────────────────────────────────
+  // ── Validation (matches API: 8+ chars, digit required) ─
   const validate = () => {
     const errs: typeof errors = {};
     if (!name.trim()) errs.name = "Full name is required.";
     if (!email.trim()) errs.email = "Email address is required.";
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) errs.email = "Enter a valid email.";
     if (!password) errs.password = "Password is required.";
-    else if (password.length < 6) errs.password = "Minimum 6 characters required.";
+    else if (password.length < 8) errs.password = "Minimum 8 characters required.";
+    else if (!/\d/.test(password)) errs.password = "Password must include at least one number.";
     if (!confirmPassword) errs.confirm = "Please confirm your password.";
     else if (password !== confirmPassword) errs.confirm = "Passwords do not match.";
     return errs;
   };
 
-  // ── Submit ─────────────────────────────────────────────
+  // ── Submit → real API ──────────────────────────────────
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const errs = validate();
@@ -169,31 +211,53 @@ export default function RegisterPage() {
     setErrors({});
     setIsSubmitting(true);
 
-    const result = await register(name, email, password, selectedRole);
-    setIsSubmitting(false);
+    try {
+      const res = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: name.trim(), email: email.trim().toLowerCase(), password, role: selectedRole }),
+      });
+      const data = await res.json();
 
-    if (!result.success) {
-      setErrors({ root: result.error });
-      toast.error("Registration failed", { description: result.error });
-      return;
+      if (!res.ok) {
+        const msg = data.message ?? "Registration failed. Please try again.";
+        if (data.error === "EmailAlreadyExists") {
+          setErrors({ email: "An account with this email already exists." });
+        } else {
+          setErrors({ root: msg });
+        }
+        toast.error("Registration failed", { description: msg });
+        return;
+      }
+
+      // Success — show confirmation card
+      toast.success(`Welcome, ${data.data?.name?.split(" ")[0] ?? name.split(" ")[0]}! 🏡`, {
+        description: "Check your inbox to verify your email.",
+      });
+      setRegistered(true);
+    } catch {
+      setErrors({ root: "Network error. Please check your connection and try again." });
+      toast.error("Network error", { description: "Could not reach the server." });
+    } finally {
+      setIsSubmitting(false);
     }
-
-    toast.success(`Welcome to Brand Estate, ${result.user?.name?.split(" ")[0]}! 🏡`, {
-      description: "Your account has been created successfully.",
-    });
-    router.push(getDashboardRoute(result.user!.role));
   };
 
-  // ── Google register mock ───────────────────────────────
-  const handleGoogle = async () => {
-    setIsSubmitting(true);
-    const result = await register("Google User", "google@brandestate.com", "google-oauth", selectedRole);
-    setIsSubmitting(false);
-    if (result.success) {
-      toast.success(`Account created with Google!`);
-      router.push(getDashboardRoute(result.user!.role));
-    }
+  // ── Google register (mock — no OAuth API yet) ──────────
+  const handleGoogle = () => {
+    toast.info("Google sign-up coming soon!", { description: "Use email registration for now." });
   };
+
+  if (registered) {
+    return (
+      <AuthLayoutShell
+        heading="Verify your email"
+        subheading="One last step — check your inbox to activate your account."
+      >
+        <EmailSentCard email={email} />
+      </AuthLayoutShell>
+    );
+  }
 
   return (
     <AuthLayoutShell

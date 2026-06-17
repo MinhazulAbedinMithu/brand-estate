@@ -6,15 +6,21 @@ Update this file whenever the current phase, active feature, or implementation s
 
 ## Current Phase
 
-**Phase 1 — Frontend UI Design**
+**Phase 2 — Backend API Development & Integration**
 
 ## Current Goal
 
-All dashboard workspace panels and public pages successfully built, type-checked, and pre-rendered in production.
+Implement, test, and integrate backend API routes (Next.js API Routes / Mongoose schemas) and wire the frontend screens to live data.
 
 ---
 
 ## Completed
+
+- [x] API Spec Sheets created and defined for all 4 backend modules:
+  - [module-1-auth.md](file:///Users/minhaz/Documents/projects/brand/brand-estate/context/api-specs/module-1-auth.md) (Auth & User Management)
+  - [module-2-properties.md](file:///Users/minhaz/Documents/projects/brand/brand-estate/context/api-specs/module-2-properties.md) (Properties & Search Engine)
+  - [module-3-blogs.md](file:///Users/minhaz/Documents/projects/brand/brand-estate/context/api-specs/module-3-blogs.md) (Blogs CMS)
+  - [module-4-platform.md](file:///Users/minhaz/Documents/projects/brand/brand-estate/context/api-specs/module-4-platform.md) (Platform services, Settings, Analytics, Inquiries)
 
 - [x] Context files fully rewritten for Brand Estate real estate SaaS platform.
 - [x] Stack confirmed: Next.js 16, TypeScript, Tailwind CSS v4, shadcn/ui, Lucide React.
@@ -143,18 +149,50 @@ All dashboard workspace panels and public pages successfully built, type-checked
     - Integrated a dynamic "Amenities & Facilities" section rendering checkboxes with the `<Check>` icon.
     - Polished the pricing details card with glassmorphism gradients, shadows, and clean sans-serif Montserrat typography for the price elements.
   - [x] Completed TypeScript compilation checks (`npx tsc --noEmit`), lint checks (`npm run lint`), and Next.js production builds (`npm run build`) successfully with zero compile errors.
+- [x] **Specs 80–83 — Module 1: Auth & User Management API COMPLETE** ✅
+  - [x] Installed backend dependencies: `mongoose`, `bcryptjs`, `resend`, `jsonwebtoken` + their types.
+  - [x] Created `lib/db/mongoose.ts` — singleton cached MongoDB connection (hot-reload safe).
+  - [x] Created `lib/db/models/user.model.ts` — full Mongoose `UserSchema` per spec: name, email, hashed password, role enum, avatar, isVerified, verificationToken/Expires, resetPasswordToken/Expires, savedProperties refs, timestamps.
+  - [x] Created `lib/auth/validation.ts` — `validateEmail()` and `validatePassword()` (8+ chars, digit required).
+  - [x] Created `lib/auth/tokens.ts` — `generateVerificationToken()`, `generateResetToken()`, `hoursFromNow()` using Node crypto.
+  - [x] Created `lib/auth/mailer.ts` — branded HTML email templates via Resend for verification and reset flows.
+  - [x] Created `app/api/auth/register/route.ts` — POST: validates input, checks duplicate email, bcrypt(12) hashes password, generates 24hr verification token, persists to MongoDB, fires verification email.
+  - [x] Created `app/api/auth/verify-email/route.ts` — GET: finds user by token where expiry > now, activates account, clears token fields.
+  - [x] Created `app/api/auth/forgot-password/route.ts` — POST: anti-enumeration (always 200), generates 1hr reset token, sends reset email; 500 on mailer failure.
+  - [x] Created `app/api/auth/reset-password/route.ts` — POST: validates token + password strength + match, bcrypt(12) hashes new password, clears token fields.
+  - [x] Created `.env.local` with MONGODB_URI, RESEND_API_KEY, JWT_SECRET, NEXT_PUBLIC_APP_URL placeholders.
+  - [x] `npx tsc --noEmit` ✅ — zero TypeScript errors.
+  - [x] `npm run lint` ✅ — zero errors in all new auth files.
 
 ---
 
 ## In Progress
 
-None. All Phase 1 views are implemented and verified.
+- [/] Module 2: Properties API routes implementation
 
 ---
 
 ## Next Up (Ordered)
 
-Phase 1 specs to be defined and implemented in order:
+Phase 2 specs to be defined and implemented in order:
+
+| Spec  | Name                              | Status  |
+| ----- | --------------------------------- | ------- |
+| 80    | Database Connection & User Schema | ✅ Done |
+| 81    | Authentication JWT & Register Route| ✅ Done |
+| 82    | Email Verification (Resend)       | ✅ Done |
+| 83    | Password Recovery (Forgot/Reset)  | ✅ Done |
+| 84    | Property Schema & Filter API      | ⏳ Pending |
+| 85    | Property Mutations & Geo Search   | ⏳ Pending |
+| 86    | Blogs Schema & Public Read APIs   | ⏳ Pending |
+| 87    | Blog Mutations & Reactions API    | ⏳ Pending |
+| 88    | Inquiries Inbox & Messaging API   | ⏳ Pending |
+| 89    | Saved Listings & Pricing Packages | ⏳ Pending |
+| 90    | Platform Settings & Verification   | ⏳ Pending |
+| 91    | Admin & Agent Analytics API       | ⏳ Pending |
+| 92    | Super Admin Security Audit Logs   | ⏳ Pending |
+
+### Completed Phase 1 Specs
 
 | Spec  | Name                              | Status  |
 | ----- | --------------------------------- | ------- |
@@ -231,5 +269,6 @@ Phase 1 specs to be defined and implemented in order:
 - Created reusable `ImageUploader` component ([image-uploader.tsx](file:///Users/minhaz/Documents/projects/brand/brand-estate/components/blog/image-uploader.tsx)) that supports drag-and-drop file selections (producing instant client previews with simulated loading states) as well as text URL link inputs. Integrated it for both Cover Image and OpenGraph (OG) Image fields inside `BlogForm`.
 - Added an automated toggle: "Use Cover Photo as Social Preview". By default, this is active and hides the OG Image selector, automatically syncing the Cover Image to the social metadata upon form submission. Toggling this off displays a custom `ImageUploader` for uploading/entering a unique OG preview thumbnail.
 - Added agent profile linking to blog reader views ([blog-detail-client.tsx](file:///Users/minhaz/Documents/projects/brand/brand-estate/app/blogs/[slug]/blog-detail-client.tsx)). If the author is an agent, matches them in the agent database. Logged-in users can click their name or card button to view their public profile `/agents/[slug]`. Guest users are blocked from viewing the profile, warned via a toast, and redirected to log in/register.
+- **Module 1 Frontend Integration**: Wired all public auth pages to the real backend APIs. `app/(auth)/register/page.tsx` — calls `POST /api/auth/register`; on success renders an `EmailSentCard` (check inbox to verify) instead of redirecting to the dashboard. `app/(auth)/forgot-password/page.tsx` — calls `POST /api/auth/forgot-password` (real Resend email); removed `simulateSend`. `app/(auth)/reset-password/page.tsx` — calls `POST /api/auth/reset-password`; maps `InvalidOrExpiredToken` → `<InvalidTokenCard />`, `PasswordMismatch` → field error. Created `app/(auth)/verify-email/page.tsx` — calls `GET /api/auth/verify-email?token=…` on mount; 4 states: loading, success (auto-redirect 4s), error, missing token. Updated `lib/auth/mailer.ts` to point verification emails to `/verify-email?token=…` UI page. All changes pass `npx tsc --noEmit` and `npm run lint` with zero errors.
 
 

@@ -39,7 +39,7 @@ Guest-accessible discovery catalog routes. Theme: **Light**.
 * **Route**: `/property/[slug]`
 * **File Entry**: [app/property/[slug]/page.tsx](file:///Users/minhaz/Documents/projects/brand/brand-estate/app/property/[slug]/page.tsx)
 * **Live Preview**: [https://brandestate.vercel.app/property/manhattan-skyline-penthouse](https://brandestate.vercel.app/property/manhattan-skyline-penthouse) *(Example)*
-* **Key UI Components**: `PropertyGallery` (YouTube/Matterport 3D), `PropertySpecs`, `PropertyPriceHistory` (TIMELINE events), `AgentContactCard` (Inquiry Form submission), `RelatedListings`
+* **Key UI Components**: `PropertyGallery` (YouTube/Matterport 3D), `PropertySpecs`, `PropertyPriceHistory` (TIMELINE events), `AgentContactCard` (Inquiry Form submission), `RelatedListings`, keywords/tags row, amenities checklist
 * **Phase 2 Backend Goals**:
   - **Database Queries**: Retrieve detailed listing document by unique `slug` string, including linked agent metadata.
   - **API Endpoints**: 
@@ -230,7 +230,7 @@ Dashboard layouts for agents. Theme: **Dark**. Allowed Roles: `agent`, `admin`, 
 * **Route**: `/agent/listings/new`
 * **File Entry**: [app/agent/listings/new/page.tsx](file:///Users/minhaz/Documents/projects/brand/brand-estate/app/agent/listings/new/page.tsx)
 * **Live Preview**: [https://brandestate.vercel.app/agent/listings/new](https://brandestate.vercel.app/agent/listings/new)
-* **Key UI Components**: 5-step stepper form panel, basic specs selectors, location details, mock media upload card, review summary.
+* **Key UI Components**: 6-step stepper form panel, basic specs chip toggles, location details, premium ImageUploader cover & gallery grids, dedicated SEO Settings panel (custom title/meta, TagInput keywords, OG image toggle), review summary with Google SERP snippet preview.
 * **Phase 2 Backend Goals**:
   - **Database Mutations**: Create listing entry linked to agent ID.
   - **API Endpoints**: 
