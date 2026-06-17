@@ -325,13 +325,15 @@ export function Navbar() {
                         Saved Properties
                       </DropdownMenuItem>
                     )}
-                    <DropdownMenuItem
-                      onClick={() => router.push("/dashboard/profile")}
-                      className="rounded-xl cursor-pointer flex items-center gap-2.5 px-2 py-2 text-sm"
-                    >
-                      <Settings className="h-4 w-4 text-text-muted" />
-                      Profile Settings
-                    </DropdownMenuItem>
+                    {currentUser.role === "auth_user" && (
+                      <DropdownMenuItem
+                        onClick={() => router.push("/dashboard/profile")}
+                        className="rounded-xl cursor-pointer flex items-center gap-2.5 px-2 py-2 text-sm"
+                      >
+                        <Settings className="h-4 w-4 text-text-muted" />
+                        Profile Settings
+                      </DropdownMenuItem>
+                    )}
                     <DropdownMenuSeparator className="bg-border-default/50 my-1" />
                     <DropdownMenuItem
                       onClick={handleLogout}
@@ -543,10 +545,12 @@ export function Navbar() {
                             Saved Properties
                           </Link>
                         )}
-                        <Link href="/dashboard/profile" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-2.5 px-4 py-3 rounded-full text-sm font-medium text-text-secondary hover:bg-bg-alt hover:text-text-primary transition-all duration-200">
-                          <Settings className="h-4 w-4 text-text-muted" />
-                          Profile Settings
-                        </Link>
+                        {currentUser.role === "auth_user" && (
+                          <Link href="/dashboard/profile" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-2.5 px-4 py-3 rounded-full text-sm font-medium text-text-secondary hover:bg-bg-alt hover:text-text-primary transition-all duration-200">
+                            <Settings className="h-4 w-4 text-text-muted" />
+                            Profile Settings
+                          </Link>
+                        )}
                         <button
                           onClick={() => { handleLogout(); setMobileMenuOpen(false); }}
                           className="flex w-full items-center gap-2.5 px-4 py-3 rounded-full text-sm font-medium text-state-error hover:bg-state-error/5 transition-all duration-200 cursor-pointer"

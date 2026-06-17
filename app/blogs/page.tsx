@@ -126,7 +126,7 @@ export default async function BlogListingPage({ searchParams }: BlogPageProps) {
               No Articles Found
             </h3>
             <p className="text-sm text-text-secondary font-body mb-6 leading-relaxed max-w-xs">
-              We couldn't find any posts matching your search criteria. Try adjusting your search query or filters.
+              We couldn&apos;t find any posts matching your search criteria. Try adjusting your search query or filters.
             </p>
             <Link
               href="/blogs"

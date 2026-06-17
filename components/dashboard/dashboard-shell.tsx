@@ -69,20 +69,19 @@ const ROLE_NAV_ITEMS: Record<UserRole, NavItem[]> = {
     { label: "My Listings", href: "/agent/listings", icon: Building },
     { label: "Create Listing", href: "/agent/listings/new", icon: PlusCircle },
     { label: "Leads & Inquiries", href: "/agent/leads", icon: Inbox },
-    { label: "Profile Settings", href: "/dashboard/profile", icon: UserIcon },
+    { label: "Pricing Packages", href: "/agent/packages", icon: Sparkles },
   ],
   admin: [
     { label: "Admin Overview", href: "/admin/dashboard", icon: LayoutDashboard },
     { label: "Manage Users", href: "/admin/users", icon: Users },
     { label: "Manage Listings", href: "/admin/listings", icon: Building },
     { label: "User Reports", href: "/admin/reports", icon: AlertOctagon },
-    { label: "Profile Settings", href: "/dashboard/profile", icon: UserIcon },
+    { label: "Manage Packages", href: "/admin/packages", icon: Settings },
   ],
   super_admin: [
     { label: "Platform Console", href: "/super-admin/dashboard", icon: ShieldCheck },
     { label: "Manage Roles", href: "/super-admin/roles", icon: Users },
     { label: "Platform Settings", href: "/super-admin/settings", icon: Settings },
-    { label: "Profile Settings", href: "/dashboard/profile", icon: UserIcon },
   ],
 };
 
@@ -98,10 +97,10 @@ function getRoleLabel(role: UserRole): string {
 
 function getRoleColor(role: UserRole): string {
   switch (role) {
-    case "agent": return "text-emerald-400 bg-emerald-500/10 border-emerald-500/20";
-    case "admin": return "text-violet-400 bg-violet-500/10 border-violet-500/20";
-    case "super_admin": return "text-amber-400 bg-amber-500/10 border-amber-500/20";
-    default: return "text-blue-400 bg-blue-500/10 border-blue-500/20";
+    case "agent": return "text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border-emerald-500/20";
+    case "admin": return "text-violet-600 dark:text-violet-400 bg-violet-500/10 border-violet-500/20";
+    case "super_admin": return "text-amber-600 dark:text-amber-400 bg-amber-500/10 border-amber-500/20";
+    default: return "text-blue-600 dark:text-blue-400 bg-blue-500/10 border-blue-500/20";
   }
 }
 
@@ -163,7 +162,7 @@ export function DashboardShell({ children, allowedRoles }: DashboardShellProps) 
   // If loading or unauthorized, render beautiful loading states
   if (isLoading || !currentUser) {
     return (
-      <div className="dark min-h-screen bg-[#080D16] text-[#F3F4F6] flex flex-col items-center justify-center gap-4">
+      <div className="min-h-screen bg-bg-base text-text-primary flex flex-col items-center justify-center gap-4 transition-colors duration-200">
         <Loader2 className="h-10 w-10 text-accent-primary animate-spin" />
         <p className="text-sm font-semibold text-text-muted">Loading workspace...</p>
       </div>
@@ -173,7 +172,7 @@ export function DashboardShell({ children, allowedRoles }: DashboardShellProps) 
   // Handle unauthorized state
   if (!hasAccess && allowedRoles) {
     return (
-      <div className="dark min-h-screen bg-[#080D16] text-[#F3F4F6] flex flex-col items-center justify-center p-6 text-center">
+      <div className="min-h-screen bg-bg-base text-text-primary flex flex-col items-center justify-center p-6 text-center transition-colors duration-200">
         <div className="h-16 w-16 rounded-full bg-state-error/10 border border-state-error/20 flex items-center justify-center text-state-error mb-4">
           <AlertOctagon className="h-8 w-8" />
         </div>
@@ -198,16 +197,16 @@ export function DashboardShell({ children, allowedRoles }: DashboardShellProps) 
   };
 
   return (
-    <div className="dark min-h-screen bg-[#080D16] text-[#F3F4F6] flex font-body antialiased">
+    <div className="min-h-screen bg-bg-base text-text-primary flex font-body antialiased transition-colors duration-200">
       {/* ── Desktop Sidebar ─────────────────────────────── */}
-      <aside className="hidden lg:flex w-64 flex-col fixed inset-y-0 left-0 bg-[#0A101C] border-r border-slate-800/60 z-20">
+      <aside className="hidden lg:flex w-64 flex-col fixed inset-y-0 left-0 bg-bg-surface border-r border-border-default/60 z-20 transition-colors duration-200">
         {/* Brand Header */}
-        <div className="h-16 px-6 border-b border-slate-800/60 flex items-center justify-between">
+        <div className="h-16 px-6 border-b border-border-default/60 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
             <div className="h-9 w-9 rounded-xl bg-linear-to-br from-accent-primary to-blue-600 flex items-center justify-center shadow-lg shadow-accent-primary/20">
               <span className="text-white font-extrabold text-sm tracking-tighter">BE</span>
             </div>
-            <span className="font-heading font-extrabold text-base tracking-tight text-white">
+            <span className="font-heading font-extrabold text-base tracking-tight text-text-primary">
               Brand<span className="text-accent-primary">Estate</span>
             </span>
           </Link>
@@ -215,7 +214,7 @@ export function DashboardShell({ children, allowedRoles }: DashboardShellProps) 
 
         {/* Navigation Area */}
         <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto custom-scrollbar">
-          <div className="px-3 mb-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+          <div className="px-3 mb-2 text-[10px] font-bold text-text-muted uppercase tracking-widest">
             Navigation
           </div>
           {navItems.map((item) => {
@@ -229,10 +228,10 @@ export function DashboardShell({ children, allowedRoles }: DashboardShellProps) 
                   "flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 group relative",
                   isActive
                     ? "bg-accent-primary/10 text-accent-primary border border-accent-primary/20 shadow-xs shadow-accent-primary/5"
-                    : "text-slate-400 hover:text-white hover:bg-slate-800/40 border border-transparent"
+                    : "text-text-secondary hover:text-text-primary hover:bg-bg-elevated border border-transparent"
                 )}
               >
-                <Icon className={cn("h-4.5 w-4.5 transition-colors", isActive ? "text-accent-primary" : "text-slate-400 group-hover:text-white")} />
+                <Icon className={cn("h-4.5 w-4.5 transition-colors", isActive ? "text-accent-primary" : "text-text-muted group-hover:text-text-primary")} />
                 {item.label}
                 {isActive && (
                   <span className="absolute right-3 w-1.5 h-1.5 rounded-full bg-accent-primary shadow-[0_0_8px_rgba(0,103,210,0.8)] animate-pulse" />
@@ -243,16 +242,16 @@ export function DashboardShell({ children, allowedRoles }: DashboardShellProps) 
         </nav>
 
         {/* User Card Footer */}
-        <div className="p-4 border-t border-slate-800/60 bg-[#080D16]/40">
-          <div className="flex items-center gap-3 p-2 rounded-xl bg-[#0F1829] border border-slate-800/40">
-            <Avatar className="h-10 w-10 border border-slate-700/60 shrink-0">
+        <div className="p-4 border-t border-border-default/60 bg-bg-alt/40">
+          <div className="flex items-center gap-3 p-2 rounded-xl bg-bg-elevated border border-border-default/45">
+            <Avatar className="h-10 w-10 border border-border-default/60 shrink-0">
               <AvatarFallback className="bg-accent-primary-dim text-accent-primary font-bold text-xs">
                 {initials}
               </AvatarFallback>
             </Avatar>
             <div className="min-w-0 flex-1">
-              <p className="text-xs font-bold text-white truncate leading-tight">{currentUser.name}</p>
-              <p className="text-[10px] text-slate-500 truncate mt-0.5">{currentUser.email}</p>
+              <p className="text-xs font-bold text-text-primary truncate leading-tight">{currentUser.name}</p>
+              <p className="text-[10px] text-text-muted truncate mt-0.5">{currentUser.email}</p>
             </div>
           </div>
         </div>
@@ -262,18 +261,18 @@ export function DashboardShell({ children, allowedRoles }: DashboardShellProps) 
       <div className="flex-1 lg:pl-64 flex flex-col min-w-0">
         
         {/* Top Header Bar */}
-        <header className="h-16 bg-[#0A101C]/80 border-b border-slate-800/60 flex items-center justify-between px-4 sm:px-6 sticky top-0 z-30 backdrop-blur-md">
+        <header className="h-16 bg-bg-surface/80 border-b border-border-default/60 flex items-center justify-between px-4 sm:px-6 sticky top-0 z-30 backdrop-blur-md transition-colors duration-200">
           {/* Left section (Hamburger + breadcrumbs) */}
           <div className="flex items-center gap-4">
             <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
               <SheetTrigger render={
-                <Button variant="ghost" size="icon-sm" className="lg:hidden text-slate-400 hover:text-white">
+                <Button variant="ghost" size="icon-sm" className="lg:hidden text-text-secondary hover:text-text-primary cursor-pointer">
                   <Menu className="h-5 w-5" />
                 </Button>
               } />
-              <SheetContent side="left" className="w-64 bg-[#0A101C] border-r border-slate-800/60 p-0 text-white flex flex-col">
-                <SheetHeader className="h-16 px-6 border-b border-slate-800/60 flex flex-row items-center justify-between">
-                  <SheetTitle className="text-white text-left font-heading font-extrabold flex items-center gap-2">
+              <SheetContent side="left" className="w-64 bg-bg-surface border-r border-border-default/60 p-0 text-text-primary dark:text-white flex flex-col">
+                <SheetHeader className="h-16 px-6 border-b border-border-default/60 flex flex-row items-center justify-between">
+                  <SheetTitle className="text-text-primary dark:text-white text-left font-heading font-extrabold flex items-center gap-2">
                     <div className="h-8 w-8 rounded-lg bg-accent-primary flex items-center justify-center">
                       <span className="text-white font-black text-xs">BE</span>
                     </div>
@@ -293,7 +292,7 @@ export function DashboardShell({ children, allowedRoles }: DashboardShellProps) 
                           "flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all",
                           isActive
                             ? "bg-accent-primary/15 text-accent-primary border border-accent-primary/10"
-                            : "text-slate-400 hover:text-white hover:bg-slate-800/30"
+                            : "text-text-secondary hover:text-text-primary hover:bg-bg-elevated/40"
                         )}
                       >
                         <Icon className="h-4.5 w-4.5" />
@@ -302,7 +301,7 @@ export function DashboardShell({ children, allowedRoles }: DashboardShellProps) 
                     );
                   })}
                 </nav>
-                <div className="p-4 border-t border-slate-800/60 bg-[#080D16]/40 flex items-center gap-3">
+                <div className="p-4 border-t border-border-default/60 bg-bg-alt/40 flex items-center gap-3">
                   <Avatar className="h-9 w-9">
                     <AvatarFallback className="bg-accent-primary-dim text-accent-primary text-xs font-bold">
                       {initials}
@@ -317,13 +316,13 @@ export function DashboardShell({ children, allowedRoles }: DashboardShellProps) 
                 </div>
               </SheetContent>
             </Sheet>
-
+ 
             {/* Platform links and active info */}
-            <div className="flex items-center gap-2 text-xs">
-              <span className="hidden sm:inline-block font-bold text-slate-500 uppercase tracking-widest">
+            <div className="flex items-center gap-2 text-xs font-semibold">
+              <span className="hidden sm:inline-block font-bold text-text-muted uppercase tracking-widest">
                 Workspace
               </span>
-              <span className="hidden sm:inline-block text-slate-600 font-bold">/</span>
+              <span className="hidden sm:inline-block text-border-default font-bold">/</span>
               <span className={cn("inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold border", getRoleColor(currentUser.role))}>
                 {getRoleLabel(currentUser.role)}
               </span>
@@ -337,30 +336,30 @@ export function DashboardShell({ children, allowedRoles }: DashboardShellProps) 
             <div className="flex items-center gap-1.5">
               <DropdownMenu>
                 <DropdownMenuTrigger render={
-                  <Button variant="outline" size="sm" className="h-9 px-3 rounded-full text-xs font-bold gap-1 bg-[#0F1829] border-slate-800 text-slate-300 hover:text-white hover:bg-slate-800/60">
-                    <Sparkles className="h-3 w-3 text-amber-400 animate-pulse" />
+                  <Button variant="outline" size="sm" className="h-9 px-3 rounded-full text-xs font-bold gap-1 bg-bg-surface border-border-default text-text-secondary hover:text-text-primary hover:bg-bg-elevated/60 cursor-pointer">
+                    <Sparkles className="h-3 w-3 text-amber-500 animate-pulse" />
                     <span>Role Demo</span>
                     <ChevronDown className="h-3 w-3 opacity-60" />
                   </Button>
                 } />
-                <DropdownMenuContent align="end" className="w-52 bg-[#0F1829] border-slate-800 text-slate-200 rounded-xl p-1 shadow-2xl">
-                  <DropdownMenuLabel className="text-[10px] text-slate-500 font-extrabold uppercase px-2.5 py-1.5">
+                <DropdownMenuContent align="end" className="w-52 bg-bg-surface border-border-default text-text-secondary dark:text-slate-200 rounded-xl p-1 shadow-2xl">
+                  <DropdownMenuLabel className="text-[10px] text-text-muted font-extrabold uppercase px-2.5 py-1.5">
                     Demo Role Simulator
                   </DropdownMenuLabel>
-                  <DropdownMenuSeparator className="bg-slate-800/60" />
-                  <DropdownMenuItem onClick={() => handleRoleSwitch("auth_user")} className="rounded-lg text-xs font-medium py-2 px-2.5 cursor-pointer hover:bg-slate-800 flex items-center justify-between">
+                  <DropdownMenuSeparator className="bg-border-default/60" />
+                  <DropdownMenuItem onClick={() => handleRoleSwitch("auth_user")} className="rounded-lg text-xs font-semibold py-2 px-2.5 cursor-pointer hover:bg-bg-elevated flex items-center justify-between">
                     <span>Regular Buyer (User)</span>
                     {currentUser.role === "auth_user" && <span className="h-1.5 w-1.5 rounded-full bg-accent-primary" />}
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => handleRoleSwitch("agent")} className="rounded-lg text-xs font-medium py-2 px-2.5 cursor-pointer hover:bg-slate-800 flex items-center justify-between">
+                  <DropdownMenuItem onClick={() => handleRoleSwitch("agent")} className="rounded-lg text-xs font-semibold py-2 px-2.5 cursor-pointer hover:bg-bg-elevated flex items-center justify-between">
                     <span>Real Estate Agent</span>
                     {currentUser.role === "agent" && <span className="h-1.5 w-1.5 rounded-full bg-accent-primary" />}
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => handleRoleSwitch("admin")} className="rounded-lg text-xs font-medium py-2 px-2.5 cursor-pointer hover:bg-slate-800 flex items-center justify-between">
+                  <DropdownMenuItem onClick={() => handleRoleSwitch("admin")} className="rounded-lg text-xs font-semibold py-2 px-2.5 cursor-pointer hover:bg-bg-elevated flex items-center justify-between">
                     <span>Moderation Admin</span>
                     {currentUser.role === "admin" && <span className="h-1.5 w-1.5 rounded-full bg-accent-primary" />}
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => handleRoleSwitch("super_admin")} className="rounded-lg text-xs font-medium py-2 px-2.5 cursor-pointer hover:bg-slate-800 flex items-center justify-between">
+                  <DropdownMenuItem onClick={() => handleRoleSwitch("super_admin")} className="rounded-lg text-xs font-semibold py-2 px-2.5 cursor-pointer hover:bg-bg-elevated flex items-center justify-between">
                     <span>Super Administrator</span>
                     {currentUser.role === "super_admin" && <span className="h-1.5 w-1.5 rounded-full bg-accent-primary" />}
                   </DropdownMenuItem>
@@ -371,31 +370,31 @@ export function DashboardShell({ children, allowedRoles }: DashboardShellProps) 
             {/* Notification triggers */}
             <DropdownMenu>
               <DropdownMenuTrigger render={
-                <Button variant="ghost" size="icon-sm" className="h-9 w-9 rounded-full text-slate-400 hover:text-white hover:bg-slate-800/40 relative">
+                <Button variant="ghost" size="icon-sm" className="h-9 w-9 rounded-full text-text-muted hover:text-text-primary hover:bg-bg-elevated/40 relative cursor-pointer">
                   <Bell className="h-4.5 w-4.5" />
                   <span className="absolute top-2.5 right-2.5 h-1.5 w-1.5 bg-rose-500 rounded-full" />
                 </Button>
               } />
-              <DropdownMenuContent align="end" className="w-80 bg-[#0F1829] border-slate-800 text-slate-200 rounded-xl p-1 shadow-2xl">
-                <DropdownMenuLabel className="text-xs font-bold px-3 py-2 flex items-center justify-between border-b border-slate-800/60">
+              <DropdownMenuContent align="end" className="w-80 bg-bg-surface border-border-default text-text-secondary dark:text-slate-200 rounded-xl p-1 shadow-2xl">
+                <DropdownMenuLabel className="text-xs font-bold px-3 py-2 flex items-center justify-between border-b border-border-default/60">
                   <span>Workspace Notifications</span>
                   <span className="text-[10px] text-accent-primary font-bold hover:underline cursor-pointer">Mark all read</span>
                 </DropdownMenuLabel>
                 <div className="py-1 max-h-64 overflow-y-auto">
-                  <div className="px-3 py-2.5 hover:bg-slate-800/40 cursor-pointer rounded-lg text-xs flex gap-2">
+                  <div className="px-3 py-2.5 hover:bg-bg-elevated/60 cursor-pointer rounded-lg text-xs flex gap-2">
                     <span className="h-2 w-2 rounded-full bg-accent-primary mt-1.5 shrink-0" />
                     <div>
-                      <p className="font-semibold text-white">New Agent inquiry</p>
-                      <p className="text-[10px] text-slate-400 mt-0.5">David Chen sent inquiry for Manhattan Penthouse</p>
-                      <span className="text-[9px] text-slate-500 block mt-1">2 mins ago</span>
+                      <p className="font-semibold text-text-primary">New Agent inquiry</p>
+                      <p className="text-[10px] text-text-muted mt-0.5 font-medium">David Chen sent inquiry for Manhattan Penthouse</p>
+                      <span className="text-[9px] text-text-faint block mt-1">2 mins ago</span>
                     </div>
                   </div>
-                  <div className="px-3 py-2.5 hover:bg-slate-800/40 cursor-pointer rounded-lg text-xs flex gap-2">
+                  <div className="px-3 py-2.5 hover:bg-bg-elevated/60 cursor-pointer rounded-lg text-xs flex gap-2">
                     <span className="h-2 w-2 rounded-full bg-accent-primary mt-1.5 shrink-0" />
                     <div>
-                      <p className="font-semibold text-white">Listing Approved</p>
-                      <p className="text-[10px] text-slate-400 mt-0.5">Your luxury villa listing has been approved by admin</p>
-                      <span className="text-[9px] text-slate-500 block mt-1">1 hour ago</span>
+                      <p className="font-semibold text-text-primary">Listing Approved</p>
+                      <p className="text-[10px] text-text-muted mt-0.5 font-medium">Your luxury villa listing has been approved by admin</p>
+                      <span className="text-[9px] text-text-faint block mt-1">1 hour ago</span>
                     </div>
                   </div>
                 </div>
@@ -405,8 +404,8 @@ export function DashboardShell({ children, allowedRoles }: DashboardShellProps) 
             {/* Profile Dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger render={
-                <Button variant="ghost" className="h-9 px-1.5 py-1 rounded-full gap-2 text-slate-300 hover:text-white hover:bg-slate-800/40">
-                  <Avatar className="h-7 w-7 border border-slate-700">
+                <Button variant="ghost" className="h-9 px-1.5 py-1 rounded-full gap-2 text-text-secondary hover:text-text-primary hover:bg-bg-elevated/40 cursor-pointer">
+                  <Avatar className="h-7 w-7 border border-border-default/60">
                     <AvatarFallback className="bg-accent-primary-dim text-accent-primary font-bold text-[10px]">
                       {initials}
                     </AvatarFallback>
@@ -415,28 +414,33 @@ export function DashboardShell({ children, allowedRoles }: DashboardShellProps) 
                   <ChevronDown className="hidden sm:block h-3.5 w-3.5 opacity-60" />
                 </Button>
               } />
-              <DropdownMenuContent align="end" className="w-56 bg-[#0F1829] border-slate-800 text-slate-200 rounded-xl p-1 shadow-2xl">
+              <DropdownMenuContent align="end" className="w-56 bg-bg-surface border-border-default text-text-secondary dark:text-slate-200 rounded-xl p-1 shadow-2xl">
                 <DropdownMenuLabel className="flex flex-col px-3 py-2 gap-0.5">
-                  <span className="font-semibold text-white text-xs">{currentUser.name}</span>
-                  <span className="text-[10px] text-slate-500 font-semibold">{currentUser.email}</span>
+                  <span className="font-semibold text-text-primary dark:text-white text-xs">{currentUser.name}</span>
+                  <span className="text-[10px] text-text-muted font-semibold">{currentUser.email}</span>
                 </DropdownMenuLabel>
-                <DropdownMenuSeparator className="bg-slate-800/60" />
-                <DropdownMenuItem
-                  render={<Link href="/dashboard/profile" className="flex items-center gap-2 w-full" />}
-                  className="rounded-lg text-xs py-2 px-3 cursor-pointer hover:bg-slate-800"
-                >
-                  <UserIcon className="h-4 w-4 opacity-75" />
-                  <span>My Profile Settings</span>
-                </DropdownMenuItem>
+                <DropdownMenuSeparator className="bg-border-default/60" />
+                
+                {currentUser.role === "auth_user" && (
+                  <DropdownMenuItem
+                    render={<Link href="/dashboard/profile" className="flex items-center gap-2 w-full" />}
+                    className="rounded-lg text-xs py-2 px-3 cursor-pointer hover:bg-bg-elevated"
+                  >
+                    <UserIcon className="h-4 w-4 opacity-75" />
+                    <span>My Profile Settings</span>
+                  </DropdownMenuItem>
+                )}
+                
                 <DropdownMenuItem
                   render={<Link href="/" className="flex items-center gap-2 w-full" />}
-                  className="rounded-lg text-xs py-2 px-3 cursor-pointer hover:bg-slate-800"
+                  className="rounded-lg text-xs py-2 px-3 cursor-pointer hover:bg-bg-elevated"
                 >
                   <Building className="h-4 w-4 opacity-75" />
                   <span>Browse Public Listings</span>
                 </DropdownMenuItem>
-                <DropdownMenuSeparator className="bg-slate-800/60" />
-                <DropdownMenuItem onClick={handleLogout} className="rounded-lg text-xs py-2 px-3 cursor-pointer hover:bg-slate-800 text-rose-400 hover:text-rose-300">
+                
+                <DropdownMenuSeparator className="bg-border-default/60" />
+                <DropdownMenuItem onClick={handleLogout} className="rounded-lg text-xs py-2 px-3 cursor-pointer hover:bg-bg-elevated text-rose-500 hover:text-rose-400">
                   <div className="flex items-center gap-2 w-full">
                     <LogOut className="h-4 w-4 opacity-75" />
                     <span>Sign Out</span>

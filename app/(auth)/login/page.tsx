@@ -19,6 +19,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { useAuth, getDashboardRoute } from "@/lib/auth-context";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { ShieldAlert } from "lucide-react";
 
 // ─────────────────────────────────────────────────────────
 // Demo accounts config
@@ -144,6 +152,11 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = React.useState(false);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [errors, setErrors] = React.useState<{ email?: string; password?: string; root?: string }>({});
+  
+  // Suspension modal state
+  const [showSuspendedModal, setShowSuspendedModal] = React.useState(false);
+  const [suspendedReason, setSuspendedReason] = React.useState("");
+  const [suspendedName, setSuspendedName] = React.useState("");
 
   const validate = () => {
     const errs: typeof errors = {};
@@ -163,6 +176,12 @@ export default function LoginPage() {
     const result = await login(email, password);
     setIsSubmitting(false);
     if (!result.success) {
+      if (result.isSuspended) {
+        setSuspendedName(result.user?.name || "User");
+        setSuspendedReason(result.suspendedReason || "No suspension reason specified.");
+        setShowSuspendedModal(true);
+        return;
+      }
       setErrors({ root: result.error });
       toast.error("Sign-in failed", { description: result.error });
       return;
@@ -329,6 +348,44 @@ export default function LoginPage() {
           Create one free
         </Link>
       </p>
+
+      {/* ── Suspension Modal ────────────────────────────── */}
+      <Dialog open={showSuspendedModal} onOpenChange={setShowSuspendedModal}>
+        <DialogContent className="max-w-md bg-bg-surface border-border-default dark:border-slate-800 text-text-primary dark:text-slate-200 rounded-3xl p-6 shadow-2xl">
+          <DialogHeader className="flex flex-col items-center justify-center text-center pb-4 border-b border-border-default dark:border-slate-800/60">
+            <div className="h-14 w-14 rounded-full bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-500 mb-3">
+              <ShieldAlert className="h-7 w-7 animate-pulse" />
+            </div>
+            <DialogTitle className="text-text-primary dark:text-white text-lg font-bold font-heading">Account Suspended</DialogTitle>
+            <DialogDescription className="text-text-muted dark:text-slate-400 text-xs mt-1">
+              Access to this account has been disabled by platform administration.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4 text-center">
+            <p className="text-sm font-semibold text-text-primary dark:text-white">Hello, {suspendedName}</p>
+            <div className="p-4 rounded-2xl bg-rose-500/5 border border-rose-500/10 text-left space-y-2">
+              <span className="text-[10px] font-bold text-rose-500 dark:text-rose-400 uppercase tracking-wider block">Reason for Suspension</span>
+              <p className="text-xs text-text-secondary dark:text-slate-300 leading-relaxed font-medium">
+                &ldquo;{suspendedReason}&rdquo;
+              </p>
+            </div>
+            <p className="text-xs text-text-muted dark:text-slate-500 leading-relaxed max-w-sm mx-auto">
+              If you believe this is a mistake or wish to appeal this decision, please contact our support team at{" "}
+              <a href="mailto:support@brandestate.com" className="text-accent-primary font-bold hover:underline">
+                support@brandestate.com
+              </a>.
+            </p>
+          </div>
+          <div className="pt-2">
+            <Button
+              onClick={() => setShowSuspendedModal(false)}
+              className="w-full h-10 rounded-xl bg-accent-primary text-white hover:bg-accent-primary-hov font-semibold text-xs transition-all duration-200"
+            >
+              Understand & Close
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </AuthLayoutShell>
   );
 }

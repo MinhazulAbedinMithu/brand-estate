@@ -68,10 +68,10 @@ export default async function PropertyDetailPage({ params }: DetailPageProps) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-16">
         {/* SECTION B: Two-Column Content Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12 items-start">
-          
+
           {/* Left Column (2/3 width) */}
           <div className="lg:col-span-2 space-y-10">
-            
+
             {/* Header / Title + Quick specs */}
             <div className="space-y-4">
               <div className="flex flex-wrap items-center gap-2">
@@ -80,7 +80,7 @@ export default async function PropertyDetailPage({ params }: DetailPageProps) {
                     Featured Property
                   </span>
                 )}
-                <span className="bg-bg-elevated border border-border-default/80 text-text-secondary text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider capitalize">
+                <span className="bg-bg-elevated border border-border-default/80 text-text-secondary text-[10px] font-bold px-3 py-1 rounded-full tracking-wider capitalize">
                   {property.status.replace("_", " ")}
                 </span>
               </div>
@@ -166,18 +166,18 @@ export default async function PropertyDetailPage({ params }: DetailPageProps) {
                 Location
               </h2>
               <p className="text-sm text-text-secondary flex items-center gap-2 font-medium">
-                <MapPin className="h-4 w-4 text-accent-primaryshrink-0" />
+                <MapPin className="h-4 w-4 text-accent-primary shrink-0" />
                 {property.formattedAddress}, {property.zipCode}
               </p>
-              
+
               {/* Maps Mockup Display */}
               <div className="relative aspect-video w-full rounded-2xl overflow-hidden border border-border-default/50 bg-bg-alt flex flex-col items-center justify-center p-6 shadow-inner group">
                 <div className="absolute inset-0 bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:20px_20px] opacity-40" />
-                
+
                 {/* Visual coordinate grids */}
                 <div className="absolute top-1/2 left-0 right-0 h-px border-t border-dashed border-border-subtle" />
                 <div className="absolute left-1/2 top-0 bottom-0 w-px border-l border-dashed border-border-subtle" />
-                
+
                 {/* Marker with pulse animation */}
                 <div className="relative z-10 flex flex-col items-center gap-2">
                   <div className="relative flex h-10 w-10 items-center justify-center">
@@ -212,7 +212,7 @@ export default async function PropertyDetailPage({ params }: DetailPageProps) {
 
           {/* Right Column / Sticky Sidebar (1/3 width) */}
           <div className="lg:sticky lg:top-24 space-y-6">
-            
+
             {/* Agent Contact details card */}
             <AgentContactCard lister={property.listerProfile} propertyTitle={property.title} />
 

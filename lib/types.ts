@@ -3,6 +3,7 @@
 // ─────────────────────────────────────────────
 
 export type UserRole = 'guest' | 'auth_user' | 'agent' | 'admin' | 'super_admin';
+export type UserStatus = 'active' | 'pending' | 'suspended' | 'unsubmitted';
 
 export interface User {
   id: string;
@@ -13,6 +14,23 @@ export interface User {
   phone?: string;
   savedProperties?: string[];
   createdAt: string;
+  status: UserStatus;
+  suspendedReason?: string;
+  legalDocs?: {
+    licenseNumber: string;
+    agencyName: string;
+    documentUrl: string;
+    submittedAt: string;
+  };
+}
+
+export interface PricingPackage {
+  id: string;
+  name: string;
+  price: number;
+  maxListings: number;
+  features: string[];
+  isActive: boolean;
 }
 
 // ─────────────────────────────────────────────

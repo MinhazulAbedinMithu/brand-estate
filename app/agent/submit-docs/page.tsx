@@ -1,0 +1,17 @@
+import * as React from "react";
+import { DashboardShell } from "@/components/dashboard/dashboard-shell";
+import { SubmitDocsClient } from "./submit-docs-client";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Submit Legal Documents | Brand Estate",
+  description: "Verify your real estate agent credentials by submitting license and registration details.",
+};
+
+export default function SubmitDocsPage() {
+  return (
+    <DashboardShell allowedRoles={["agent"]}>
+      <SubmitDocsClient />
+    </DashboardShell>
+  );
+}

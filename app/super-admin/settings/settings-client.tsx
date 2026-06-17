@@ -81,12 +81,12 @@ export function SettingsClient() {
     <div className="space-y-8 pb-16">
       
       {/* ── Page Header ── */}
-      <div className="border-b border-slate-800/60 pb-5">
-        <h1 className="text-xl sm:text-2xl font-bold font-heading text-white flex items-center gap-2">
+      <div className="border-b border-border-default/60 pb-5">
+        <h1 className="text-xl sm:text-2xl font-bold font-heading text-text-primary flex items-center gap-2">
           <Settings className="h-5 w-5 text-amber-500" />
           Platform Configurations
         </h1>
-        <p className="text-xs text-slate-500 font-medium font-body">Modify system flags, manage target regional directories and adjust variables</p>
+        <p className="text-xs text-text-muted font-medium font-body">Modify system flags, manage target regional directories and adjust variables</p>
       </div>
 
       {/* ── Main settings grids ── */}
@@ -96,8 +96,8 @@ export function SettingsClient() {
         <div className="lg:col-span-2 space-y-8">
           
           {/* Card 1: Feature Flags */}
-          <div className="rounded-2xl border border-slate-800/60 bg-[#0A101C] p-5 sm:p-6 shadow-sm space-y-5">
-            <h3 className="font-heading text-base font-bold text-white border-b border-slate-800/50 pb-3 flex items-center gap-2">
+          <div className="rounded-2xl border border-border-default bg-bg-surface p-5 sm:p-6 shadow-sm space-y-5">
+            <h3 className="font-heading text-base font-bold text-text-primary border-b border-border-default/50 pb-3 flex items-center gap-2">
               <Zap className="h-4.5 w-4.5 text-amber-500" /> System Feature Flags
             </h3>
             <div className="space-y-4">
@@ -130,11 +130,11 @@ export function SettingsClient() {
               ].map((flag) => (
                 <div
                   key={flag.key}
-                  className="flex items-start justify-between gap-4 p-3.5 rounded-xl hover:bg-slate-900/40 transition-colors"
+                  className="flex items-start justify-between gap-4 p-3.5 rounded-xl hover:bg-bg-alt/40 transition-colors"
                 >
                   <div className="space-y-1">
-                    <span className="text-xs font-bold text-white block">{flag.label}</span>
-                    <span className="text-[11px] text-slate-500 font-medium leading-relaxed block">{flag.desc}</span>
+                    <span className="text-xs font-bold text-text-primary block">{flag.label}</span>
+                    <span className="text-[11px] text-text-muted font-medium leading-relaxed block">{flag.desc}</span>
                   </div>
                   <button
                     onClick={() => handleToggleFlag(flag.key as keyof typeof flags)}
@@ -142,7 +142,7 @@ export function SettingsClient() {
                       "w-11 h-6 rounded-full transition-colors relative shrink-0 focus:outline-none select-none cursor-pointer",
                       flags[flag.key as keyof typeof flags]
                         ? flag.key === "maintenanceMode" ? "bg-rose-500" : "bg-amber-500"
-                        : "bg-slate-800"
+                        : "bg-border-default"
                     )}
                   >
                     <span className={cn(
@@ -156,37 +156,37 @@ export function SettingsClient() {
           </div>
 
           {/* Card 2: General Configuration Info */}
-          <div className="rounded-2xl border border-slate-800/60 bg-[#0A101C] p-5 sm:p-6 shadow-sm space-y-5">
-            <h3 className="font-heading text-base font-bold text-white border-b border-slate-800/50 pb-3">
+          <div className="rounded-2xl border border-border-default bg-bg-surface p-5 sm:p-6 shadow-sm space-y-5">
+            <h3 className="font-heading text-base font-bold text-text-primary border-b border-border-default/50 pb-3">
               App Parameters
             </h3>
             <form onSubmit={handleGeneralSave} className="space-y-4 text-xs font-medium">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Application Name</label>
+                  <label className="text-[10px] font-bold text-text-secondary uppercase tracking-wider">Application Name</label>
                   <Input
                     value={generalSettings.appName}
                     onChange={(e) => setGeneralSettings(p => ({ ...p, appName: e.target.value }))}
-                    className="h-10 border-slate-850 bg-[#0F1829] text-slate-200 text-sm"
+                    className="h-10 border-border-default bg-bg-base text-text-primary text-sm"
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Contact Support Email</label>
+                  <label className="text-[10px] font-bold text-text-secondary uppercase tracking-wider">Contact Support Email</label>
                   <Input
                     type="email"
                     value={generalSettings.supportEmail}
                     onChange={(e) => setGeneralSettings(p => ({ ...p, supportEmail: e.target.value }))}
-                    className="h-10 border-slate-850 bg-[#0F1829] text-slate-200 text-sm"
+                    className="h-10 border-border-default bg-bg-base text-text-primary text-sm"
                   />
                 </div>
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Support Portal URL</label>
+                <label className="text-[10px] font-bold text-text-secondary uppercase tracking-wider">Support Portal URL</label>
                 <Input
                   value={generalSettings.supportUrl}
                   onChange={(e) => setGeneralSettings(p => ({ ...p, supportUrl: e.target.value }))}
-                  className="h-10 border-slate-850 bg-[#0F1829] text-slate-200 text-sm"
+                  className="h-10 border-border-default bg-bg-base text-text-primary text-sm"
                 />
               </div>
 
@@ -204,8 +204,8 @@ export function SettingsClient() {
         <div className="space-y-8">
           
           {/* Card: Active Regions */}
-          <div className="rounded-2xl border border-slate-800/60 bg-[#0A101C] p-5 sm:p-6 shadow-sm space-y-5">
-            <h3 className="font-heading text-base font-bold text-white border-b border-slate-800/50 pb-3 flex items-center gap-2">
+          <div className="rounded-2xl border border-border-default bg-bg-surface p-5 sm:p-6 shadow-sm space-y-5">
+            <h3 className="font-heading text-base font-bold text-text-primary border-b border-border-default/50 pb-3 flex items-center gap-2">
               <Globe className="h-4.5 w-4.5 text-amber-500" /> Active Directories
             </h3>
             
@@ -214,19 +214,19 @@ export function SettingsClient() {
               {regions.map((reg) => (
                 <div
                   key={reg.code}
-                  className="p-3 rounded-xl bg-[#0F1829] border border-slate-850 flex items-center justify-between text-xs font-semibold"
+                  className="p-3 rounded-xl bg-bg-base border border-border-default flex items-center justify-between text-xs font-semibold"
                 >
                   <div className="flex items-center gap-2.5">
-                    <span className="font-mono text-[10px] font-bold text-slate-500 bg-slate-900 border border-slate-800 px-1.5 py-0.5 rounded">
+                    <span className="font-mono text-[10px] font-bold text-text-muted bg-bg-alt border border-border-default px-1.5 py-0.5 rounded">
                       {reg.code}
                     </span>
-                    <span className="text-white">{reg.name}</span>
+                    <span className="text-text-primary">{reg.name}</span>
                   </div>
                   <Button
                     onClick={() => handleRemoveRegion(reg.code, reg.name)}
                     size="icon-sm"
                     variant="ghost"
-                    className="h-7 w-7 text-slate-500 hover:text-rose-500 hover:bg-slate-800 rounded"
+                    className="h-7 w-7 text-text-muted hover:text-rose-500 hover:bg-bg-elevated rounded"
                     title="Remove region"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
@@ -236,24 +236,24 @@ export function SettingsClient() {
             </div>
 
             {/* Add Region form */}
-            <form onSubmit={handleAddRegion} className="space-y-3.5 pt-4 border-t border-slate-800/60 text-xs font-medium">
-              <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block">Add Region Directory</span>
+            <form onSubmit={handleAddRegion} className="space-y-3.5 pt-4 border-t border-border-default/60 text-xs font-medium">
+              <span className="text-[10px] font-bold text-text-muted uppercase tracking-widest block">Add Region Directory</span>
               <div className="grid grid-cols-3 gap-2">
                 <Input
                   placeholder="Code (e.g. CA)"
                   value={newRegionCode}
                   onChange={(e) => setNewRegionCode(e.target.value)}
-                  className="h-9 border-slate-850 bg-[#0F1829] text-xs uppercase"
+                  className="h-9 border-border-default bg-bg-base text-xs uppercase"
                   maxLength={3}
                 />
                 <Input
                   placeholder="Name (e.g. Canada)"
                   value={newRegionName}
                   onChange={(e) => setNewRegionName(e.target.value)}
-                  className="h-9 border-slate-850 bg-[#0F1829] text-xs col-span-2"
+                  className="h-9 border-border-default bg-bg-base text-xs col-span-2"
                 />
               </div>
-              <Button type="submit" size="sm" className="w-full h-9 rounded-xl bg-[#0F1829] hover:bg-slate-800 text-slate-350 hover:text-white font-bold border border-slate-800 hover:border-slate-700 flex items-center justify-center gap-1 mt-1">
+              <Button type="submit" size="sm" className="w-full h-9 rounded-xl bg-bg-base hover:bg-bg-elevated text-text-secondary hover:text-text-primary font-bold border border-border-default hover:border-border-subtle flex items-center justify-center gap-1 mt-1">
                 <Plus className="h-4 w-4" /> Add Region
               </Button>
             </form>
@@ -264,7 +264,7 @@ export function SettingsClient() {
             <h4 className="font-heading text-xs font-bold text-rose-400 flex items-center gap-2">
               <AlertTriangle className="h-4 w-4 shrink-0" /> Danger System Zone
             </h4>
-            <p className="text-[10px] text-slate-400 leading-relaxed font-body">
+            <p className="text-[10px] text-text-muted leading-relaxed font-body">
               Forced cleanup and diagnostics procedures directly wipe local database settings parameters. Use with developer authorization.
             </p>
             <div className="flex flex-col gap-2 pt-1.5">

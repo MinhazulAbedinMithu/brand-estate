@@ -306,3 +306,30 @@ export const COUNTRIES = [
   "United States",
 ] as const;
 
+export const DEFAULT_PACKAGES = [
+  {
+    id: "pkg-bronze",
+    name: "Bronze Starter",
+    price: 29,
+    maxListings: 3,
+    features: ["Up to 3 active listings", "Standard email support", "Basic analytics"],
+    isActive: true,
+  },
+  {
+    id: "pkg-silver",
+    name: "Silver Professional",
+    price: 79,
+    maxListings: 10,
+    features: ["Up to 10 active listings", "Priority email & chat support", "Advanced analytics & performance charts", "Featured tag for 2 listings"],
+    isActive: true,
+  },
+  {
+    id: "pkg-gold",
+    name: "Gold Enterprise",
+    price: 199,
+    maxListings: 50,
+    features: ["Up to 50 active listings", "Dedicated account manager", "24/7 phone support", "Featured tag for 10 listings", "Virtual tours & video uploads support"],
+    isActive: true,
+  },
+];
+

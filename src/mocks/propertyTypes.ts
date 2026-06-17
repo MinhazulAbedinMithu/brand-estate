@@ -174,6 +174,9 @@ export interface BaseProperty {
 
   // Dynamic SEO
   seo: PropertySEO;
+
+  // Amenities
+  amenities?: string[];
 }
 
 // ─── Discriminated Union Members ──────────────────────────────────────────────

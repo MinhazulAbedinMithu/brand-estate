@@ -108,57 +108,57 @@ export function RolesClient() {
     <div className="space-y-8">
       
       {/* ── Page Header ── */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800/60 pb-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border-default/60 pb-5">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold font-heading text-white flex items-center gap-2">
+          <h1 className="text-xl sm:text-2xl font-bold font-heading text-text-primary flex items-center gap-2">
             <Shield className="h-5 w-5 text-amber-500" />
             Manage Roles
           </h1>
-          <p className="text-xs text-slate-500 font-medium font-body">Supervise administrative privileges, assign moderator capabilities and audit adjustments</p>
+          <p className="text-xs text-text-muted font-medium font-body">Supervise administrative privileges, assign moderator capabilities and audit adjustments</p>
         </div>
-        <div className="text-xs font-bold bg-[#0F1829] border border-slate-800 px-3.5 py-1.5 rounded-full text-slate-400 select-none">
-          Operators Count: <span className="text-white">{accounts.filter(a => a.role !== "auth_user").length} admins/agents</span>
+        <div className="text-xs font-bold bg-bg-alt border border-border-default px-3.5 py-1.5 rounded-full text-text-muted select-none">
+          Operators Count: <span className="text-text-primary">{accounts.filter(a => a.role !== "auth_user").length} admins/agents</span>
         </div>
       </div>
 
       {/* ── Search Toolbar ── */}
       <div className="relative flex-1 max-w-md">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-muted" />
         <Input
           placeholder="Search operator accounts by name or email..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="pl-9 h-10 border-slate-800 bg-[#0A101C] text-sm text-slate-200 placeholder:text-slate-500 focus:ring-amber-500 rounded-xl"
+          className="pl-9 h-10 border-border-default bg-bg-surface text-sm text-text-primary placeholder:text-text-muted focus:ring-amber-500 rounded-xl"
         />
       </div>
 
       {/* ── Accounts Table Grid ── */}
-      <div className="rounded-2xl border border-slate-800/60 bg-[#0A101C] overflow-hidden shadow-sm">
+      <div className="rounded-2xl border border-border-default/60 bg-bg-surface overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs border-collapse">
             <thead>
-              <tr className="border-b border-slate-800/80 bg-[#0F1829]/50 text-slate-400 font-extrabold uppercase select-none">
+              <tr className="border-b border-border-default/80 bg-bg-alt/50 text-text-muted font-extrabold uppercase select-none">
                 <th className="py-4 px-5">Account Details</th>
                 <th className="py-4 px-5">Active Privilege Role</th>
                 <th className="py-4 px-5">Status Badge</th>
                 <th className="py-4 px-5 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800/60 text-slate-350 font-medium">
+            <tbody className="divide-y divide-border-default/40 text-text-secondary font-medium">
               {filteredAccounts.map((acc) => {
                 const initials = acc.name.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2);
                 return (
                   <tr key={acc.id} className="hover:bg-amber-500/2 transition-colors">
                     <td className="py-4 px-5">
                       <div className="flex items-center gap-3">
-                        <Avatar className="h-8.5 w-8.5 border border-slate-700">
-                          <AvatarFallback className="bg-slate-800 text-[10px] text-white">
+                        <Avatar className="h-8.5 w-8.5 border border-border-default">
+                          <AvatarFallback className="bg-bg-alt text-[10px] text-text-primary">
                             {initials}
                           </AvatarFallback>
                         </Avatar>
                         <div>
-                          <span className="font-bold text-white block">{acc.name}</span>
-                          <span className="text-[10px] text-slate-500 block mt-0.5">{acc.email}</span>
+                          <span className="font-bold text-text-primary block">{acc.name}</span>
+                          <span className="text-[10px] text-text-muted block mt-0.5">{acc.email}</span>
                         </div>
                       </div>
                     </td>
@@ -183,7 +183,7 @@ export function RolesClient() {
                     {/* Actions */}
                     <td className="py-4 px-5 text-right">
                       {acc.role === "super_admin" ? (
-                        <span className="text-[10px] text-slate-600 font-bold pr-2">Protected</span>
+                        <span className="text-[10px] text-text-faint font-bold pr-2">Protected</span>
                       ) : (
                         <Button
                           onClick={() => handleOpenModal(acc)}
@@ -203,19 +203,19 @@ export function RolesClient() {
       </div>
 
       {/* ── Audit Trail Logs Section ── */}
-      <div className="rounded-2xl border border-slate-800/60 bg-[#0A101C] p-5 sm:p-6 shadow-sm space-y-4">
+      <div className="rounded-2xl border border-border-default/60 bg-bg-surface p-5 sm:p-6 shadow-sm space-y-4">
         <div>
-          <h3 className="font-heading text-base font-bold text-white flex items-center gap-2">
+          <h3 className="font-heading text-base font-bold text-text-primary flex items-center gap-2">
             <FileText className="h-4.5 w-4.5 text-amber-500" />
             Roles Adjustments History Trail
           </h3>
-          <p className="text-xs text-slate-500 font-medium">Archived log of system account credential updates</p>
+          <p className="text-xs text-text-muted font-medium">Archived log of system account credential updates</p>
         </div>
 
         <div className="overflow-x-auto">
           <table className="w-full text-left text-[11px] border-collapse">
             <thead>
-              <tr className="border-b border-slate-800/60 text-slate-500 font-extrabold uppercase select-none">
+              <tr className="border-b border-border-default/60 text-text-muted font-extrabold uppercase select-none">
                 <th className="py-2 px-3">Modified User</th>
                 <th className="py-2 px-3">Role Change Path</th>
                 <th className="py-2 px-3">Authorized Operator</th>
@@ -223,24 +223,24 @@ export function RolesClient() {
                 <th className="py-2 px-3">Date</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-850 text-slate-400 font-medium">
+            <tbody className="divide-y divide-border-default/40 text-text-secondary font-medium">
               {auditTrail.map((item) => (
                 <tr key={item.id} className="hover:bg-amber-500/2 transition-colors">
-                  <td className="py-3 px-3 font-bold text-white">
+                  <td className="py-3 px-3 font-bold text-text-primary">
                     {item.user}
                   </td>
-                  <td className="py-3 px-3 font-bold text-slate-350">
+                  <td className="py-3 px-3 font-bold text-text-secondary">
                     <span className="capitalize">{item.from.replace("_", " ")}</span>
-                    <span className="text-slate-600 px-1.5 font-bold">→</span>
+                    <span className="text-text-faint px-1.5 font-bold">→</span>
                     <span className="capitalize text-amber-400">{item.to.replace("_", " ")}</span>
                   </td>
-                  <td className="py-3 px-3 text-slate-300 font-bold">
+                  <td className="py-3 px-3 text-text-secondary font-bold">
                     {item.authorizedBy}
                   </td>
-                  <td className="py-3 px-3 italic leading-relaxed text-slate-400 max-w-[200px] truncate">
+                  <td className="py-3 px-3 italic leading-relaxed text-text-muted max-w-[200px] truncate">
                     &ldquo;{item.reason}&rdquo;
                   </td>
-                  <td className="py-3 px-3 font-mono text-[10px] text-slate-500">
+                  <td className="py-3 px-3 font-mono text-[10px] text-text-muted">
                     {item.date}
                   </td>
                 </tr>
@@ -252,24 +252,24 @@ export function RolesClient() {
 
       {/* ── Interactive Role Switcher Modal Dialog ── */}
       <Dialog open={modalOpen} onOpenChange={setModalOpen}>
-        <DialogContent className="bg-[#0F1829] border-slate-800 text-slate-200 rounded-2xl max-w-md">
+        <DialogContent className="bg-bg-surface border-border-default text-text-primary rounded-2xl max-w-md">
           <DialogHeader className="space-y-2">
-            <DialogTitle className="text-white text-left font-heading font-bold text-lg flex items-center gap-2">
+            <DialogTitle className="text-text-primary text-left font-heading font-bold text-lg flex items-center gap-2">
               <Sparkles className="h-5 w-5 text-amber-500" />
               Modify Account Role
             </DialogTitle>
-            <DialogDescription className="text-left text-slate-500 text-xs">
-              Change privileges for operator: <span className="font-bold text-slate-300">{selectedAcc?.name}</span>
+            <DialogDescription className="text-left text-text-muted text-xs">
+              Change privileges for operator: <span className="font-bold text-text-secondary">{selectedAcc?.name}</span>
             </DialogDescription>
           </DialogHeader>
 
           <form onSubmit={handleRoleChangeSubmit} className="space-y-4 my-4">
             <div className="space-y-1.5">
-              <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Target Role Level</label>
+              <label className="text-[11px] font-bold text-text-secondary uppercase tracking-wider block">Target Role Level</label>
               <select
                 value={targetRole}
                 onChange={(e) => setTargetRole(e.target.value as UserRole)}
-                className="h-10 w-full text-xs font-bold text-slate-250 bg-slate-950 border border-slate-800 rounded-xl px-3 focus:outline-none focus:ring-1 focus:ring-amber-500"
+                className="h-10 w-full text-xs font-bold text-text-primary bg-bg-base border border-border-default rounded-xl px-3 focus:outline-none focus:ring-1 focus:ring-amber-500"
               >
                 <option value="auth_user">Member (Regular Buyer)</option>
                 <option value="agent">Real Estate Agent</option>
@@ -278,13 +278,13 @@ export function RolesClient() {
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Justification Reason *</label>
+              <label className="text-[11px] font-bold text-text-secondary uppercase tracking-wider block">Justification Reason *</label>
               <textarea
                 placeholder="State the audit reason (e.g. verified brokerage license number, joined moderation support)..."
                 value={changeReason}
                 onChange={(e) => setChangeReason(e.target.value)}
                 rows={3}
-                className="w-full text-xs border bg-slate-950 text-slate-200 border-slate-800 rounded-xl p-3 focus:outline-none focus:ring-1 focus:ring-amber-500 transition-all resize-none"
+                className="w-full text-xs border bg-bg-base text-text-primary border-border-default rounded-xl p-3 focus:outline-none focus:ring-1 focus:ring-amber-500 transition-all resize-none"
               />
             </div>
 
@@ -293,7 +293,7 @@ export function RolesClient() {
                 type="button"
                 onClick={() => setModalOpen(false)}
                 variant="outline"
-                className="flex-1 h-10 rounded-xl border-slate-800 text-slate-200"
+                className="flex-1 h-10 rounded-xl border-border-default text-text-primary"
               >
                 Cancel
               </Button>

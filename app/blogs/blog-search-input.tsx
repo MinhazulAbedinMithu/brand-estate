@@ -11,7 +11,9 @@ export function BlogSearchInput({ defaultValue }: { defaultValue: string }) {
 
   // Sync state if default value changes (e.g. when filters are reset)
   React.useEffect(() => {
-    setValue(defaultValue);
+    Promise.resolve().then(() => {
+      setValue(defaultValue);
+    });
   }, [defaultValue]);
 
   const handleSubmit = (e: React.FormEvent) => {

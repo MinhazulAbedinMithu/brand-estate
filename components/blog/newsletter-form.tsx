@@ -51,7 +51,7 @@ export function NewsletterForm() {
               Subscription Successful!
             </h5>
             <p className="text-xs text-text-secondary font-body mt-1 leading-relaxed">
-              Thank you for subscribing to our newsletter. We'll send you our weekly insights.
+              Thank you for subscribing to our newsletter. We&apos;ll send you our weekly insights.
             </p>
           </div>
           <button

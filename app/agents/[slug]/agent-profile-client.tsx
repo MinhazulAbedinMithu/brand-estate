@@ -29,6 +29,8 @@ import { agentsMock } from "@/src/mocks/agentsMock";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useAuth } from "@/lib/auth-context";
+import { useRouter } from "next/navigation";
 
 // ─────────────────────────────────────────────
 // Star rating component
@@ -234,7 +236,26 @@ function RatingBreakdown({ reviews }: { reviews: MockAgent["reviews"] }) {
 // Main client page
 // ─────────────────────────────────────────────
 export function AgentProfileClient({ agent }: { agent: MockAgent }) {
+  const { isAuthenticated, isLoading } = useAuth();
+  const router = useRouter();
+
+  React.useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      toast.error("Authentication required", { description: "Please sign in to view agent profiles." });
+      router.push("/login?callbackUrl=" + encodeURIComponent(window.location.pathname));
+    }
+  }, [isLoading, isAuthenticated, router]);
+
   const [saved, setSaved] = React.useState(false);
+
+  if (isLoading || !isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-bg-base flex flex-col items-center justify-center gap-4 text-text-primary">
+        <Loader2 className="h-10 w-10 text-accent-primary animate-spin" />
+        <p className="text-sm font-semibold text-text-muted">Loading profile security guards...</p>
+      </div>
+    );
+  }
 
   // Related agents (same country, exclude self)
   const relatedAgents = agentsMock
