@@ -1,15 +1,15 @@
 "use client";
 
 import * as React from "react";
-import { 
-  X, 
-  ZoomIn, 
-  ZoomOut, 
-  Download, 
-  Printer, 
-  FileText, 
-  ShieldCheck, 
-  RotateCw, 
+import {
+  X,
+  ZoomIn,
+  ZoomOut,
+  Download,
+  Printer,
+  FileText,
+  ShieldCheck,
+  RotateCw,
   Award,
   Maximize2,
   Minimize2
@@ -58,19 +58,19 @@ export function DocumentViewer({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent 
-        showCloseButton={false} 
+      <DialogContent
+        showCloseButton={false}
         className={cn(
           "w-full p-0 overflow-hidden bg-bg-surface border-border-default shadow-2xl flex flex-col transition-all duration-300",
-          isFullscreen 
-            ? "fixed inset-0 top-0 left-0 translate-x-0 translate-y-0 max-w-none sm:max-w-none w-screen h-screen rounded-none border-none z-[100] p-0 gap-0" 
+          isFullscreen
+            ? "fixed inset-0 top-0 left-0 translate-x-0 translate-y-0 max-w-none sm:max-w-none w-screen h-screen rounded-none border-none z-[100] p-0 gap-0"
             : "fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 max-w-[95vw] sm:max-w-[92vw] md:max-w-5xl lg:max-w-6xl w-full rounded-3xl h-[85vh] p-0 gap-0 z-50"
         )}
       >
         {/* ── PDF Reader Top Toolbar ── */}
         <div className="flex items-center justify-between px-3 sm:px-4 py-3 border-b border-border-default bg-bg-alt/70 select-none shrink-0">
           <div className="flex items-center gap-2 min-w-0 mr-2">
-            <div className="h-8 w-8 rounded-lg bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-500 shrink-0 hidden sm:flex">
+            <div className="h-8 w-8 rounded-lg bg-rose-500/10 border border-rose-500/20 items-center justify-center text-rose-500 shrink-0 hidden sm:flex">
               <FileText className="h-4.5 w-4.5" />
             </div>
             <div className="min-w-0">
@@ -102,7 +102,7 @@ export function DocumentViewer({
             >
               <ZoomIn className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
             </Button>
-            
+
             <div className="h-4 w-px bg-border-default/80 mx-1 sm:mx-1.5" />
 
             <Button
@@ -145,7 +145,7 @@ export function DocumentViewer({
                 <Maximize2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
               )}
             </Button>
-            
+
             <div className="h-4 w-px bg-border-default/80 mx-1 sm:mx-1.5" />
 
             <DialogClose render={
@@ -163,9 +163,9 @@ export function DocumentViewer({
 
         {/* ── Document Viewer Canvas Area ── */}
         <div className="flex-1 overflow-auto bg-bg-base/70 p-4 sm:p-8 flex items-start justify-center custom-scrollbar">
-          <div 
-            style={{ 
-              transform: `scale(${zoom / 100}) rotate(${rotation}deg)`, 
+          <div
+            style={{
+              transform: `scale(${zoom / 100}) rotate(${rotation}deg)`,
               transformOrigin: "top center",
               transition: "transform 0.15s ease-out"
             }}
