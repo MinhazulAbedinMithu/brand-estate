@@ -79,6 +79,8 @@ export function Navbar() {
   // Mobile accordion state for dropdown menu items
   const [mobileExpanded, setMobileExpanded] = React.useState<Record<string, boolean>>({});
 
+  const [isMounted, setIsMounted] = React.useState(false);
+
   const handleMouseEnter = (label: string) => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     setActiveDropdown(label);
@@ -98,6 +100,9 @@ export function Navbar() {
   };
 
   React.useEffect(() => {
+    Promise.resolve().then(() => {
+      setIsMounted(true);
+    });
     return () => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
@@ -277,7 +282,7 @@ export function Navbar() {
 
             {/* Auth Buttons (Desktop) */}
             <div className="hidden lg:flex items-center gap-2">
-              {isAuthenticated && currentUser ? (
+              {isMounted && isAuthenticated && currentUser ? (
                 <DropdownMenu>
                   <DropdownMenuTrigger
                     className="flex items-center gap-2 pl-1 pr-3 py-1 rounded-full border border-border-default/60 bg-transparent hover:bg-bg-elevated transition-all duration-200 cursor-pointer"
@@ -522,7 +527,7 @@ export function Navbar() {
 
                   {/* Auth Actions Group (Mobile Bottom) */}
                   <div className="border-t border-border-default/50 pt-6 mt-auto space-y-3">
-                    {isAuthenticated && currentUser ? (
+                    {isMounted && isAuthenticated && currentUser ? (
                       <>
                         <div className="flex items-center gap-3 px-2 py-2">
                           <Avatar className="h-10 w-10">

@@ -1,20 +1,25 @@
+"use client";
+
 import * as React from "react";
 import Link from "next/link";
-import { ArrowRight, BookOpen } from "lucide-react";
+import { ArrowRight, BookOpen, Loader2 } from "lucide-react";
 import { BlogCard } from "./blog-card";
-import { mockBlogPosts } from "@/src/mocks/blogPostsMock";
+import { useBlogs } from "@/lib/blog-context";
 
 export function BlogsSection() {
-  // Take the latest 3 posts for the homepage grid
-  const displayedPosts = mockBlogPosts.slice(0, 3);
+  const { posts, isLoading } = useBlogs();
+
+  // Take the latest 3 published posts for the homepage grid
+  const displayedPosts = React.useMemo(() => {
+    return posts.filter((p) => p.status === "published").slice(0, 3);
+  }, [posts]);
 
   return (
-    <section className="relative py-16 md:py-24 bg-bg-alt/30 border-y border-border-default/40">
+    <section className="relative py-16 md:py-24 bg-bg-alt/30 border-y border-border-default/45">
       {/* Background radial highlight */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-accent-primary-dim/20 via-transparent to-transparent pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 md:mb-16">
           <div className="space-y-3 max-w-xl">
@@ -40,13 +45,18 @@ export function BlogsSection() {
           </div>
         </div>
 
-        {/* Blog Post Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {displayedPosts.map((post) => (
-            <BlogCard key={post.id} post={post} />
-          ))}
-        </div>
-
+        {/* Loading placeholder or Blog Post Grid */}
+        {isLoading ? (
+          <div className="flex items-center justify-center py-12">
+            <Loader2 className="h-8 w-8 text-accent-primary animate-spin" />
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {displayedPosts.map((post) => (
+              <BlogCard key={post.id} post={post} />
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );

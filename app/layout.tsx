@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { Playfair_Display, Montserrat } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import { ThemeProvider } from "@/components/layout/theme-provider";
 import { AuthProvider } from "@/lib/auth-context";
+import { BlogProvider } from "@/lib/blog-context";
 import { Toaster } from "@/components/ui/sonner";
 import { ConditionalLayout } from "@/components/layout/conditional-layout";
 
@@ -51,8 +53,14 @@ export default function RootLayout({
       className={`${playfair.variable} ${montserrat.variable} h-full antialiased`}
       suppressHydrationWarning
     >
-      <head>
-        <script
+      <head />
+      <body
+        className="min-h-full flex flex-col bg-bg-base text-text-primary transition-colors duration-300"
+        suppressHydrationWarning
+      >
+        <Script
+          id="theme-initializer"
+          strategy="beforeInteractive"
           dangerouslySetInnerHTML={{
             __html: `
               (function() {
@@ -71,16 +79,13 @@ export default function RootLayout({
             `,
           }}
         />
-      </head>
-      <body
-        className="min-h-full flex flex-col bg-bg-base text-text-primary transition-colors duration-300"
-        suppressHydrationWarning
-      >
         <ThemeProvider>
           <AuthProvider>
-            {/* ConditionalLayout shows/hides Navbar+Footer based on route */}
-            <ConditionalLayout>{children}</ConditionalLayout>
-            <Toaster richColors position="top-right" />
+            <BlogProvider>
+              {/* ConditionalLayout shows/hides Navbar+Footer based on route */}
+              <ConditionalLayout>{children}</ConditionalLayout>
+              <Toaster richColors position="top-right" />
+            </BlogProvider>
           </AuthProvider>
         </ThemeProvider>
       </body>

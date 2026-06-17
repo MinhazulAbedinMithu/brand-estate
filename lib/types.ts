@@ -230,6 +230,9 @@ export interface BlogSEO {
   ogImage: string;         // Open Graph image URL
   ogType?: 'article' | 'website'; // Defaults to 'article'
   canonicalUrl?: string;   // Canonical URL redirect
+  ogTitle?: string;        // Open Graph Title
+  ogDescription?: string;  // Open Graph Description
+  noIndex?: boolean;       // Index or NoIndex robots flag
 }
 
 export interface BlogPost {
@@ -247,6 +250,11 @@ export interface BlogPost {
   readTimeMinutes: number;
   isFeatured: boolean;
   seo: BlogSEO;
+  status?: 'draft' | 'pending' | 'published' | 'rejected';
+  authorId?: string;
+  authorRole?: UserRole;
+  rejectionReason?: string;
+  reactions?: Record<string, number>;
 }
 
 

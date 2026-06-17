@@ -62,6 +62,7 @@ const ROLE_NAV_ITEMS: Record<UserRole, NavItem[]> = {
     { label: "Overview", href: "/dashboard", icon: LayoutDashboard },
     { label: "Saved Properties", href: "/dashboard/saved", icon: Heart },
     { label: "My Inquiries", href: "/dashboard/inquiries", icon: MessageSquare },
+    { label: "My Blogs", href: "/dashboard/blogs", icon: FileText },
     { label: "Profile Settings", href: "/dashboard/profile", icon: UserIcon },
   ],
   agent: [
@@ -69,12 +70,14 @@ const ROLE_NAV_ITEMS: Record<UserRole, NavItem[]> = {
     { label: "My Listings", href: "/agent/listings", icon: Building },
     { label: "Create Listing", href: "/agent/listings/new", icon: PlusCircle },
     { label: "Leads & Inquiries", href: "/agent/leads", icon: Inbox },
+    { label: "My Blogs", href: "/agent/blogs", icon: FileText },
     { label: "Pricing Packages", href: "/agent/packages", icon: Sparkles },
   ],
   admin: [
     { label: "Admin Overview", href: "/admin/dashboard", icon: LayoutDashboard },
     { label: "Manage Users", href: "/admin/users", icon: Users },
     { label: "Manage Listings", href: "/admin/listings", icon: Building },
+    { label: "Manage Blogs", href: "/admin/blogs", icon: FileText },
     { label: "User Reports", href: "/admin/reports", icon: AlertOctagon },
     { label: "Manage Packages", href: "/admin/packages", icon: Settings },
   ],
