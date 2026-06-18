@@ -274,6 +274,11 @@ Phase 2 specs to be defined and implemented in order:
 - **Auth Security & Edge Runtime Audit**:
   - Resolved user verification state enumeration in [login/route.ts](file:///Users/minhaz/Documents/projects/brand/brand-estate/app/api/auth/login/route.ts) by verifying passwords *before* revealing whether an email is verified or not.
   - Avoided Node.js-native library requirements inside Next.js Edge Middleware by implementing a zero-dependency Edge-compatible JWT verification utility in [edge-jwt.ts](file:///Users/minhaz/Documents/projects/brand/brand-estate/lib/auth/edge-jwt.ts) using the Web Crypto API (`crypto.subtle`), ensuring 100% Edge compliance and resolving compile/runtime errors.
+- **Agent Legal Document Submission**:
+  - Created new backend API route `POST /api/agent/submit-docs` (in [submit-docs/route.ts](file:///Users/minhaz/Documents/projects/brand/brand-estate/app/api/agent/submit-docs/route.ts)) validating the JWT session, checking agent role, saving license number and agency information, and setting status to `pending`.
+  - Updated `IUser` interface and Mongoose schema in [user.model.ts](file:///Users/minhaz/Documents/projects/brand/brand-estate/lib/db/models/user.model.ts) to define user statuses and legal documentation fields.
+  - Wired client context `submitLegalDocs` helper in [auth-context.tsx](file:///Users/minhaz/Documents/projects/brand/brand-estate/lib/auth-context.tsx) to call the real backend endpoint while maintaining local fallback functionality for demo seed accounts.
+
 
 
 

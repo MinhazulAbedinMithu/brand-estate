@@ -171,15 +171,23 @@ function mapApiUser(data: {
   role: string;
   isVerified: boolean;
   avatar?: string;
+  status?: string;
+  legalDocs?: {
+    licenseNumber: string;
+    agencyName: string;
+    documentUrl: string;
+    submittedAt: string;
+  };
 }): User {
   return {
     id: data.id,
     name: data.name,
     email: data.email,
     role: data.role as User['role'],
-    status: 'active',
+    status: (data.status as User['status']) || 'active',
     avatar: data.avatar ?? '',
     isVerified: data.isVerified,
+    legalDocs: data.legalDocs,
     createdAt: new Date().toISOString(),
     savedProperties: [],
   };
@@ -340,9 +348,48 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const submitLegalDocs = React.useCallback(
     async (licenseNumber: string, agencyName: string, docName: string): Promise<{ success: boolean; user: User }> => {
       setIsLoading(true);
-      await new Promise((r) => setTimeout(r, 1000));
       if (!currentUser) throw new Error("No user logged in");
 
+      // Check if seed user/mock account
+      const isSeedUser = currentUser.id.startsWith('usr-') || 
+        SEED_USERS.some((u) => u.email.toLowerCase() === currentUser.email.toLowerCase());
+
+      if (!isSeedUser) {
+        try {
+          const res = await fetch('/api/agent/submit-docs', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({
+              licenseNumber,
+              agencyName,
+              documentUrl: docName,
+            }),
+          });
+          await res.json();
+          if (!res.ok) {
+            setIsLoading(false);
+            return { success: false, user: currentUser };
+          }
+          
+          // Fetch fresh user data to update the local currentUser context
+          const meRes = await fetch('/api/auth/me', { credentials: 'include' });
+          if (meRes.ok) {
+            const meData = await meRes.json();
+            const updated = mapApiUser(meData.data);
+            setCurrentUser(updated);
+            setIsLoading(false);
+            return { success: true, user: updated };
+          }
+        } catch (err) {
+          console.error('[submitLegalDocs] API error:', err);
+          setIsLoading(false);
+          return { success: false, user: currentUser };
+        }
+      }
+
+      // Fallback for seed accounts: mock database update in localStorage
+      await new Promise((r) => setTimeout(r, 1000));
       const updatedUser: User = {
         ...currentUser,
         status: "pending",

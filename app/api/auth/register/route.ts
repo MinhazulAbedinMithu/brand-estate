@@ -110,6 +110,7 @@ export async function POST(request: NextRequest) {
       email: email.toLowerCase().trim(),
       password: hashedPassword,
       role: resolvedRole,
+      status: resolvedRole === 'agent' ? 'unsubmitted' : 'active',
       isVerified: false,
       verificationToken,
       verificationTokenExpires,

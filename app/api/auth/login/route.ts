@@ -87,6 +87,8 @@ export async function POST(request: NextRequest) {
           role: user.role,
           isVerified: user.isVerified,
           avatar: user.avatar,
+          status: user.status,
+          legalDocs: user.legalDocs,
         },
         message: 'Logged in successfully.',
       },

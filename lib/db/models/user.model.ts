@@ -10,6 +10,14 @@ export interface IUser extends Document {
   role: 'auth_user' | 'agent' | 'admin' | 'super_admin';
   avatar: string;
   isVerified: boolean;
+  status: 'active' | 'pending' | 'suspended' | 'unsubmitted';
+  suspendedReason?: string;
+  legalDocs?: {
+    licenseNumber: string;
+    agencyName: string;
+    documentUrl: string;
+    submittedAt: Date;
+  };
   verificationToken?: string;
   verificationTokenExpires?: Date;
   resetPasswordToken?: string;
@@ -44,6 +52,20 @@ const UserSchema = new Schema<IUser>(
       type: String,
       enum: ['auth_user', 'agent', 'admin', 'super_admin'],
       default: 'auth_user',
+    },
+    status: {
+      type: String,
+      enum: ['active', 'pending', 'suspended', 'unsubmitted'],
+      default: 'active',
+    },
+    suspendedReason: {
+      type: String,
+    },
+    legalDocs: {
+      licenseNumber: { type: String },
+      agencyName: { type: String },
+      documentUrl: { type: String },
+      submittedAt: { type: Date },
     },
     avatar: {
       type: String,

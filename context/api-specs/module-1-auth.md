@@ -5,10 +5,10 @@ This document details the database models, API endpoints, request payloads, resp
 ## Database setup: mongodb+srv://brandestate:<db_password>@brandestate.wkegp0x.mongodb.net/?appName=brandestate
 
 ## Resend Setup: 
-api key: re_Hg5RRSjR_B2vuADbRhoQZ3m67B2axyWBW
+api key: re_key
 example code: import { Resend } from 'resend';
 
-const resend = new Resend('re_Hg5RRSjR_B2vuADbRhoQZ3m67B2axyWBW');
+const resend = new Resend('re_key');
 
 resend.emails.send({
   from: 'onboarding@resend.dev',
