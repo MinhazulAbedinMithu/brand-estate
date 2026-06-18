@@ -131,14 +131,21 @@ interface AuthContextValue {
     email: string,
     password: string,
     overrideRole?: UserRole
-  ) => Promise<{ success: boolean; error?: string; user?: User; isSuspended?: boolean; suspendedReason?: string }>;
+  ) => Promise<{
+    success: boolean;
+    error?: string;
+    user?: User;
+    isSuspended?: boolean;
+    suspendedReason?: string;
+    isUnverified?: boolean;
+  }>;
   register: (
     name: string,
     email: string,
     password: string,
     role: UserRole
   ) => Promise<{ success: boolean; error?: string; user?: User }>;
-  logout: () => void;
+  logout: () => Promise<void>;
   
   // Custom Local Storage DB Helpers
   getUsers: () => User[];
@@ -155,61 +162,63 @@ interface AuthContextValue {
 const AuthContext = React.createContext<AuthContextValue | undefined>(undefined);
 
 // ─────────────────────────────────────────────────────────
+// Map raw API user shape → internal User interface
+// ─────────────────────────────────────────────────────────
+function mapApiUser(data: {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  isVerified: boolean;
+  avatar?: string;
+}): User {
+  return {
+    id: data.id,
+    name: data.name,
+    email: data.email,
+    role: data.role as User['role'],
+    status: 'active',
+    avatar: data.avatar ?? '',
+    isVerified: data.isVerified,
+    createdAt: new Date().toISOString(),
+    savedProperties: [],
+  };
+}
+
+// ─────────────────────────────────────────────────────────
 // Provider
 // ─────────────────────────────────────────────────────────
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [currentUser, setCurrentUser] = React.useState<User | null>(() => {
-    if (typeof window === "undefined") return null;
-    try {
-      const storedSession = localStorage.getItem(STORAGE_KEY);
-      if (storedSession) {
-        const parsedUser = JSON.parse(storedSession) as User;
-        const storedUsers = localStorage.getItem(USERS_DB_KEY);
-        const dbUsers = storedUsers ? (JSON.parse(storedUsers) as User[]) : SEED_USERS;
-        const currentDbUser = dbUsers.find(u => u.id === parsedUser.id || u.email === parsedUser.email);
-        return currentDbUser || parsedUser;
-      }
-    } catch (e) {
-      console.error("Local DB hydration error:", e);
-    }
-    return null;
-  });
+  // Start null — session restored from /api/auth/me on mount
+  const [currentUser, setCurrentUser] = React.useState<User | null>(null);
   const [isLoading, setIsLoading] = React.useState(true);
 
-  // Initialize DBs and rehydrate session from localStorage on mount
+  // ── On mount: call /api/auth/me to restore session from httpOnly cookie ──
   React.useEffect(() => {
+    (async () => {
+      try {
+        const res = await fetch('/api/auth/me', { credentials: 'include' });
+        if (res.ok) {
+          const data = await res.json();
+          setCurrentUser(mapApiUser(data.data));
+        }
+      } catch (e) {
+        console.error('Session restore error:', e);
+      } finally {
+        setIsLoading(false);
+      }
+    })();
+
+    // Initialize mock localStorage DBs (for admin/user-management mock features)
     try {
-      // 1. Initialize Users DB
-      const storedUsers = localStorage.getItem(USERS_DB_KEY);
-      if (!storedUsers) {
+      if (!localStorage.getItem(USERS_DB_KEY)) {
         localStorage.setItem(USERS_DB_KEY, JSON.stringify(SEED_USERS));
       }
-
-      // 2. Initialize Packages DB
-      const storedPackages = localStorage.getItem(PACKAGES_DB_KEY);
-      if (!storedPackages) {
+      if (!localStorage.getItem(PACKAGES_DB_KEY)) {
         localStorage.setItem(PACKAGES_DB_KEY, JSON.stringify(DEFAULT_PACKAGES));
       }
-
-      // 3. Rehydrate Session
-      const storedSession = localStorage.getItem(STORAGE_KEY);
-      if (storedSession) {
-        const parsedUser = JSON.parse(storedSession) as User;
-        
-        // Sync active user status with database in case it changed in admin panel
-        const dbUsers = storedUsers ? (JSON.parse(storedUsers) as User[]) : SEED_USERS;
-        const currentDbUser = dbUsers.find(u => u.id === parsedUser.id || u.email === parsedUser.email);
-        
-        if (currentDbUser) {
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(currentDbUser));
-        }
-      }
     } catch (e) {
-      console.error("Local DB hydration error:", e);
-    } finally {
-      Promise.resolve().then(() => {
-        setIsLoading(false);
-      });
+      console.error('Local DB init error:', e);
     }
   }, []);
 
@@ -352,7 +361,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     [currentUser]
   );
 
-  // ─── Login & Register ───
+  // ─── Real API Login ───
   const login = React.useCallback(
     async (
       email: string,
@@ -361,75 +370,114 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     ): Promise<{ success: boolean; error?: string; user?: User; isSuspended?: boolean; suspendedReason?: string }> => {
       setIsLoading(true);
 
-      // Simulate network latency
-      await new Promise((r) => setTimeout(r, 700));
-
+      // ── Demo / mock login (seed accounts or overrideRole) ──
+      // The real API only has users registered via /api/auth/register.
+      // Seed accounts (user@brandestate.com, agent@..., admin@...) only exist
+      // in localStorage, so we fall back to the mock path for them.
       const emailLower = email.toLowerCase().trim();
-      
-      // Load current user registry from db
-      let dbUsers: User[] = [];
-      try {
-        const stored = localStorage.getItem(USERS_DB_KEY);
-        dbUsers = stored ? JSON.parse(stored) : [...SEED_USERS];
-      } catch {
-        dbUsers = [...SEED_USERS];
-      }
+      const isSeedEmail = SEED_USERS.some((u) => u.email.toLowerCase() === emailLower);
 
-      // Check if user exists
-      let user = dbUsers.find((u) => u.email.toLowerCase() === emailLower);
+      if (isSeedEmail || overrideRole) {
+        // ── Mock path (unchanged from before) ──────────────────
+        await new Promise((r) => setTimeout(r, 700));
 
-      if (password.length < 6) {
-        setIsLoading(false);
-        return { success: false, error: "Password must be at least 6 characters." };
-      }
-
-      // Enforce password check for seed accounts
-      const isSeedEmail = SEED_USERS.some(u => u.email.toLowerCase() === emailLower);
-      if (isSeedEmail && password !== MOCK_PASSWORD && !overrideRole) {
-        setIsLoading(false);
-        return { success: false, error: "Invalid email or password." };
-      }
-
-      // Check for account suspension BEFORE logging in
-      if (user && user.status === "suspended") {
-        setIsLoading(false);
-        return {
-          success: false,
-          error: "Your account is suspended.",
-          isSuspended: true,
-          suspendedReason: user.suspendedReason || "No reason specified.",
-          user,
-        };
-      }
-
-      // If user does not exist, create them in the db
-      if (!user) {
-        const role = overrideRole ?? "auth_user";
-        const name = email.split("@")[0].replace(/[._]/g, " ");
-        user = {
-          id: `mock-${role}-${Date.now()}`,
-          name,
-          email: emailLower,
-          role,
-          status: role === "agent" ? "unsubmitted" : "active",
-          createdAt: new Date().toISOString(),
-          savedProperties: [],
-        };
-        dbUsers.push(user);
-        localStorage.setItem(USERS_DB_KEY, JSON.stringify(dbUsers));
-      } else if (overrideRole && user.role !== overrideRole) {
-        // Handle role switcher overrides
-        user.role = overrideRole;
-        // Adjust status to make it active or unsubmitted based on role switches
-        if (overrideRole === "agent" && user.status === "active" && !user.legalDocs) {
-          user.status = "unsubmitted";
+        let dbUsers: User[] = [];
+        try {
+          const stored = localStorage.getItem(USERS_DB_KEY);
+          dbUsers = stored ? JSON.parse(stored) : [...SEED_USERS];
+        } catch {
+          dbUsers = [...SEED_USERS];
         }
-        localStorage.setItem(USERS_DB_KEY, JSON.stringify(dbUsers));
+
+        let user = dbUsers.find((u) => u.email.toLowerCase() === emailLower);
+
+        if (password.length < 6) {
+          setIsLoading(false);
+          return { success: false, error: 'Password must be at least 6 characters.' };
+        }
+
+        const isSeed = SEED_USERS.some((u) => u.email.toLowerCase() === emailLower);
+        if (isSeed && password !== MOCK_PASSWORD && !overrideRole) {
+          setIsLoading(false);
+          return { success: false, error: 'Invalid email or password.' };
+        }
+
+        if (user && user.status === 'suspended') {
+          setIsLoading(false);
+          return {
+            success: false,
+            error: 'Your account is suspended.',
+            isSuspended: true,
+            suspendedReason: user.suspendedReason || 'No reason specified.',
+            user,
+          };
+        }
+
+        if (!user) {
+          const role = overrideRole ?? 'auth_user';
+          const name = email.split('@')[0].replace(/[._]/g, ' ');
+          user = {
+            id: `mock-${role}-${Date.now()}`,
+            name,
+            email: emailLower,
+            role,
+            status: role === 'agent' ? 'unsubmitted' : 'active',
+            createdAt: new Date().toISOString(),
+            savedProperties: [],
+          };
+          dbUsers.push(user);
+          localStorage.setItem(USERS_DB_KEY, JSON.stringify(dbUsers));
+        } else if (overrideRole && user.role !== overrideRole) {
+          user.role = overrideRole;
+          if (overrideRole === 'agent' && user.status === 'active' && !user.legalDocs) {
+            user.status = 'unsubmitted';
+          }
+          localStorage.setItem(USERS_DB_KEY, JSON.stringify(dbUsers));
+        }
+
+        persistUser(user);
+        setIsLoading(false);
+        return { success: true, user };
       }
 
-      persistUser(user);
-      setIsLoading(false);
-      return { success: true, user };
+      // ── Real API path (users registered via /api/auth/register) ──
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ email: emailLower, password }),
+        });
+        const data = await res.json();
+
+        if (!res.ok) {
+          return {
+            success: false,
+            error: data.message ?? 'Login failed.',
+            // Surface AccountNotVerified so the login page can show the right UI
+            ...(data.error === 'AccountNotVerified' ? { isUnverified: true } : {}),
+          } as { success: false; error: string; isUnverified?: boolean };
+        }
+
+        // Fetch full user state from /me (ensures role/status is always fresh)
+        const meRes = await fetch('/api/auth/me', { credentials: 'include' });
+        if (meRes.ok) {
+          const meData = await meRes.json();
+          const user = mapApiUser(meData.data);
+          setCurrentUser(user);
+          setIsLoading(false);
+          return { success: true, user };
+        }
+
+        // Fallback: use data from login response
+        const user = mapApiUser(data.data);
+        setCurrentUser(user);
+        setIsLoading(false);
+        return { success: true, user };
+      } catch {
+        setIsLoading(false);
+        return { success: false, error: 'Network error. Please check your connection.' };
+      }
     },
     []
   );
@@ -490,7 +538,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     []
   );
 
-  const logout = React.useCallback(() => {
+  const logout = React.useCallback(async () => {
+    try {
+      await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
+    } catch (e) {
+      console.error('Logout API error:', e);
+    }
+    // Also clear the localStorage session for mock accounts
     localStorage.removeItem(STORAGE_KEY);
     setCurrentUser(null);
   }, []);

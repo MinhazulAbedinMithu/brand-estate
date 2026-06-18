@@ -16,6 +16,7 @@ export interface User {
   createdAt: string;
   status: UserStatus;
   suspendedReason?: string;
+  isVerified?: boolean;
   legalDocs?: {
     licenseNumber: string;
     agencyName: string;

@@ -152,6 +152,7 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = React.useState(false);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [errors, setErrors] = React.useState<{ email?: string; password?: string; root?: string }>({});
+  const [isUnverified, setIsUnverified] = React.useState(false);
   
   // Suspension modal state
   const [showSuspendedModal, setShowSuspendedModal] = React.useState(false);
@@ -172,6 +173,7 @@ export default function LoginPage() {
     const errs = validate();
     if (Object.keys(errs).length > 0) { setErrors(errs); return; }
     setErrors({});
+    setIsUnverified(false);
     setIsSubmitting(true);
     const result = await login(email, password);
     setIsSubmitting(false);
@@ -180,6 +182,13 @@ export default function LoginPage() {
         setSuspendedName(result.user?.name || "User");
         setSuspendedReason(result.suspendedReason || "No suspension reason specified.");
         setShowSuspendedModal(true);
+        return;
+      }
+      if (result.isUnverified) {
+        setIsUnverified(true);
+        toast.warning("Email Verification Required", {
+          description: "Please verify your email address to log in.",
+        });
         return;
       }
       setErrors({ root: result.error });
@@ -194,6 +203,7 @@ export default function LoginPage() {
 
   const handleGoogle = async () => {
     setIsSubmitting(true);
+    setIsUnverified(false);
     const result = await login("user@brandestate.com", "Password123");
     setIsSubmitting(false);
     if (result.success) {
@@ -206,6 +216,7 @@ export default function LoginPage() {
     setEmail(demoEmail);
     setPassword("Password123");
     setErrors({});
+    setIsUnverified(false);
   };
 
   return (
@@ -247,6 +258,22 @@ export default function LoginPage() {
         </div>
       </div>
 
+      {/* ── Unverified Alert ────────────────────────────── */}
+      {isUnverified && (
+        <div className="mb-4 p-4 rounded-xl bg-amber-500/8 dark:bg-amber-500/12 border border-amber-500/20 text-[13px] text-amber-600 dark:text-amber-400 font-medium animate-fade-in space-y-2">
+          <div className="flex items-center gap-2">
+            <span className="h-1.5 w-1.5 rounded-full bg-amber-500 shrink-0" />
+            <span>Please verify your email. Check your inbox for the verification link.</span>
+          </div>
+          <p className="text-[11px] text-text-muted dark:text-[#8D93A5] font-normal pl-3.5">
+            Didn&apos;t receive it? You can register again with a different email or try resubmitting via the{" "}
+            <Link href="/register" className="font-semibold text-accent-primary hover:underline">
+              Registration Page
+            </Link>.
+          </p>
+        </div>
+      )}
+
       {/* ── Root error ─────────────────────────────────── */}
       {errors.root && (
         <div className="mb-4 px-4 py-3 rounded-xl bg-state-error/8 border border-state-error/20 text-[13px] text-state-error font-medium animate-fade-in flex items-center gap-2">
@@ -263,7 +290,7 @@ export default function LoginPage() {
           type="email"
           placeholder="you@example.com"
           value={email}
-          onChange={(v) => { setEmail(v); setErrors(p => ({ ...p, email: undefined })); }}
+          onChange={(v) => { setEmail(v); setErrors(p => ({ ...p, email: undefined })); setIsUnverified(false); }}
           error={errors.email}
           Icon={Mail}
           autoComplete="email"
@@ -275,7 +302,7 @@ export default function LoginPage() {
           type={showPassword ? "text" : "password"}
           placeholder="Enter your password"
           value={password}
-          onChange={(v) => { setPassword(v); setErrors(p => ({ ...p, password: undefined })); }}
+          onChange={(v) => { setPassword(v); setErrors(p => ({ ...p, password: undefined })); setIsUnverified(false); }}
           error={errors.password}
           Icon={Lock}
           autoComplete="current-password"

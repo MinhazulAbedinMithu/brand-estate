@@ -1,6 +1,6 @@
 # API Specification — Module 1: Auth & User Management
 
-This document details the database models, API endpoints, request payloads, response payloads, and tracking statuses for the User Authentication module.
+This document details the database models, API endpoints, request payloads, response payloads, and tracking statuses for the complete **User Authentication & Session** module.
 
 ## Database setup: mongodb+srv://brandestate:<db_password>@brandestate.wkegp0x.mongodb.net/?appName=brandestate
 
@@ -57,6 +57,10 @@ export const User = mongoose.models.User || mongoose.model('User', UserSchema);
 | **2. Email Verification (Resend)** | `GET /api/auth/verify-email` | `done` |
 | **3. Forgot Password Request** | `POST /api/auth/forgot-password` | `done` |
 | **4. Reset Password Action** | `POST /api/auth/reset-password` | `done` |
+| **5. Login** | `POST /api/auth/login` | `done` |
+| **6. Get Current User** | `GET /api/auth/me` | `done` |
+| **7. Logout** | `POST /api/auth/logout` | `done` |
+| **8. Middleware Route Guard** | `middleware.ts` — server-side | `done` |
 
 ---
 
@@ -206,3 +210,112 @@ Validates the reset token and applies the new password to the user account.
     "message": "The password reset token is invalid or has expired."
   }
   ```
+
+---
+
+## Session Architecture
+
+- **Mechanism**: JWT stored in an `HttpOnly` `SameSite=Lax` cookie named `be_auth_token`
+- **JWT payload**: `{ id, name, email, role, isVerified, iat, exp }`
+- **Expiry**: 7 days
+- **Secret**: `JWT_SECRET` environment variable (64-byte random base64 string)
+- **Secure flag**: enabled in `production`, disabled in `development`
+
+---
+
+### 5. Login
+
+Validates credentials against MongoDB, checks `isVerified`, and issues a signed JWT in an `HttpOnly` cookie.
+
+* **Method / Route**: `POST /api/auth/login`
+* **Auth Guard**: Public / None
+* **Request Payload**:
+  ```json
+  {
+    "email": "johndoe@example.com",
+    "password": "Password123!"
+  }
+  ```
+* **Success Response (`200 OK`)** — also sets `Set-Cookie: be_auth_token=<jwt>; HttpOnly; SameSite=Lax; Path=/; Max-Age=604800`:
+  ```json
+  {
+    "status": "success",
+    "data": {
+      "id": "60d5ec4934d52c1b9c9f225f",
+      "name": "John Doe",
+      "email": "johndoe@example.com",
+      "role": "auth_user",
+      "isVerified": true,
+      "avatar": ""
+    },
+    "message": "Logged in successfully."
+  }
+  ```
+* **Error Response (`400 Bad Request` / Validation)**:
+  ```json
+  { "status": "error", "error": "ValidationError", "message": "Email and password are required." }
+  ```
+* **Error Response (`401 Unauthorized` / Wrong credentials)**:
+  ```json
+  { "status": "error", "error": "InvalidCredentials", "message": "Invalid email or password." }
+  ```
+* **Error Response (`403 Forbidden` / Email not verified)**:
+  ```json
+  { "status": "error", "error": "AccountNotVerified", "message": "Please verify your email address before signing in." }
+  ```
+
+---
+
+### 6. Get Current User
+
+Reads the `be_auth_token` cookie, verifies the JWT, and returns the latest user data from MongoDB.
+
+* **Method / Route**: `GET /api/auth/me`
+* **Auth Guard**: Cookie required
+* **Success Response (`200 OK`)**:
+  ```json
+  {
+    "status": "success",
+    "data": {
+      "id": "60d5ec4934d52c1b9c9f225f",
+      "name": "John Doe",
+      "email": "johndoe@example.com",
+      "role": "auth_user",
+      "isVerified": true,
+      "avatar": ""
+    }
+  }
+  ```
+* **Error Response (`401 Unauthorized` / No or invalid token)**:
+  ```json
+  { "status": "error", "error": "Unauthorized", "message": "Authentication required." }
+  ```
+
+---
+
+### 7. Logout
+
+Clears the `be_auth_token` cookie.
+
+* **Method / Route**: `POST /api/auth/logout`
+* **Auth Guard**: None (always succeeds)
+* **Success Response (`200 OK`)**:
+  ```json
+  { "status": "success", "message": "Logged out successfully." }
+  ```
+
+---
+
+### 8. Middleware Route Guard
+
+Next.js `middleware.ts` at the project root. Reads and decodes the JWT cookie server-side (no DB call — lightweight decode only).
+
+| Route Pattern | Required Role |
+| :--- | :--- |
+| `/dashboard*` | Any authenticated user |
+| `/agent/*` | `agent`, `admin`, `super_admin` |
+| `/admin/*` | `admin`, `super_admin` |
+| `/super-admin/*` | `super_admin` |
+
+Redirect on auth failure: `/login?from={pathname}`  
+Redirect on role mismatch (authenticated but wrong role): `/dashboard`
