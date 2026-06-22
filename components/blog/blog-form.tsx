@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import type { BlogPost, BlogSEO } from "@/lib/types";
 import { TagInput } from "@/components/blog/tag-input";
 import { ImageUploader } from "@/components/blog/image-uploader";
+import { MarkdownEditor } from "@/components/blog/markdown-editor";
 
 const CATEGORIES = [
   { key: "buying-guide", label: "Buying Guide" },
@@ -221,17 +222,12 @@ export function BlogForm({
           required
         />
 
-        <div className="space-y-1.5">
-          <label className="text-xs font-bold text-text-secondary">Content Body (Markdown Format supported) <span className="text-rose-500">*</span></label>
-          <textarea
-            required
-            rows={8}
-            placeholder="Draft your main article content. Supports headings (##, ###), bullet lists (*), blockquotes (> [!IMPORTANT])."
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            className="w-full p-3 rounded-xl border border-border-default bg-bg-base text-text-primary focus:border-accent-primary outline-none font-mono text-xs transition-colors"
-          />
-        </div>
+        <MarkdownEditor
+          value={content}
+          onChange={setContent}
+          label="Content Body"
+          required
+        />
       </div>
 
       {/* SEO Metadata Section */}

@@ -2,40 +2,6 @@
 
 import * as React from "react";
 import type { BlogPost } from "@/lib/types";
-import { mockBlogPosts } from "@/src/mocks/blogPostsMock";
-
-const BLOGS_DB_KEY = "brand-estate-blogs-db";
-
-const DEFAULT_REACTIONS = {
-  "🔥": 0,
-  "❤️": 0,
-  "👏": 0,
-  "💡": 0,
-  "😮": 0,
-  "🚀": 0,
-};
-
-// Seed posts with active reactions and published status
-const getSeededPosts = (): BlogPost[] => {
-  return mockBlogPosts.map((post, index) => {
-    // Generate some starter reactions based on index to look realistic
-    const reactions = {
-      "🔥": (index + 2) * 5 + 3,
-      "❤️": (index + 1) * 8 + 4,
-      "👏": (index + 3) * 6 + 2,
-      "💡": (index + 1) * 4 + 1,
-      "😮": index * 2,
-      "🚀": (index + 1) * 3,
-    };
-    return {
-      ...post,
-      status: post.status || "published",
-      authorRole: post.authorRole || "admin",
-      authorId: post.authorId || `usr-admin-${index}`,
-      reactions: post.reactions || reactions,
-    };
-  });
-};
 
 interface BlogContextValue {
   posts: BlogPost[];
@@ -57,39 +23,26 @@ export function BlogProvider({ children }: { children: React.ReactNode }) {
   const [posts, setPosts] = React.useState<BlogPost[]>([]);
   const [isLoading, setIsLoading] = React.useState(true);
 
-  // Initialize store on mount
-  React.useEffect(() => {
+  // Fetch blogs list from backend API
+  const fetchBlogs = React.useCallback(async () => {
     try {
-      const stored = localStorage.getItem(BLOGS_DB_KEY);
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        Promise.resolve().then(() => {
-          setPosts(parsed);
-        });
-      } else {
-        const seeded = getSeededPosts();
-        localStorage.setItem(BLOGS_DB_KEY, JSON.stringify(seeded));
-        Promise.resolve().then(() => {
-          setPosts(seeded);
-        });
+      const res = await fetch("/api/blogs");
+      const json = await res.json();
+      if (json.status === "success" && Array.isArray(json.data)) {
+        setPosts(json.data);
       }
     } catch (e) {
-      console.error("Failed to load blogs database from localStorage:", e);
+      console.error("Failed to fetch blogs from API:", e);
     } finally {
-      Promise.resolve().then(() => {
-        setIsLoading(false);
-      });
+      setIsLoading(false);
     }
   }, []);
 
-  const savePosts = (newPosts: BlogPost[]) => {
-    try {
-      localStorage.setItem(BLOGS_DB_KEY, JSON.stringify(newPosts));
-      setPosts(newPosts);
-    } catch (e) {
-      console.error("Failed to save blogs database to localStorage:", e);
-    }
-  };
+  // Initialize store on mount
+  React.useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchBlogs();
+  }, [fetchBlogs]);
 
   const createPost = React.useCallback(
     async (
@@ -97,77 +50,139 @@ export function BlogProvider({ children }: { children: React.ReactNode }) {
         status: "draft" | "pending" | "published";
       }
     ): Promise<BlogPost> => {
-      // Simulate network latency
-      await new Promise((r) => setTimeout(r, 600));
+      const res = await fetch("/api/blogs", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(postData),
+      });
 
+      const json = await res.json();
+      if (json.status !== "success") {
+        throw new Error(json.message || "Failed to create blog post");
+      }
+
+      const createdData = json.data;
       const newPost: BlogPost = {
         ...postData,
-        id: `post-${Date.now()}`,
+        id: createdData.id,
+        slug: createdData.slug,
+        status: createdData.status,
         publishedAt: new Date().toISOString(),
-        reactions: { ...DEFAULT_REACTIONS },
+        reactions: {
+          "🔥": 0, "❤️": 0, "👏": 0, "💡": 0, "😮": 0, "🚀": 0
+        },
       };
 
-      savePosts([newPost, ...posts]);
+      setPosts((prev) => [newPost, ...prev]);
       return newPost;
     },
-    [posts]
+    []
   );
 
   const updatePost = React.useCallback(
     async (updatedPost: BlogPost): Promise<void> => {
-      await new Promise((r) => setTimeout(r, 400));
-      const updated = posts.map((p) => (p.id === updatedPost.id ? updatedPost : p));
-      savePosts(updated);
+      const res = await fetch(`/api/blogs/${updatedPost.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updatedPost),
+      });
+
+      const json = await res.json();
+      if (json.status !== "success") {
+        throw new Error(json.message || "Failed to update blog post");
+      }
+
+      setPosts((prev) =>
+        prev.map((p) =>
+          p.id === updatedPost.id 
+            ? { ...p, ...updatedPost, slug: json.data.slug, status: json.data.status } 
+            : p
+        )
+      );
     },
-    [posts]
+    []
   );
 
   const deletePost = React.useCallback(
     async (id: string): Promise<void> => {
-      await new Promise((r) => setTimeout(r, 300));
-      const filtered = posts.filter((p) => p.id !== id);
-      savePosts(filtered);
+      const res = await fetch(`/api/blogs/${id}`, {
+        method: "DELETE",
+      });
+
+      const json = await res.json();
+      if (json.status !== "success") {
+        throw new Error(json.message || "Failed to delete blog post");
+      }
+
+      setPosts((prev) => prev.filter((p) => p.id !== id));
     },
-    [posts]
+    []
   );
 
   const reactToPost = React.useCallback(
     async (id: string, emoji: string): Promise<void> => {
-      // Optimistic update
-      const updated = posts.map((post) => {
-        if (post.id === id) {
-          const currentReactions = post.reactions || { ...DEFAULT_REACTIONS };
-          return {
-            ...post,
-            reactions: {
-              ...currentReactions,
-              [emoji]: (currentReactions[emoji] || 0) + 1,
-            },
-          };
+      // Optimistic update locally
+      setPosts((prev) =>
+        prev.map((post) => {
+          if (post.id === id) {
+            const current = post.reactions || {};
+            return {
+              ...post,
+              reactions: {
+                ...current,
+                [emoji]: (current[emoji] || 0) + 1,
+              },
+            };
+          }
+          return post;
+        })
+      );
+
+      // Async backend update
+      try {
+        const res = await fetch(`/api/blogs/${id}/react`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ reactionType: emoji }),
+        });
+        const json = await res.json();
+        if (json.status === "success" && json.data?.reactions) {
+          // Re-sync with actual database state in case other reactions happened
+          setPosts((prev) =>
+            prev.map((post) =>
+              post.id === id ? { ...post, reactions: json.data.reactions } : post
+            )
+          );
         }
-        return post;
-      });
-      savePosts(updated);
+      } catch (e) {
+        console.error("Failed to submit reaction to API:", e);
+      }
     },
-    [posts]
+    []
   );
 
   const reviewPost = React.useCallback(
     async (id: string, status: "published" | "rejected", reason?: string): Promise<void> => {
-      await new Promise((r) => setTimeout(r, 500));
-      const updated = posts.map((post) => {
-        if (post.id === id) {
-          return {
-            ...post,
-            status,
-            rejectionReason: status === "rejected" ? reason : undefined,
-          };
-        }
-        return post;
+      const res = await fetch(`/api/blogs/${id}/review`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status, reason }),
       });
-      savePosts(updated);
+
+      const json = await res.json();
+      if (json.status !== "success") {
+        throw new Error(json.message || "Failed to complete review");
+      }
+
+      setPosts((prev) =>
+        prev.map((post) =>
+          post.id === id 
+            ? { ...post, status, rejectionReason: status === "rejected" ? reason : undefined } 
+            : post
+        )
+      );
     },
-    [posts]
+    []
   );
 
   const value = React.useMemo(
@@ -193,3 +208,4 @@ export function useBlogs() {
   }
   return context;
 }
+

@@ -181,12 +181,18 @@ Implement, test, and integrate backend API routes (Next.js API Routes / Mongoose
   - [x] Integrated buyer dashboard saved listings page (`saved-page-client.tsx`) to load/remove listings and support undo restorations.
   - [x] Integrated agent dashboard overview (`agent-dashboard-client.tsx`) stats, timeline Recharts, and popular listings.
   - [x] Integrated admin listings moderation queue (`listings-management.tsx`) and admin dashboard overview (`admin-dashboard-client.tsx`) pending review list.
+- [x] **Spec 86 & 87 — Module 3: Blogs CMS API & Client Integration COMPLETE** ✅
+  - [x] Created Mongoose model `BlogPost` in `lib/db/models/blog-post.model.ts` with sub-schemas for author and SEO metadata and atomic reactions map.
+  - [x] Created seed endpoint `/api/blogs/seed` to populate DB with mock articles and mock users.
+  - [x] Developed list/create endpoint `/api/blogs` with visibility filter rules based on session role.
+  - [x] Developed individual routes `/api/blogs/[idOrSlug]`, review endpoint `/api/blogs/[idOrSlug]/review`, and reaction atomic increment route `/api/blogs/[idOrSlug]/react`.
+  - [x] Connected React `BlogProvider` state hooks context to real MongoDB API endpoints.
 
 ---
 
 ## In Progress
 
-- [/] Module 3: Blogs CMS API routes implementation
+- None
 
 ---
 
@@ -202,8 +208,8 @@ Phase 2 specs to be defined and implemented in order:
 | 83    | Password Recovery (Forgot/Reset)  | ✅ Done |
 | 84    | Property Schema & Filter API      | ✅ Done |
 | 85    | Property Mutations & Geo Search   | ✅ Done |
-| 86    | Blogs Schema & Public Read APIs   | ⏳ Pending |
-| 87    | Blog Mutations & Reactions API    | ⏳ Pending |
+| 86    | Blogs Schema & Public Read APIs   | ✅ Done |
+| 87    | Blog Mutations & Reactions API    | ✅ Done |
 | 88    | Inquiries Inbox & Messaging API   | ⏳ Pending |
 | 89    | Saved Listings & Pricing Packages | ✅ Done |
 | 90    | Platform Settings & Verification   | ⏳ Pending |
