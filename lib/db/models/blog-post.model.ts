@@ -53,6 +53,7 @@ export interface IBlogPost extends Document {
   rejectionReason?: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   reactions: any;
+  views: number;
   seo: {
     title: string;
     metaDescription: string;
@@ -147,6 +148,10 @@ const BlogPostSchema = new Schema<IBlogPost>(
         '😮': 0,
         '🚀': 0,
       },
+    },
+    views: {
+      type: Number,
+      default: 0,
     },
     seo: {
       type: BlogSEOSchema,

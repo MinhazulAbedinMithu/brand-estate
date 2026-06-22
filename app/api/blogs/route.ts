@@ -3,6 +3,7 @@ import { connectDB } from '@/lib/db/mongoose';
 import { BlogPost } from '@/lib/db/models/blog-post.model';
 import { User } from '@/lib/db/models/user.model';
 import { verifyJwt } from '@/lib/auth/tokens';
+import { seedBlogs } from '@/lib/db/seed-blogs-helper';
 
 const COOKIE_NAME = 'be_auth_token';
 
@@ -22,6 +23,12 @@ function generateSlug(title: string): string {
 export async function GET(request: NextRequest) {
   try {
     await connectDB();
+
+    // Auto-seed if database is empty of blog posts
+    const totalCount = await BlogPost.countDocuments({});
+    if (totalCount === 0) {
+      await seedBlogs();
+    }
 
     const { searchParams } = new URL(request.url);
     const category = searchParams.get('category');

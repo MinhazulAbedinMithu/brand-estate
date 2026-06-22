@@ -20,12 +20,14 @@ interface BlogDetailClientProps {
 const EMOJIS = ["🔥", "❤️", "👏", "💡", "😮", "🚀"];
 
 export function BlogDetailClient({ slug }: BlogDetailClientProps) {
-  const { posts, reactToPost, isLoading } = useBlogs();
+  const { posts, reactToPost, trackBlogView, isLoading } = useBlogs();
   const { currentUser } = useAuth();
   const router = useRouter();
 
   // Track client-side clicked emojis to prevent spamming (or highlight selected)
   const [clickedEmojis, setClickedEmojis] = React.useState<Record<string, boolean>>({});
+
+  const post = React.useMemo(() => posts.find((p) => p.slug === slug), [posts, slug]);
 
   React.useEffect(() => {
     try {
@@ -38,6 +40,19 @@ export function BlogDetailClient({ slug }: BlogDetailClientProps) {
       }
     } catch { }
   }, [slug]);
+
+  React.useEffect(() => {
+    if (!post?.id) return;
+    
+    const hasViewed = sessionStorage.getItem(`brand-estate-viewed-${post.id}`);
+    if (hasViewed) return;
+
+    trackBlogView(post.id)
+      .then(() => {
+        sessionStorage.setItem(`brand-estate-viewed-${post.id}`, "true");
+      })
+      .catch((e) => console.error("Failed to track blog view:", e));
+  }, [post?.id, trackBlogView]);
 
   const handleReact = (emoji: string, postId: string) => {
     reactToPost(postId, emoji);
@@ -56,8 +71,6 @@ export function BlogDetailClient({ slug }: BlogDetailClientProps) {
       </div>
     );
   }
-
-  const post = posts.find((p) => p.slug === slug);
 
   if (!post) {
     notFound();
@@ -172,6 +185,10 @@ export function BlogDetailClient({ slug }: BlogDetailClientProps) {
             <span className="flex items-center gap-1.5">
               <Clock className="h-4 w-4 text-accent-primary" />
               {post.readTimeMinutes} min read
+            </span>
+            <span className="flex items-center gap-1.5">
+              <Eye className="h-4 w-4 text-accent-primary" />
+              {post.views || 0} views
             </span>
           </div>
         </div>

@@ -274,6 +274,7 @@ export interface BlogPost {
   authorRole?: UserRole;
   rejectionReason?: string;
   reactions?: Record<string, number>;
+  views?: number;
 }
 
 

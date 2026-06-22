@@ -15,6 +15,7 @@ interface BlogContextValue {
   deletePost: (id: string) => Promise<void>;
   reactToPost: (id: string, emoji: string) => Promise<void>;
   reviewPost: (id: string, status: "published" | "rejected", reason?: string) => Promise<void>;
+  trackBlogView: (id: string) => Promise<void>;
 }
 
 const BlogContext = React.createContext<BlogContextValue | undefined>(undefined);
@@ -185,6 +186,35 @@ export function BlogProvider({ children }: { children: React.ReactNode }) {
     []
   );
 
+  const trackBlogView = React.useCallback(
+    async (id: string): Promise<void> => {
+      // Optimistic update locally
+      setPosts((prev) =>
+        prev.map((post) =>
+          post.id === id ? { ...post, views: (post.views || 0) + 1 } : post
+        )
+      );
+
+      try {
+        const res = await fetch(`/api/blogs/${id}/view`, {
+          method: "POST",
+        });
+        const json = await res.json();
+        if (json.status === "success" && json.data && typeof json.data.views === "number") {
+          // Re-sync with actual database state
+          setPosts((prev) =>
+            prev.map((post) =>
+              post.id === id ? { ...post, views: json.data.views } : post
+            )
+          );
+        }
+      } catch (e) {
+        console.error("Failed to track blog view:", e);
+      }
+    },
+    []
+  );
+
   const value = React.useMemo(
     () => ({
       posts,
@@ -194,8 +224,9 @@ export function BlogProvider({ children }: { children: React.ReactNode }) {
       deletePost,
       reactToPost,
       reviewPost,
+      trackBlogView,
     }),
-    [posts, isLoading, createPost, updatePost, deletePost, reactToPost, reviewPost]
+    [posts, isLoading, createPost, updatePost, deletePost, reactToPost, reviewPost, trackBlogView]
   );
 
   return <BlogContext.Provider value={value}>{children}</BlogContext.Provider>;

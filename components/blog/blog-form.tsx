@@ -352,6 +352,12 @@ export function BlogForm({
         </div>
       </div>
 
+      {initialPost?.status === "published" && submitStatusType === "pending" && (
+        <div className="p-3.5 rounded-xl border border-state-warning/20 bg-state-warning/10 text-state-warning text-xs font-semibold leading-relaxed">
+          ⚠️ Note: This article is currently published and live. Saving changes will reset its status to <strong className="font-bold underline">Pending Approval</strong>, requiring moderator review before it is visible to the public again.
+        </div>
+      )}
+
       {/* Actions Panel */}
       <div className="flex gap-4 pt-6 border-t border-border-default/60">
         <Button

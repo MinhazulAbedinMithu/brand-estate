@@ -367,6 +367,7 @@ export function AdminBlogsClient() {
                       <th className="p-4">Author Profile</th>
                       <th className="p-4">Category</th>
                       <th className="p-4">Status</th>
+                      <th className="p-4 text-center">Views</th>
                       <th className="p-4 text-center">Engagement</th>
                       <th className="p-4 text-right">Actions</th>
                     </tr>
@@ -404,6 +405,7 @@ export function AdminBlogsClient() {
                               {post.status || "published"}
                             </span>
                           </td>
+                          <td className="p-4 text-center font-bold text-text-primary">{post.views || 0}</td>
                           <td className="p-4 text-center font-bold text-text-primary">{reactionsCount} reacts</td>
                           <td className="p-4 text-right space-x-1">
                             <div className="inline-flex gap-2">

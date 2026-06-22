@@ -50,7 +50,9 @@ export function AgentBlogsClient() {
     };
 
     let totalReacts = 0;
+    let totalViews = 0;
     agentPosts.forEach((p) => {
+      totalViews += p.views || 0;
       if (p.reactions) {
         Object.entries(p.reactions).forEach(([emoji, count]) => {
           totalReacts += count;
@@ -66,6 +68,7 @@ export function AgentBlogsClient() {
       published,
       pending,
       reactions: totalReacts,
+      views: totalViews,
       breakdown: emojiBreakdown
     };
   }, [agentPosts]);
@@ -159,7 +162,7 @@ export function AgentBlogsClient() {
       {/* Analytics Breakdown Row */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Core Stats */}
-        <div className="lg:col-span-2 grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="lg:col-span-2 grid grid-cols-1 sm:grid-cols-4 gap-4">
           <div className="rounded-2xl border border-border-default/60 bg-bg-surface p-5 shadow-sm flex flex-col justify-between">
             <span className="text-[10px] font-bold text-text-muted uppercase tracking-widest block">Authored Columns</span>
             <span className="text-3xl font-extrabold font-heading text-text-primary mt-2">{stats.total}</span>
@@ -174,6 +177,11 @@ export function AgentBlogsClient() {
             <span className="text-[10px] font-bold text-text-muted uppercase tracking-widest block">Pending Approvals</span>
             <span className="text-3xl font-extrabold font-heading text-amber-400 mt-2">{stats.pending}</span>
             <span className="text-[10px] text-text-muted mt-4">Under review by administrators</span>
+          </div>
+          <div className="rounded-2xl border border-border-default/60 bg-bg-surface p-5 shadow-sm flex flex-col justify-between">
+            <span className="text-[10px] font-bold text-text-muted uppercase tracking-widest block">Total Page Views</span>
+            <span className="text-3xl font-extrabold font-heading text-sky-400 mt-2">{stats.views}</span>
+            <span className="text-[10px] text-text-muted mt-4">Cumulative traffic across all posts</span>
           </div>
         </div>
 
@@ -217,6 +225,7 @@ export function AgentBlogsClient() {
                 <tr className="bg-bg-alt/40 border-b border-border-default text-text-muted font-bold font-body">
                   <th className="p-4">Cover & Title</th>
                   <th className="p-4">Category</th>
+                  <th className="p-4 text-center">Views</th>
                   <th className="p-4">Reactions</th>
                   <th className="p-4">Status</th>
                   <th className="p-4">Submission Date</th>
@@ -236,6 +245,7 @@ export function AgentBlogsClient() {
                         </div>
                       </td>
                       <td className="p-4 capitalize">{post.category.replace("-", " ")}</td>
+                      <td className="p-4 text-center font-bold text-text-primary">{post.views || 0}</td>
                       <td className="p-4 font-bold text-text-primary">{reactionsCount} reacts</td>
                       <td className="p-4">
                         <div className="flex items-center gap-1.5">
