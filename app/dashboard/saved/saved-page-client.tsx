@@ -2,19 +2,37 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { Search, Heart, SlidersHorizontal, MapPin, Ruler, Bed, Bath, ArrowUpRight, ArrowRight, Trash2 } from "lucide-react";
-import { mockProperties } from "@/src/mocks/propertiesMock";
+import { Search, Heart, SlidersHorizontal, MapPin, Ruler, Bed, Bath, ArrowRight, Trash2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { cn } from "@/lib/utils";
+import type { MockProperty } from "@/src/mocks/propertyTypes";
 
 export function SavedPageClient() {
-  const [properties, setProperties] = React.useState(mockProperties.slice(0, 5));
+  const [properties, setProperties] = React.useState<MockProperty[]>([]);
+  const [loading, setLoading] = React.useState(true);
   const [search, setSearch] = React.useState("");
   const [sortBy, setSortBy] = React.useState("latest");
   const [currentPage, setCurrentPage] = React.useState(1);
   const itemsPerPage = 3;
+
+  React.useEffect(() => {
+    async function loadSaved() {
+      try {
+        setLoading(true);
+        const response = await fetch("/api/users/me/saved");
+        const result = await response.json();
+        if (result.status === "success") {
+          setProperties(result.data || []);
+        }
+      } catch (err) {
+        console.error("Failed to load saved properties:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadSaved();
+  }, []);
 
   // Filter properties
   const filteredProperties = React.useMemo(() => {
@@ -49,25 +67,53 @@ export function SavedPageClient() {
     return filteredProperties.slice(start, start + itemsPerPage);
   }, [filteredProperties, currentPage, itemsPerPage]);
 
-  const handleRemove = (id: string, title: string) => {
+  const handleRemove = async (id: string, title: string) => {
     const itemToRemove = properties.find(p => p.id === id);
-    setProperties(prev => prev.filter(p => p.id !== id));
-    
-    // Reset page if needed
-    if (currentPage > 1 && paginatedProperties.length === 1) {
-      setCurrentPage(prev => prev - 1);
-    }
-
-    toast.success("Property removed", {
-      description: `"${title}" has been deleted from your saved listings.`,
-      action: itemToRemove ? {
-        label: "Undo",
-        onClick: () => {
-          setProperties(prev => [...prev, itemToRemove]);
-          toast.success("Restored property to saved list");
+    try {
+      const response = await fetch(`/api/users/me/saved/${id}`, {
+        method: "DELETE",
+      });
+      const result = await response.json();
+      if (result.status === "success") {
+        setProperties(prev => prev.filter(p => p.id !== id));
+        
+        // Reset page if needed
+        if (currentPage > 1 && paginatedProperties.length === 1) {
+          setCurrentPage(prev => prev - 1);
         }
-      } : undefined
-    });
+
+        toast.success("Property removed", {
+          description: `"${title}" has been deleted from your saved listings.`,
+          action: itemToRemove ? {
+            label: "Undo",
+            onClick: async () => {
+              try {
+                const addRes = await fetch("/api/users/me/saved", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ propertyId: id })
+                });
+                const addResJson = await addRes.json();
+                if (addResJson.status === "success") {
+                  setProperties(prev => [...prev, itemToRemove]);
+                  toast.success("Restored property to saved list");
+                } else {
+                  toast.error("Failed to restore property");
+                }
+              } catch (e) {
+                console.error(e);
+                toast.error("Network error restoring property");
+              }
+            }
+          } : undefined
+        });
+      } else {
+        toast.error("Failed to remove property from saved list", { description: result.message });
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("An unexpected error occurred.");
+    }
   };
 
   return (
@@ -118,7 +164,11 @@ export function SavedPageClient() {
       </div>
 
       {/* ── Grid/List Display ── */}
-      {paginatedProperties.length === 0 ? (
+      {loading ? (
+        <div className="py-20 text-center font-body font-semibold text-text-muted animate-pulse">
+          Loading saved properties...
+        </div>
+      ) : paginatedProperties.length === 0 ? (
         <div className="rounded-3xl border border-dashed border-border-default bg-bg-surface/40 p-12 text-center max-w-xl mx-auto flex flex-col items-center justify-center gap-4 mt-8">
           <div className="h-14 w-14 rounded-full bg-bg-alt flex items-center justify-center text-text-muted">
             <Heart className="h-6 w-6" />

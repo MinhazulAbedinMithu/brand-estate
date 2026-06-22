@@ -9,6 +9,7 @@ export interface IUser extends Document {
   password: string; // bcrypt-hashed
   role: 'auth_user' | 'agent' | 'admin' | 'super_admin';
   avatar: string;
+  phone?: string;
   isVerified: boolean;
   status: 'active' | 'pending' | 'suspended' | 'unsubmitted';
   suspendedReason?: string;
@@ -68,6 +69,10 @@ const UserSchema = new Schema<IUser>(
       submittedAt: { type: Date },
     },
     avatar: {
+      type: String,
+      default: '',
+    },
+    phone: {
       type: String,
       default: '',
     },

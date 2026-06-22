@@ -46,15 +46,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import type { User } from "@/lib/types";
+import type { User, AdminStats } from "@/lib/types";
+import type { MockProperty } from "@/src/mocks/propertyTypes";
 import { DocumentViewer } from "@/components/shared/document-viewer";
  
 export function AdminDashboardClient() {
   const { getUsers, updateUserStatus } = useAuth();
   const [users, setUsers] = React.useState<User[]>([]);
-  const [pendingListings, setPendingListings] = React.useState(
-    mockProperties.slice(4, 7).map(p => ({ ...p, status: "pending_approval" as const }))
-  );
+  const [pendingListings, setPendingListings] = React.useState<MockProperty[]>([]);
+  const [analytics, setAnalytics] = React.useState<AdminStats | null>(null);
+  const [loading, setLoading] = React.useState(true);
  
   // Suspension reason dialog states
   const [showBanDialog, setShowBanDialog] = React.useState(false);
@@ -75,20 +76,76 @@ export function AdminDashboardClient() {
     setUsers(getUsers());
   }, [getUsers]);
 
+  const loadDashboardData = React.useCallback(async () => {
+    try {
+      setLoading(true);
+      const [analyticsRes, pendingRes] = await Promise.all([
+        fetch("/api/analytics/admin"),
+        fetch("/api/properties?status=pending_approval&limit=5")
+      ]);
+      const analyticsJson = await analyticsRes.json();
+      const pendingJson = await pendingRes.json();
+
+      if (analyticsJson.status === "success") {
+        setAnalytics(analyticsJson.data);
+      }
+      if (pendingJson.status === "success") {
+        setPendingListings(pendingJson.data || []);
+      }
+    } catch (err) {
+      console.error("Failed to load admin dashboard statistics:", err);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   React.useEffect(() => {
     Promise.resolve().then(() => {
       refreshList();
+      loadDashboardData();
     });
-  }, [refreshList]);
+  }, [refreshList, loadDashboardData]);
 
-  const handleApproveListing = (id: string, title: string) => {
-    setPendingListings(prev => prev.filter(p => p.id !== id));
-    toast.success("Listing Approved", { description: `"${title}" has been successfully published.` });
+  const handleApproveListing = async (id: string, title: string) => {
+    try {
+      const response = await fetch(`/api/properties/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "active" })
+      });
+      const result = await response.json();
+      if (result.status === "success") {
+        setPendingListings(prev => prev.filter(p => p.id !== id));
+        toast.success("Listing Approved", { description: `"${title}" has been successfully published.` });
+        loadDashboardData();
+      } else {
+        toast.error("Failed to approve listing", { description: result.message });
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Network error approving listing");
+    }
   };
 
-  const handleRejectListing = (id: string, title: string) => {
-    setPendingListings(prev => prev.filter(p => p.id !== id));
-    toast.error("Listing Rejected", { description: `"${title}" has been rejected and archived.` });
+  const handleRejectListing = async (id: string, title: string) => {
+    try {
+      const response = await fetch(`/api/properties/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "rejected" })
+      });
+      const result = await response.json();
+      if (result.status === "success") {
+        setPendingListings(prev => prev.filter(p => p.id !== id));
+        toast.error("Listing Rejected", { description: `"${title}" has been rejected.` });
+        loadDashboardData();
+      } else {
+        toast.error("Failed to reject listing", { description: result.message });
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Network error rejecting listing");
+    }
   };
 
   const agentsWithDocs = React.useMemo(() => {
@@ -127,12 +184,23 @@ export function AdminDashboardClient() {
     }
   };
 
-  const stats = [
-    { label: "Total Users", value: "1,240", change: "+18 this week", icon: Users, color: "text-violet-400 bg-violet-500/10 border-violet-500/20" },
-    { label: "Active Listings", value: "348", change: "+14 since yesterday", icon: Building, color: "text-blue-400 bg-blue-500/10 border-blue-500/20" },
-    { label: "Daily Inquiries", value: "89", change: "+5.4% conversion", icon: MessageSquare, color: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20" },
-    { label: "Pending Approvals", value: pendingListings.length, change: "Requires reviews", icon: ShieldAlert, color: "text-amber-400 bg-amber-500/10 border-amber-500/20" },
-  ];
+  const stats = React.useMemo(() => {
+    if (!analytics) {
+      return [
+        { label: "Total Users", value: "...", change: "—", icon: Users, color: "text-violet-400 bg-violet-500/10 border-violet-500/20" },
+        { label: "Active Listings", value: "...", change: "—", icon: Building, color: "text-blue-400 bg-blue-500/10 border-blue-500/20" },
+        { label: "Daily Inquiries", value: "...", change: "—", icon: MessageSquare, color: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20" },
+        { label: "Pending Approvals", value: "...", change: "Requires reviews", icon: ShieldAlert, color: "text-amber-400 bg-amber-500/10 border-amber-500/20" },
+      ];
+    }
+    const s = analytics.stats;
+    return [
+      { label: "Total Users", value: s.totalUsers.toLocaleString(), change: "Registered accounts", icon: Users, color: "text-violet-400 bg-violet-500/10 border-violet-500/20" },
+      { label: "Active Listings", value: s.activeListings.toLocaleString(), change: "Public discoverable listings", icon: Building, color: "text-blue-400 bg-blue-500/10 border-blue-500/20" },
+      { label: "Daily Inquiries", value: s.dailyInquiries.toLocaleString(), change: "leads in last 24h", icon: MessageSquare, color: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20" },
+      { label: "Pending Approvals", value: s.pendingApprovals.toString(), change: "Needs evaluation", icon: ShieldAlert, color: "text-amber-400 bg-amber-500/10 border-amber-500/20" },
+    ];
+  }, [analytics]);
 
   return (
     <div className="space-y-8">
@@ -183,7 +251,7 @@ export function AdminDashboardClient() {
         </div>
         <div className="h-72 sm:h-80 w-full pr-4 text-xs font-semibold text-text-muted">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={mockSignupsHistory}>
+            <LineChart data={analytics?.signupsHistory || []}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border-default)" opacity={0.3} />
               <XAxis dataKey="month" stroke="var(--text-muted)" strokeWidth={0.5} />
               <YAxis stroke="var(--text-muted)" strokeWidth={0.5} />

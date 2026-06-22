@@ -1,6 +1,7 @@
 import * as React from "react";
 import { notFound } from "next/navigation";
-import { mockProperties } from "@/src/mocks/propertiesMock";
+import { connectDB } from "@/lib/db/mongoose";
+import { Property, IProperty } from "@/lib/db/models/property.model";
 import { PropertyGallery } from "@/components/property/property-gallery";
 import { PropertySpecs } from "@/components/property/property-specs";
 import { PropertyPriceHistory } from "@/components/property/property-price-history";
@@ -8,6 +9,7 @@ import { AgentContactCard } from "@/components/property/agent-contact-card";
 import { RelatedListings } from "@/components/property/related-listings";
 import { MapPin, Bed, Bath, Ruler, Calendar, Compass, Check } from "lucide-react";
 import { Metadata } from "next";
+import type { MockProperty } from "@/src/mocks/propertyTypes";
 
 interface DetailPageProps {
   params: Promise<{ slug: string }>;
@@ -16,24 +18,26 @@ interface DetailPageProps {
 // Generate dynamic SEO metadata
 export async function generateMetadata({ params }: DetailPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const property = mockProperties.find((p) => p.slug === slug);
+  
+  await connectDB();
+  const prop = await Property.findOne({ slug: slug.toLowerCase() }).lean();
 
-  if (!property) {
+  if (!prop) {
     return {
       title: "Property Not Found",
     };
   }
 
   return {
-    title: property.seo.seoTitle || property.title,
-    description: property.seo.metaDescription || property.description,
+    title: prop.seo?.seoTitle || prop.title,
+    description: prop.seo?.metaDescription || prop.description,
     openGraph: {
-      title: property.seo.seoTitle || property.title,
-      description: property.seo.metaDescription || property.description,
+      title: prop.seo?.seoTitle || prop.title,
+      description: prop.seo?.metaDescription || prop.description,
       images: [
         {
-          url: property.images[0],
-          alt: property.title,
+          url: prop.images[0],
+          alt: prop.title,
         },
       ],
     },
@@ -42,11 +46,52 @@ export async function generateMetadata({ params }: DetailPageProps): Promise<Met
 
 export default async function PropertyDetailPage({ params }: DetailPageProps) {
   const { slug } = await params;
-  const property = mockProperties.find((p) => p.slug === slug);
+  
+  await connectDB();
+  const prop = (await Property.findOne({ slug: slug.toLowerCase() }).lean()) as IProperty | null;
 
-  if (!property) {
+  if (!prop) {
     notFound();
   }
+
+  // Map database document to MockProperty structure for child components
+  const property = {
+    id: prop._id.toString(),
+    title: prop.title,
+    slug: prop.slug,
+    description: prop.description,
+    transactionType: prop.transactionType,
+    propertyCategory: prop.propertyCategory,
+    price: prop.price,
+    currency: prop.currency,
+    taxHistory: prop.taxHistory || [],
+    priceHistory: prop.priceHistory || [],
+    formattedAddress: prop.formattedAddress,
+    city: prop.city,
+    state: prop.state,
+    zipCode: prop.zipCode,
+    _geo: prop._geo,
+    neighborhoodNotes: prop.neighborhoodNotes || '',
+    squareFeet: prop.squareFeet,
+    squareMeters: prop.squareMeters,
+    totalRooms: prop.totalRooms,
+    bedrooms: prop.bedrooms,
+    bathrooms: prop.bathrooms,
+    yearBuilt: prop.yearBuilt,
+    images: prop.images,
+    videoTourUrl: prop.videoTourUrl,
+    virtualTourUrl: prop.virtualTourUrl,
+    status: prop.status,
+    isFeatured: prop.isFeatured,
+    ownerId: prop.ownerId.toString(),
+    listerProfile: prop.listerProfile,
+    seo: prop.seo,
+    amenities: prop.amenities,
+    apartment: prop.apartment,
+    house: prop.house,
+    roomShare: prop.roomShare,
+    commercial: prop.commercial,
+  } as unknown as MockProperty;
 
   // Format currency price
   const isRent = property.transactionType === "rent" || property.transactionType === "roommate_share";
@@ -85,7 +130,7 @@ export default async function PropertyDetailPage({ params }: DetailPageProps) {
                 </span>
                 {property.seo?.keywords && property.seo.keywords.length > 0 && (
                   <div className="flex flex-wrap gap-1.5 ml-1">
-                    {property.seo.keywords.map((tag) => (
+                    {property.seo.keywords.map((tag: string) => (
                       <span
                         key={tag}
                         className="bg-accent-primary/8 text-accent-primary border border-accent-primary/15 text-[9px] font-extrabold px-2.5 py-0.5 rounded-md uppercase tracking-wider transition-colors hover:bg-accent-primary/12"
@@ -175,7 +220,7 @@ export default async function PropertyDetailPage({ params }: DetailPageProps) {
                     Amenities & Facilities
                   </h3>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                    {property.amenities.map((amenity) => (
+                    {property.amenities.map((amenity: string) => (
                       <div
                         key={amenity}
                         className="flex items-center gap-2.5 px-4 py-3 rounded-xl border border-border-default/50 bg-bg-surface text-xs font-semibold text-text-secondary select-none"

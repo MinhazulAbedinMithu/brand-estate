@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { useAuth } from "@/lib/auth-context";
-import { cn } from "@/lib/utils";
 
 export function SubmitDocsClient() {
   const router = useRouter();
@@ -16,6 +15,7 @@ export function SubmitDocsClient() {
   const [license, setLicense] = React.useState("");
   const [agency, setAgency] = React.useState("");
   const [file, setFile] = React.useState<File | null>(null);
+  const [uploadedUrl, setUploadedUrl] = React.useState("");
   
   // Progress states
   const [uploading, setUploading] = React.useState(false);
@@ -38,27 +38,71 @@ export function SubmitDocsClient() {
     if (files && files.length > 0) {
       const selectedFile = files[0];
       setFile(selectedFile);
-      startMockUpload();
+      startR2Upload(selectedFile);
     }
   };
 
-  const startMockUpload = () => {
+  const startR2Upload = async (selectedFile: File) => {
     setUploading(true);
-    setProgress(0);
+    setProgress(5);
     setUploadComplete(false);
+    setUploadedUrl("");
 
-    const interval = setInterval(() => {
-      setProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(interval);
+    try {
+      const res = await fetch('/api/upload/presigned', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          filename: selectedFile.name,
+          contentType: selectedFile.type,
+          folder: 'agents/documents'
+        })
+      });
+
+      if (!res.ok) throw new Error('Authorization or server permission error.');
+      const data = await res.json();
+      if (data.status !== 'success' || !data.uploadUrl || !data.publicUrl) {
+        throw new Error(data.message || 'Failed to acquire upload parameters.');
+      }
+
+      const { uploadUrl, publicUrl } = data;
+      setProgress(20);
+
+      const xhr = new XMLHttpRequest();
+      xhr.open('PUT', uploadUrl, true);
+      xhr.setRequestHeader('Content-Type', selectedFile.type);
+
+      xhr.upload.onprogress = (event) => {
+        if (event.lengthComputable) {
+          const percentage = Math.round((event.loaded / event.total) * 75) + 20; // 20% to 95%
+          setProgress(percentage);
+        }
+      };
+
+      xhr.onload = () => {
+        if (xhr.status === 200 || xhr.status === 201) {
+          setProgress(100);
           setUploading(false);
           setUploadComplete(true);
+          setUploadedUrl(publicUrl);
           toast.success("Document uploaded successfully", { description: "File is ready for verification submission." });
-          return 100;
+        } else {
+          setUploading(false);
+          toast.error("Upload failed", { description: `R2 endpoint rejected the file with status: ${xhr.status}` });
         }
-        return prev + 20;
-      });
-    }, 250);
+      };
+
+      xhr.onerror = () => {
+        setUploading(false);
+        toast.error("Upload failed", { description: "Network error occurred during document upload." });
+      };
+
+      xhr.send(selectedFile);
+    } catch (err) {
+      console.error('[Document R2 Upload Error]', err);
+      setUploading(false);
+      toast.error("Upload failed", { description: err instanceof Error ? err.message : "Error uploading document to storage." });
+    }
   };
 
   const triggerFileSelect = () => {
@@ -67,14 +111,14 @@ export function SubmitDocsClient() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!license.trim() || !agency.trim() || !uploadComplete || !file) {
+    if (!license.trim() || !agency.trim() || !uploadComplete || !file || !uploadedUrl) {
       toast.error("Form incomplete", { description: "Please complete all fields and upload verification documentation." });
       return;
     }
 
     setSubmitting(true);
     try {
-      const res = await submitLegalDocs(license, agency, file.name);
+      const res = await submitLegalDocs(license, agency, uploadedUrl);
       if (res.success) {
         toast.success("Documents submitted!", {
           description: "Your registration status is now pending administrator approval.",

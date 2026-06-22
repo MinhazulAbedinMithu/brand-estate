@@ -440,3 +440,41 @@ Performs bounding box checks using coordinate vertices to display properties on 
     ]
   }
   ```
+
+---
+
+## Form UI Updates: Category-Specific Attributes
+
+To align the wizard form UI with the database schema definitions, we update the Specs and Details panel (Step 3) in both the Listing Creation Wizard and Listing Edit forms to capture these fields:
+
+### 1. Apartment Attributes
+* `floorNumber` (Integer, required)
+* `totalBuildingFloors` (Integer, required)
+* `monthlyMaintenanceFee` (Integer, required, defaults to 0)
+* `hasElevator` (Boolean toggle)
+* `parkingSlotNumber` (String, optional, null if none)
+
+### 2. House Attributes
+* `lotSizeAcres` (Float, required)
+* `lotSizeSqFt` (Integer, required)
+* `garageSpacesCount` (Integer, required, defaults to 0)
+* `roofType` (Select: `asphalt_shingle`, `metal`, `clay_tile`, `flat`, `slate`, `wood_shake`)
+* `foundationType` (Select: `concrete_slab`, `crawl_space`, `full_basement`, `pier_and_beam`, `stem_wall`)
+* `heatingCoolingSystem` (String, required)
+* `backyardAreaSqFt` (Integer, required, defaults to 0)
+
+### 3. Room Share Attributes
+* `roomType` (Select: `private`, `shared`)
+* `bathroomType` (Select: `attached`, `common`)
+* `currentOccupantsCount` (Integer, required, defaults to 0)
+* `preferredGender` (Select: `any`, `male`, `female`)
+* `utilitiesIncluded` (Checkboxes: `wifi`, `gas`, `water`, `electricity`, `cable`, `trash`)
+* `minimumLeasePeriodMonths` (Integer, required, defaults to 1)
+
+### 4. Commercial Attributes
+* `zoningCode` (Select: `retail`, `office`, `industrial`, `warehouse`)
+* `loadingDocksCount` (Integer, required, defaults to 0)
+* `ceilingHeightFt` (Integer, required)
+* `minimumLeaseTermYears` (Integer, required, defaults to 1)
+* `electricalCapacity` (String, required)
+

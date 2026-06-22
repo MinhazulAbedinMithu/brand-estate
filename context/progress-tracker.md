@@ -161,14 +161,32 @@ Implement, test, and integrate backend API routes (Next.js API Routes / Mongoose
   - [x] Created `app/api/auth/forgot-password/route.ts` — POST: anti-enumeration (always 200), generates 1hr reset token, sends reset email; 500 on mailer failure.
   - [x] Created `app/api/auth/reset-password/route.ts` — POST: validates token + password strength + match, bcrypt(12) hashes new password, clears token fields.
   - [x] Created `.env.local` with MONGODB_URI, RESEND_API_KEY, JWT_SECRET, NEXT_PUBLIC_APP_URL placeholders.
-  - [x] `npx tsc --noEmit` ✅ — zero TypeScript errors.
-  - [x] `npm run lint` ✅ — zero errors in all new auth files.
+- **Specs 84 & 85 — Module 2: Properties Schema & APIs COMPLETE** ✅
+- [x] **Specs 84 & 85 — Module 2: Properties Schema & APIs COMPLETE** ✅
+  - [x] Created `lib/db/models/property.model.ts` — defined Mongoose `PropertySchema` containing common base fields and category-specific (discriminator) blocks (`apartment`, `house`, `roomShare`, `commercial`).
+  - [x] Created `app/api/properties/seed/route.ts` — developer endpoint seeding agents and 21 listings to MongoDB.
+  - [x] Created properties list & create route `app/api/properties/route.ts` supporting paginated query filtering and POST creation.
+  - [x] Created mutation routes `app/api/properties/[idOrSlug]/route.ts` supporting details retrieval, permissioned updates (owner/admin), and deletion.
+  - [x] Created status control route `app/api/properties/[idOrSlug]/archive/route.ts` for toggling listing archives (sold/rented).
+  - [x] Created geo search route `app/api/properties/map/route.ts` checking neLat/neLng/swLat/swLng bounding boxes.
+  - [x] Updated agent creation and edit forms (`new-listing-client.tsx` and `edit-listing-client.tsx`) to dynamically display and gather category-specific spec metadata.
+  - [x] Wired agent directory, detail pages, and dashboards to real MongoDB endpoints.
+  - [x] Completed compilation checks (`npx tsc --noEmit`) and resolved all TypeScript-eslint explicit `any` and type mismatches.
+- [x] **Specs 89 & 91 — Saved Listings & Dashboards Analytics COMPLETE** ✅
+  - [x] Created Mongoose `Inquiry` schema in `lib/db/models/inquiry.model.ts` to allow database-backed inquiry queries.
+  - [x] Created saved listings API routes (`GET /api/users/me/saved`, `POST /api/users/me/saved`, and `DELETE /api/users/me/saved/[id]`) updating user's favorite listings references.
+  - [x] Created listing view tracker route `POST /api/properties/[idOrSlug]/view` incrementing traffic views.
+  - [x] Created agent analytics aggregator `GET /api/analytics/agent` for active/draft counts, total saves, views, and inquiries.
+  - [x] Created admin analytics aggregator `GET /api/analytics/admin` for platform totals and monthly signups trends.
+  - [x] Integrated buyer dashboard saved listings page (`saved-page-client.tsx`) to load/remove listings and support undo restorations.
+  - [x] Integrated agent dashboard overview (`agent-dashboard-client.tsx`) stats, timeline Recharts, and popular listings.
+  - [x] Integrated admin listings moderation queue (`listings-management.tsx`) and admin dashboard overview (`admin-dashboard-client.tsx`) pending review list.
 
 ---
 
 ## In Progress
 
-- [/] Module 2: Properties API routes implementation
+- [/] Module 3: Blogs CMS API routes implementation
 
 ---
 
@@ -182,14 +200,14 @@ Phase 2 specs to be defined and implemented in order:
 | 81    | Authentication JWT & Register Route| ✅ Done |
 | 82    | Email Verification (Resend)       | ✅ Done |
 | 83    | Password Recovery (Forgot/Reset)  | ✅ Done |
-| 84    | Property Schema & Filter API      | ⏳ Pending |
-| 85    | Property Mutations & Geo Search   | ⏳ Pending |
+| 84    | Property Schema & Filter API      | ✅ Done |
+| 85    | Property Mutations & Geo Search   | ✅ Done |
 | 86    | Blogs Schema & Public Read APIs   | ⏳ Pending |
 | 87    | Blog Mutations & Reactions API    | ⏳ Pending |
 | 88    | Inquiries Inbox & Messaging API   | ⏳ Pending |
-| 89    | Saved Listings & Pricing Packages | ⏳ Pending |
+| 89    | Saved Listings & Pricing Packages | ✅ Done |
 | 90    | Platform Settings & Verification   | ⏳ Pending |
-| 91    | Admin & Agent Analytics API       | ⏳ Pending |
+| 91    | Admin & Agent Analytics API       | ✅ Done |
 | 92    | Super Admin Security Audit Logs   | ⏳ Pending |
 
 ### Completed Phase 1 Specs
@@ -278,6 +296,20 @@ Phase 2 specs to be defined and implemented in order:
   - Created new backend API route `POST /api/agent/submit-docs` (in [submit-docs/route.ts](file:///Users/minhaz/Documents/projects/brand/brand-estate/app/api/agent/submit-docs/route.ts)) validating the JWT session, checking agent role, saving license number and agency information, and setting status to `pending`.
   - Updated `IUser` interface and Mongoose schema in [user.model.ts](file:///Users/minhaz/Documents/projects/brand/brand-estate/lib/db/models/user.model.ts) to define user statuses and legal documentation fields.
   - Wired client context `submitLegalDocs` helper in [auth-context.tsx](file:///Users/minhaz/Documents/projects/brand/brand-estate/lib/auth-context.tsx) to call the real backend endpoint while maintaining local fallback functionality for demo seed accounts.
+- **Document Viewer R2 Loading Fix**:
+  - Enhanced the reusable [DocumentViewer](file:///Users/minhaz/Documents/projects/brand/brand-estate/components/shared/document-viewer.tsx) component to dynamically detect if `documentUrl` is a real remote URL (e.g. from the Cloudflare R2 bucket).
+  - Wired the viewer to render PDFs inside an `iframe` element and images inside an `img` tag for live credential inspection by admins, while retaining the premium HTML/CSS certificate frame fallback for mock seed accounts.
+  - Linked the download control helper to handle live R2 object downloads.
+  - Obfuscated raw S3/R2 document URLs by removing them from print/download toast descriptions and appending `#toolbar=0` to the PDF iframe source to hide the browser's native PDF reader top toolbar.
+- **Property Listing Fields Extension**:
+  - Integrated `videoTourUrl`, `virtualTourUrl`, and `neighborhoodNotes` fields into the agent's "Create New Listing" and "Edit Listing" forms.
+  - Updated Step 3 (Details & Specs) of the listing forms to include a "Neighborhood Notes" textarea input.
+  - Updated Step 4 (Media Assets) of the listing forms to include input fields for "Video Tour URL" and "3D Virtual Tour URL".
+  - Updated Step 5/6 (Review Summary Layout) of the listing forms to display preview values for the new fields.
+  - Modified the properties creation API endpoint `POST /api/properties` to destructure and persist `neighborhoodNotes` inside MongoDB.
+  - Linked all inputs into the creation and edit API request payloads.
+
+
 
 
 

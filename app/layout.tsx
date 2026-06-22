@@ -26,6 +26,7 @@ const montserrat = Montserrat({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"),
   title: {
     default: "Brand Estate — Find Your Perfect Property",
     template: "%s | Brand Estate",

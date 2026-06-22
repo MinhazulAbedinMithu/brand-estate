@@ -40,7 +40,7 @@ export interface PricingPackage {
 
 export type ListingType = 'sale' | 'rent';
 export type PropertyType = 'apartment' | 'house' | 'villa' | 'commercial' | 'land';
-export type ListingStatus = 'active' | 'pending' | 'archived' | 'rejected';
+export type ListingStatus = 'active' | 'pending' | 'archived' | 'rejected' | 'pending_approval' | 'draft' | 'sold' | 'rented';
 
 export interface PropertyLocation {
   city: string;
@@ -173,6 +173,8 @@ export interface StatCard {
 export interface AgentStats {
   totalListings: number;
   activeListings: number;
+  draftListings: number;
+  archivedListings: number;
   totalInquiries: number;
   newInquiries: number;
   totalViews: number;
@@ -186,6 +188,14 @@ export interface AdminStats {
   pendingListings: number;
   totalInquiries: number;
   newUsersThisMonth: number;
+  stats: {
+    totalUsers: number;
+    activeListings: number;
+    pendingApprovals: number;
+    totalInquiries: number;
+    dailyInquiries: number;
+  };
+  signupsHistory?: Array<{ month: string; Users: number; Agents: number }>;
 }
 
 // ─────────────────────────────────────────────

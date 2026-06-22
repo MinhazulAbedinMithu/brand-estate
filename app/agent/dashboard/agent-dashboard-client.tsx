@@ -28,43 +28,101 @@ import {
   Legend
 } from "recharts";
 import { cn } from "@/lib/utils";
+import type { AgentStats } from "@/lib/types";
+import type { MockProperty } from "@/src/mocks/propertyTypes";
 
-// Filter mock properties listed by agent (or general properties for demo)
-const agentProperties = mockProperties.slice(0, 4);
+// The agent analytics endpoint returns { stats: AgentStats, viewsTimeline: [...] }
+interface AgentAnalyticsData {
+  stats: AgentStats;
+  viewsTimeline: Array<{ name: string; views: number; leads: number }>;
+}
+
+// The API serializes listings with a views field not in MockProperty
+type ListingWithViews = MockProperty & { views?: number };
 
 export function AgentDashboardClient() {
   const { currentUser } = useAuth();
-  
-  const stats = [
-    {
-      label: "Active Listings",
-      value: "8",
-      change: "+2 new listings",
-      icon: Building2,
-      color: "text-emerald-500 bg-emerald-500/10 border-emerald-500/20",
-    },
-    {
-      label: "Total Views",
-      value: "1,890",
-      change: "+12.4% vs last month",
-      icon: Eye,
-      color: "text-blue-500 bg-blue-500/10 border-blue-500/20",
-    },
-    {
-      label: "Unread Leads",
-      value: "3",
-      change: "Response time ~12h",
-      icon: Inbox,
-      color: "text-rose-500 bg-rose-500/10 border-rose-500/20",
-    },
-    {
-      label: "Closed Deals",
-      value: "12",
-      change: "Target: 15 this quarter",
-      icon: TrendingUp,
-      color: "text-amber-500 bg-amber-500/10 border-amber-500/20",
-    },
-  ];
+  const [analytics, setAnalytics] = React.useState<AgentAnalyticsData | null>(null);
+  const [listings, setListings] = React.useState<ListingWithViews[]>([]);
+  const [loading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    if (!currentUser) return;
+    
+    async function loadData() {
+      try {
+        setLoading(true);
+        const [analyticsRes, listingsRes] = await Promise.all([
+          fetch("/api/analytics/agent"),
+          fetch(`/api/properties?ownerId=${currentUser?.id || ""}&status=all&limit=100`)
+        ]);
+        
+        const analyticsJson = await analyticsRes.json();
+        const listingsJson = await listingsRes.json();
+        
+        if (analyticsJson.status === "success") {
+          setAnalytics(analyticsJson.data);
+        }
+        if (listingsJson.status === "success") {
+          setListings(listingsJson.data || []);
+        }
+      } catch (err) {
+        console.error("Failed to load agent dashboard analytics:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    
+    loadData();
+  }, [currentUser]);
+
+  const popularListings = React.useMemo(() => {
+    return [...listings]
+      .sort((a, b) => (b.views || 0) - (a.views || 0))
+      .slice(0, 4);
+  }, [listings]);
+
+  const stats = React.useMemo(() => {
+    if (!analytics) {
+      return [
+        { label: "Active Listings", value: "...", change: "—", icon: Building2, color: "text-emerald-500 bg-emerald-500/10 border-emerald-500/20" },
+        { label: "Total Views", value: "...", change: "—", icon: Eye, color: "text-blue-500 bg-blue-500/10 border-blue-500/20" },
+        { label: "Unread Leads", value: "...", change: "—", icon: Inbox, color: "text-rose-500 bg-rose-500/10 border-rose-500/20" },
+        { label: "Closed Deals", value: "...", change: "—", icon: TrendingUp, color: "text-amber-500 bg-amber-500/10 border-amber-500/20" },
+      ];
+    }
+    const s = analytics.stats;
+    return [
+      {
+        label: "Active Listings",
+        value: s.activeListings.toString(),
+        change: `${s.totalListings} total listings`,
+        icon: Building2,
+        color: "text-emerald-500 bg-emerald-500/10 border-emerald-500/20",
+      },
+      {
+        label: "Total Views",
+        value: s.totalViews.toLocaleString(),
+        change: `Saves: ${s.totalSaves} bookmarks`,
+        icon: Eye,
+        color: "text-blue-500 bg-blue-500/10 border-blue-500/20",
+      },
+      {
+        label: "Unread Leads",
+        value: s.newInquiries.toString(),
+        change: `Total leads: ${s.totalInquiries}`,
+        icon: Inbox,
+        color: "text-rose-500 bg-rose-500/10 border-rose-500/20",
+      },
+      {
+        label: "Closed Deals",
+        value: s.archivedListings.toString(),
+        change: "Marked sold or rented",
+        icon: TrendingUp,
+        color: "text-amber-500 bg-amber-500/10 border-amber-500/20",
+      },
+    ];
+  }, [analytics]);
 
   return (
     <div className="space-y-8">
@@ -162,7 +220,7 @@ export function AgentDashboardClient() {
         </div>
         <div className="h-72 sm:h-80 w-full pr-4 text-xs font-semibold text-text-muted">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={mockViewsHistory}>
+            <BarChart data={analytics?.viewsTimeline || []}>
               <CartesianGrid strokeDasharray="3 3" stroke="currentColor" opacity={0.1} />
               <XAxis dataKey="name" stroke="currentColor" strokeWidth={0.5} />
               <YAxis yAxisId="left" stroke="currentColor" strokeWidth={0.5} label={{ value: 'Views count', angle: -90, position: 'insideLeft', offset: -5 }} />
@@ -207,7 +265,7 @@ export function AgentDashboardClient() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border-default/40 text-text-secondary font-medium">
-                  {agentProperties.map((prop) => (
+                  {popularListings.map((prop) => (
                     <tr key={prop.id} className="hover:bg-bg-alt/25 transition-colors">
                       <td className="py-3 px-3">
                         <div className="flex items-center gap-2.5">
@@ -222,7 +280,7 @@ export function AgentDashboardClient() {
                         </div>
                       </td>
                       <td className="py-3 px-3 font-mono font-bold text-text-secondary">
-                        {(prop.price / 800 + 120).toFixed(0)}
+                        {prop.views || 0}
                       </td>
                       <td className="py-3 px-3 capitalize">
                         {prop.transactionType.replace("_", " ")}

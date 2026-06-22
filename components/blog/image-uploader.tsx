@@ -4,6 +4,8 @@ import * as React from "react";
 import { Upload, X, Loader2, Link as LinkIcon, Trash } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+import { toast } from "sonner";
+
 interface ImageUploaderProps {
   value: string;
   onChange: (value: string) => void;
@@ -22,53 +24,96 @@ export function ImageUploader({
   const [mode, setMode] = React.useState<"upload" | "url">("upload");
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const uploadFileToR2 = async (file: File): Promise<string | null> => {
+    try {
+      setIsUploading(true);
+      setUploadProgress(5);
+
+      const response = await fetch('/api/upload/presigned', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          filename: file.name,
+          contentType: file.type,
+          folder: 'images',
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to get presigned URL from server.');
+      }
+
+      const data = await response.json();
+      if (data.status !== 'success' || !data.uploadUrl || !data.publicUrl) {
+        throw new Error(data.message || 'Invalid upload credentials response.');
+      }
+
+      const { uploadUrl, publicUrl } = data;
+      setUploadProgress(20);
+
+      return new Promise<string | null>((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open('PUT', uploadUrl, true);
+        xhr.setRequestHeader('Content-Type', file.type);
+
+        xhr.upload.onprogress = (event) => {
+          if (event.lengthComputable) {
+            const percentage = Math.round((event.loaded / event.total) * 75) + 20; // scale 20% to 95%
+            setUploadProgress(percentage);
+          }
+        };
+
+        xhr.onload = () => {
+          if (xhr.status === 200 || xhr.status === 201) {
+            setUploadProgress(100);
+            resolve(publicUrl);
+          } else {
+            reject(new Error(`Storage server rejected upload with status ${xhr.status}.`));
+          }
+        };
+
+        xhr.onerror = () => {
+          reject(new Error('Network connectivity issue during upload.'));
+        };
+
+        xhr.send(file);
+      });
+    } catch (error) {
+      console.error('[ImageUploader R2 Upload Error]', error);
+      toast.error('Image upload failed', {
+        description: error instanceof Error ? error.message : 'Please check your connection and try again.',
+      });
+      return null;
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Simulate file upload process
-    setIsUploading(true);
-    setUploadProgress(10);
-    
-    const interval = setInterval(() => {
-      setUploadProgress((prev) => {
-        if (prev >= 90) {
-          clearInterval(interval);
-          return 95;
-        }
-        return prev + 25;
-      });
-    }, 200);
-
-    setTimeout(() => {
-      clearInterval(interval);
-      setUploadProgress(100);
-      
-      // Use local blob URL for frontend mock rendering
-      const localUrl = URL.createObjectURL(file);
-      onChange(localUrl);
-      setIsUploading(false);
-    }, 900);
+    const publicUrl = await uploadFileToR2(file);
+    if (publicUrl) {
+      onChange(publicUrl);
+      toast.success("Image uploaded successfully");
+    }
   };
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
   };
 
-  const handleDrop = (e: React.DragEvent) => {
+  const handleDrop = async (e: React.DragEvent) => {
     e.preventDefault();
     const file = e.dataTransfer.files?.[0];
     if (!file) return;
 
-    setIsUploading(true);
-    setUploadProgress(20);
-    
-    setTimeout(() => {
-      setUploadProgress(100);
-      const localUrl = URL.createObjectURL(file);
-      onChange(localUrl);
-      setIsUploading(false);
-    }, 850);
+    const publicUrl = await uploadFileToR2(file);
+    if (publicUrl) {
+      onChange(publicUrl);
+      toast.success("Image uploaded successfully");
+    }
   };
 
   const clearImage = () => {

@@ -14,7 +14,8 @@ export type PropertyStatus =
   | "pending_approval"
   | "active"
   | "sold"
-  | "rented";
+  | "rented"
+  | "rejected";
 
 export type Currency = "USD" | "GBP" | "EUR" | "JPY" | "AUD" | "CAD" | "AED" | "SGD";
 
@@ -178,6 +179,10 @@ export interface BaseProperty {
 
   // Amenities
   amenities?: string[];
+
+  // Pending Update Overlay — admin review system
+  hasPendingUpdate?: boolean;
+  pendingUpdate?: Record<string, unknown> & { submittedAt?: string | Date };
 }
 
 // ─── Discriminated Union Members ──────────────────────────────────────────────

@@ -6,14 +6,12 @@ import {
   Search, 
   Trash2, 
   ShieldAlert, 
-  CheckCircle2, 
   XCircle, 
   FileText, 
   Mail, 
   Calendar, 
   Eye, 
-  SlidersHorizontal,
-  Download
+  SlidersHorizontal
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -410,10 +408,10 @@ export function UsersClient() {
                       <span className="text-text-muted">Document File</span>
                       <span 
                         onClick={() => setShowDocViewer(true)}
-                        className="font-bold text-accent-primary flex items-center gap-1 cursor-pointer hover:underline"
+                        className="font-bold text-accent-primary flex items-center gap-1.5 cursor-pointer hover:underline"
                       >
                         <Eye className="h-3.5 w-3.5" />
-                        {inspectedUser.legalDocs.documentUrl}
+                        View Document
                       </span>
                     </div>
                     <div className="flex justify-between py-1.5">

@@ -2,19 +2,45 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { Building, Plus, Edit2, Archive, Trash2, ArrowUpRight, Search, MapPin } from "lucide-react";
-import { mockProperties } from "@/src/mocks/propertiesMock";
+import { Building, Plus, Edit2, Archive, Trash2, ArrowUpRight, Search, MapPin, GitCompare } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/lib/auth-context";
+import type { MockProperty } from "@/src/mocks/propertyTypes";
 
 export function ListingsClient() {
   const { currentUser } = useAuth();
-  const [listings, setListings] = React.useState(mockProperties.slice(0, 6));
+  const [listings, setListings] = React.useState<MockProperty[]>([]);
+  const [loadingListings, setLoadingListings] = React.useState(true);
   const [filterTab, setFilterTab] = React.useState<"all" | "active" | "draft" | "archived">("all");
   const [searchQuery, setSearchQuery] = React.useState("");
+
+  React.useEffect(() => {
+    if (!currentUser) return;
+    
+    let active = true;
+    const currentUserId = currentUser.id;
+    async function fetchListings() {
+      try {
+        setLoadingListings(true);
+        const response = await fetch(`/api/properties?ownerId=${currentUserId}&status=all&limit=100`);
+        const result = await response.json();
+        if (active && result.status === 'success') {
+          setListings(result.data || []);
+        }
+      } catch (err) {
+        console.error("Failed to load agent listings:", err);
+      } finally {
+        if (active) setLoadingListings(false);
+      }
+    }
+    
+    fetchListings();
+    return () => { active = false; };
+  }, [currentUser]);
 
   const filteredListings = React.useMemo(() => {
     return listings.filter((item) => {
@@ -78,22 +104,55 @@ export function ListingsClient() {
     );
   }
 
-  const handleArchive = (id: string, title: string) => {
-    setListings((prev) =>
-      prev.map((item) => {
-        if (item.id === id) {
-          const status = (item.transactionType === "buy" ? "sold" : "rented") as "sold" | "rented";
-          return { ...item, status };
-        }
-        return item;
-      })
-    );
-    toast.success("Listing archived", { description: `"${title}" has been moved to archives.` });
+  const handleArchive = async (id: string, title: string) => {
+    try {
+      const propToArchive = listings.find(l => l.id === id);
+      if (!propToArchive) return;
+      const targetStatus = propToArchive.transactionType === "buy" ? "sold" : "rented";
+
+      const response = await fetch(`/api/properties/${id}/archive`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: targetStatus })
+      });
+      const result = await response.json();
+
+      if (result.status === "success") {
+        setListings((prev) =>
+          prev.map((item) => {
+            if (item.id === id) {
+              return { ...item, status: targetStatus };
+            }
+            return item;
+          })
+        );
+        toast.success("Listing archived", { description: `"${title}" has been marked as ${targetStatus}.` });
+      } else {
+        toast.error("Failed to archive listing", { description: result.message || "Request failed." });
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Error", { description: "An unexpected network error occurred." });
+    }
   };
 
-  const handleDelete = (id: string, title: string) => {
-    setListings((prev) => prev.filter((item) => item.id !== id));
-    toast.success("Listing removed", { description: `"${title}" was deleted.` });
+  const handleDelete = async (id: string, title: string) => {
+    try {
+      const response = await fetch(`/api/properties/${id}`, {
+        method: "DELETE"
+      });
+      const result = await response.json();
+
+      if (result.status === "success") {
+        setListings((prev) => prev.filter((item) => item.id !== id));
+        toast.success("Listing removed", { description: `"${title}" was deleted successfully.` });
+      } else {
+        toast.error("Failed to delete listing", { description: result.message || "Request failed." });
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Error", { description: "An unexpected network error occurred." });
+    }
   };
 
   return (
@@ -157,7 +216,11 @@ export function ListingsClient() {
       </div>
 
       {/* ── Listings Table ── */}
-      {filteredListings.length === 0 ? (
+      {loadingListings ? (
+        <div className="py-20 text-center font-body font-semibold text-text-muted">
+          Loading listings...
+        </div>
+      ) : filteredListings.length === 0 ? (
         <div className="rounded-3xl border border-dashed border-border-default bg-bg-alt/20 p-12 text-center max-w-xl mx-auto flex flex-col items-center justify-center gap-4 mt-6 animate-fade-in shadow-xs">
           <div className="h-14 w-14 rounded-full bg-bg-elevated flex items-center justify-center text-text-muted">
             <Building className="h-6 w-6" />
@@ -205,10 +268,17 @@ export function ListingsClient() {
                             <span className="font-bold text-text-primary block truncate max-w-[200px] sm:max-w-xs">
                               {prop.title}
                             </span>
-                            <span className="text-[10px] text-text-muted font-semibold flex items-center gap-1.5 mt-1">
-                              <MapPin className="h-3 w-3 text-accent-primary shrink-0" />
-                              {prop.city}, {prop.state}
-                            </span>
+                            <div className="flex items-center flex-wrap gap-1.5 mt-1">
+                              <span className="text-[10px] text-text-muted font-semibold flex items-center gap-1.5">
+                                <MapPin className="h-3 w-3 text-accent-primary shrink-0" />
+                                {prop.city}, {prop.state}
+                              </span>
+                              {prop.hasPendingUpdate && (
+                                <span className="inline-flex items-center gap-0.5 text-[9px] font-extrabold px-1.5 py-0.5 rounded-md bg-amber-500/15 border border-amber-500/30 text-amber-600 dark:text-amber-400 uppercase tracking-wider mt-0.5 sm:mt-0">
+                                  <GitCompare className="h-2.5 w-2.5" /> Update Pending
+                                </span>
+                              )}
+                            </div>
                           </div>
                         </div>
                       </td>

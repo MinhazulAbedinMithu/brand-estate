@@ -1,7 +1,7 @@
 import * as React from "react";
 import { parseSearchParams, countActiveFilters } from "@/lib/property-search-params";
-import { searchProperties } from "@/lib/property-filters";
-import { mockProperties } from "@/src/mocks/propertiesMock";
+import { connectDB } from "@/lib/db/mongoose";
+import { Property, IProperty } from "@/lib/db/models/property.model";
 import { PropertyFilters } from "@/components/property/property-filters";
 import { PropertySortBar } from "@/components/property/property-sort-bar";
 import { PropertyGrid } from "@/components/property/property-grid";
@@ -11,6 +11,7 @@ import { Metadata } from "next";
 import { Sheet, SheetTrigger, SheetContent } from "@/components/ui/sheet";
 import { SlidersHorizontal } from "lucide-react";
 import { cn } from "@/lib/utils";
+import type { MockProperty } from "@/src/mocks/propertyTypes";
 
 export const metadata: Metadata = {
   title: "Search Properties",
@@ -25,7 +26,101 @@ export default async function PropertiesPage({
 }) {
   const rawParams = await searchParams;
   const parsedParams = parseSearchParams(rawParams);
-  const results = searchProperties(mockProperties, parsedParams);
+  
+  await connectDB();
+
+  interface PropertyFilterQuery {
+    status?: string;
+    propertyCategory?: string;
+    transactionType?: string;
+    price?: { $gte?: number; $lte?: number };
+    bedrooms?: { $gte: number };
+    bathrooms?: { $gte: number };
+    squareFeet?: { $gte?: number; $lte?: number };
+    isFeatured?: boolean;
+    $or?: Array<{ [key: string]: string | RegExp | { $regex: RegExp } }>;
+  }
+
+  const filter: PropertyFilterQuery = { status: "active" };
+
+  if (parsedParams.category) {
+    filter.propertyCategory = parsedParams.category;
+  }
+  if (parsedParams.type) {
+    filter.transactionType = parsedParams.type;
+  }
+  if (parsedParams.minPrice !== undefined || parsedParams.maxPrice !== undefined) {
+    filter.price = {};
+    if (parsedParams.minPrice !== undefined) filter.price.$gte = parsedParams.minPrice;
+    if (parsedParams.maxPrice !== undefined) filter.price.$lte = parsedParams.maxPrice;
+  }
+  if (parsedParams.minBed !== undefined) {
+    filter.bedrooms = { $gte: parsedParams.minBed };
+  }
+  if (parsedParams.minBath !== undefined) {
+    filter.bathrooms = { $gte: parsedParams.minBath };
+  }
+  if (parsedParams.minSqFt !== undefined || parsedParams.maxSqFt !== undefined) {
+    filter.squareFeet = {};
+    if (parsedParams.minSqFt !== undefined) filter.squareFeet.$gte = parsedParams.minSqFt;
+    if (parsedParams.maxSqFt !== undefined) filter.squareFeet.$lte = parsedParams.maxSqFt;
+  }
+  if (parsedParams.featured) {
+    filter.isFeatured = true;
+  }
+  if (parsedParams.q) {
+    const searchRegex = new RegExp(parsedParams.q, "i");
+    filter.$or = [
+      { title: searchRegex },
+      { description: searchRegex },
+      { city: searchRegex },
+      { formattedAddress: searchRegex },
+    ];
+  }
+
+  // Sort Option Mapping
+  let sortOptions: Record<string, 1 | -1> = {};
+  if (parsedParams.sort === "price_asc") {
+    sortOptions = { price: 1 };
+  } else if (parsedParams.sort === "price_desc") {
+    sortOptions = { price: -1 };
+  } else if (parsedParams.sort === "sqft_asc") {
+    sortOptions = { squareFeet: 1 };
+  } else if (parsedParams.sort === "sqft_desc") {
+    sortOptions = { squareFeet: -1 };
+  } else if (parsedParams.sort === "newest") {
+    sortOptions = { yearBuilt: -1 };
+  } else if (parsedParams.sort === "oldest") {
+    sortOptions = { yearBuilt: 1 };
+  } else {
+    // Default featured first, then price desc
+    sortOptions = { isFeatured: -1, price: -1 };
+  }
+
+  const page = parsedParams.page ?? 1;
+  const limit = 12;
+  const skip = (page - 1) * limit;
+
+  const [total, propertiesDocs] = await Promise.all([
+    Property.countDocuments(filter as unknown as Record<string, unknown>),
+    Property.find(filter as unknown as Record<string, unknown>)
+      .sort(sortOptions)
+      .skip(skip)
+      .limit(limit)
+      .lean(),
+  ]);
+
+  // Map database documents to MockProperty shape for components
+  const items = (propertiesDocs as unknown as IProperty[]).map((p) => ({
+    ...p,
+    id: p._id.toString(),
+    ownerId: p.ownerId.toString(),
+    createdAt: p.createdAt?.toISOString(),
+    updatedAt: p.updatedAt?.toISOString(),
+  })) as unknown as MockProperty[];
+
+  const totalPages = Math.max(1, Math.ceil(total / limit));
+  const results = { items, total, page, totalPages, pageSize: limit };
   const activeCount = countActiveFilters(parsedParams);
 
   return (

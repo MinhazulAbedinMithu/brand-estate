@@ -200,6 +200,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Start null — session restored from /api/auth/me on mount
   const [currentUser, setCurrentUser] = React.useState<User | null>(null);
   const [isLoading, setIsLoading] = React.useState(true);
+  const [backendUsers, setBackendUsers] = React.useState<User[]>([]);
 
   // ── On mount: call /api/auth/me to restore session from httpOnly cookie ──
   React.useEffect(() => {
@@ -230,6 +231,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
+  const refreshBackendUsers = React.useCallback(async () => {
+    try {
+      const res = await fetch('/api/admin/users', { credentials: 'include' });
+      if (res.ok) {
+        const data = await res.json();
+        setBackendUsers(data.data);
+      }
+    } catch (err) {
+      console.error('Failed to sync users from backend:', err);
+    }
+  }, []);
+
+  // Sync users when authenticated role is admin
+  React.useEffect(() => {
+    if (currentUser && (currentUser.role === 'admin' || currentUser.role === 'super_admin')) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      refreshBackendUsers();
+    }
+  }, [currentUser, refreshBackendUsers]);
+
+
   const persistUser = (user: User) => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
     setCurrentUser(user);
@@ -252,6 +274,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // ─── DB Methods ───
   const getUsers = React.useCallback((): User[] => {
+    if (currentUser && (currentUser.role === 'admin' || currentUser.role === 'super_admin') && backendUsers.length > 0) {
+      return backendUsers;
+    }
     if (typeof window === "undefined") return [];
     try {
       const stored = localStorage.getItem(USERS_DB_KEY);
@@ -259,9 +284,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } catch {
       return SEED_USERS;
     }
-  }, []);
+  }, [backendUsers, currentUser]);
 
-  const updateUserStatus = React.useCallback((userId: string, status: UserStatus, reason?: string) => {
+  const updateUserStatus = React.useCallback(async (userId: string, status: UserStatus, reason?: string) => {
+    const isSeed = userId.startsWith('usr-');
+    if (!isSeed) {
+      try {
+        const res = await fetch(`/api/admin/users/${userId}/status`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ status, reason }),
+        });
+        if (res.ok) {
+          await refreshBackendUsers();
+          return;
+        }
+      } catch (err) {
+        console.error('[updateUserStatus] backend error:', err);
+      }
+    }
+
     try {
       const stored = localStorage.getItem(USERS_DB_KEY);
       const dbUsers: User[] = stored ? JSON.parse(stored) : [...SEED_USERS];
@@ -275,7 +318,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
         localStorage.setItem(USERS_DB_KEY, JSON.stringify(dbUsers));
         
-        // If this matches the current logged-in user session, update it!
         if (currentUser && currentUser.id === userId) {
           const updated = dbUsers[index];
           localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
@@ -285,16 +327,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } catch (e) {
       console.error(e);
     }
-  }, [currentUser]);
+  }, [currentUser, refreshBackendUsers]);
 
-  const deleteUser = React.useCallback((userId: string) => {
+  const deleteUser = React.useCallback(async (userId: string) => {
+    const isSeed = userId.startsWith('usr-');
+    if (!isSeed) {
+      try {
+        const res = await fetch(`/api/admin/users/${userId}`, {
+          method: 'DELETE',
+          credentials: 'include',
+        });
+        if (res.ok) {
+          await refreshBackendUsers();
+          return;
+        }
+      } catch (err) {
+        console.error('[deleteUser] backend error:', err);
+      }
+    }
+
     try {
       const stored = localStorage.getItem(USERS_DB_KEY);
       let dbUsers: User[] = stored ? JSON.parse(stored) : [...SEED_USERS];
       dbUsers = dbUsers.filter((u) => u.id !== userId);
       localStorage.setItem(USERS_DB_KEY, JSON.stringify(dbUsers));
 
-      // If logging out self
       if (currentUser && currentUser.id === userId) {
         localStorage.removeItem(STORAGE_KEY);
         setCurrentUser(null);
@@ -302,7 +359,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } catch (e) {
       console.error(e);
     }
-  }, [currentUser]);
+  }, [currentUser, refreshBackendUsers]);
 
   // ─── Packages Methods ───
   const getPackages = React.useCallback((): PricingPackage[] => {

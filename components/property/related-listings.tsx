@@ -1,8 +1,8 @@
 import * as React from "react";
-import { mockProperties } from "@/src/mocks/propertiesMock";
-import { getRelatedListings } from "@/lib/property-filters";
+import { connectDB } from "@/lib/db/mongoose";
+import { Property, IProperty } from "@/lib/db/models/property.model";
 import { PropertyCard } from "./property-card";
-import type { PropertyCategory } from "@/src/mocks/propertyTypes";
+import type { PropertyCategory, MockProperty } from "@/src/mocks/propertyTypes";
 import { cn } from "@/lib/utils";
 
 interface RelatedListingsProps {
@@ -11,8 +11,24 @@ interface RelatedListingsProps {
   className?: string;
 }
 
-export function RelatedListings({ currentId, category, className }: RelatedListingsProps) {
-  const related = getRelatedListings(mockProperties, currentId, category, 4);
+export async function RelatedListings({ currentId, category, className }: RelatedListingsProps) {
+  await connectDB();
+  
+  // Exclude current listing, filter by category and active status
+  const query: Record<string, unknown> = { status: "active", propertyCategory: category };
+  if (currentId && currentId.length === 24) {
+    query._id = { $ne: currentId };
+  }
+
+  const relatedDocs = await Property.find(query).limit(4).lean();
+
+  const related = (relatedDocs as unknown as IProperty[]).map((p) => ({
+    ...p,
+    id: p._id.toString(),
+    ownerId: p.ownerId.toString(),
+    createdAt: p.createdAt?.toISOString(),
+    updatedAt: p.updatedAt?.toISOString(),
+  })) as unknown as MockProperty[];
 
   if (related.length === 0) return null;
 

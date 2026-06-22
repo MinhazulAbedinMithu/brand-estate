@@ -52,6 +52,10 @@ export const LISTING_STATUSES: ListingStatus[] = [
   'pending',
   'archived',
   'rejected',
+  'pending_approval',
+  'draft',
+  'sold',
+  'rented',
 ];
 
 export const LISTING_STATUS_LABELS: Record<ListingStatus, string> = {
@@ -59,6 +63,10 @@ export const LISTING_STATUS_LABELS: Record<ListingStatus, string> = {
   pending: 'Pending Review',
   archived: 'Archived',
   rejected: 'Rejected',
+  pending_approval: 'Pending Approval',
+  draft: 'Draft',
+  sold: 'Sold',
+  rented: 'Rented',
 };
 
 // ─────────────────────────────────────────────

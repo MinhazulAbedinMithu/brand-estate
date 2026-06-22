@@ -71,6 +71,41 @@ export function NewListingClient() {
     seoKeywords: "",
     ogImageUrl: "",
     useCoverAsOg: true,
+    videoTourUrl: "",
+    virtualTourUrl: "",
+    neighborhoodNotes: "",
+
+    // Category specific details state:
+    // Apartment
+    aptFloorNumber: "1",
+    aptTotalFloors: "5",
+    aptMaintenanceFee: "0",
+    aptHasElevator: true,
+    aptParkingSlot: "",
+    
+    // House
+    hseLotAcres: "0.25",
+    hseLotSqFt: "10890",
+    hseGarageSpaces: "2",
+    hseRoofType: "asphalt_shingle",
+    hseFoundationType: "concrete_slab",
+    hseHVAC: "Central HVAC System",
+    hseBackyardSqFt: "1500",
+    
+    // RoomShare
+    rmShareType: "private",
+    rmBathType: "common",
+    rmOccupants: "1",
+    rmGender: "any",
+    rmUtilities: [] as string[], // wifi, gas, water, electricity, cable, trash
+    rmMinLease: "6",
+    
+    // Commercial
+    commZoning: "office",
+    commLoadingDocks: "0",
+    commCeilingHeight: "12",
+    commMinLeaseYears: "3",
+    commElectricCapacity: "200A / 3-Phase",
   });
 
   if (currentUser && currentUser.role === "agent" && currentUser.status !== "active") {
@@ -150,23 +185,94 @@ export function NewListingClient() {
     setStep(s => Math.max(1, s - 1));
   };
 
-  const handlePublish = (status: "active" | "draft") => {
+  const handlePublish = async (status: "active" | "draft") => {
     setLoading(true);
     
-    toast.promise(
-      new Promise((resolve) => setTimeout(resolve, 1500)),
-      {
-        loading: status === "active" ? "Publishing property listing..." : "Saving draft listing...",
-        success: () => {
-          setLoading(false);
-          router.push("/agent/listings");
-          return status === "active"
-            ? "Property listed successfully! It is now active on the public catalog. 🚀"
-            : "Listing saved as draft. You can edit and approve it later.";
-        },
-        error: "Failed to create listing."
+    // Construct request payload
+    const payload = {
+      title: form.title,
+      description: form.description,
+      transactionType: form.category === "room_share" ? "roommate_share" : (parseInt(form.price) < 25000 ? "rent" : "buy"),
+      propertyCategory: form.category,
+      price: parseInt(form.price, 10) || 0,
+      currency: form.currency,
+      formattedAddress: form.address,
+      city: form.city,
+      state: form.state,
+      zipCode: form.zipCode,
+      latitude: parseFloat(form.lat),
+      longitude: parseFloat(form.lng),
+      squareFeet: parseInt(form.squareFeet, 10) || 0,
+      bedrooms: parseInt(form.bedrooms, 10) || 0,
+      bathrooms: parseFloat(form.bathrooms) || 0,
+      yearBuilt: parseInt(form.yearBuilt, 10) || 2020,
+      images: [form.coverImage, ...form.images].filter(Boolean),
+      status: status === "active" ? "pending_approval" : "draft", // for agent publishing
+      videoTourUrl: form.videoTourUrl || null,
+      virtualTourUrl: form.virtualTourUrl || null,
+      neighborhoodNotes: form.neighborhoodNotes || "",
+      seo: {
+        seoTitle: form.seoTitle || form.title,
+        metaDescription: form.seoDescription || form.description,
+        ogImageUrl: form.useCoverAsOg ? form.coverImage : form.ogImageUrl,
+        keywords: form.seoKeywords ? form.seoKeywords.split(",").map(k => k.trim()).filter(Boolean) : []
+      },
+      amenities: form.amenities,
+      
+      // Category specific
+      apartment: form.category === "apartment" ? {
+        floorNumber: parseInt(form.aptFloorNumber, 10) || 1,
+        totalBuildingFloors: parseInt(form.aptTotalFloors, 10) || 1,
+        monthlyMaintenanceFee: parseInt(form.aptMaintenanceFee, 10) || 0,
+        hasElevator: !!form.aptHasElevator,
+        parkingSlotNumber: form.aptParkingSlot || null
+      } : undefined,
+      house: form.category === "house" ? {
+        lotSizeAcres: parseFloat(form.hseLotAcres) || 0,
+        lotSizeSqFt: parseInt(form.hseLotSqFt, 10) || 0,
+        garageSpacesCount: parseInt(form.hseGarageSpaces, 10) || 0,
+        roofType: form.hseRoofType,
+        foundationType: form.hseFoundationType,
+        heatingCoolingSystem: form.hseHVAC,
+        backyardAreaSqFt: parseInt(form.hseBackyardSqFt, 10) || 0
+      } : undefined,
+      roomShare: form.category === "room_share" ? {
+        roomType: form.rmShareType,
+        bathroomType: form.rmBathType,
+        currentOccupantsCount: parseInt(form.rmOccupants, 10) || 0,
+        preferredGender: form.rmGender,
+        utilitiesIncluded: form.rmUtilities,
+        minimumLeasePeriodMonths: parseInt(form.rmMinLease, 10) || 1
+      } : undefined,
+      commercial: form.category === "commercial" ? {
+        zoningCode: form.commZoning,
+        loadingDocksCount: parseInt(form.commLoadingDocks, 10) || 0,
+        ceilingHeightFt: parseInt(form.commCeilingHeight, 10) || 0,
+        minimumLeaseTermYears: parseInt(form.commMinLeaseYears, 10) || 1,
+        electricalCapacity: form.commElectricCapacity
+      } : undefined
+    };
+
+    try {
+      const response = await fetch('/api/properties', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const result = await response.json();
+      
+      if (result.status === 'success') {
+        toast.success(status === "active" ? "Property listing submitted for review! 🚀" : "Draft listing saved.");
+        router.push('/agent/listings');
+      } else {
+        toast.error("Submission failed", { description: result.message || "Could not list property." });
       }
-    );
+    } catch (err) {
+      console.error(err);
+      toast.error("Error", { description: "An unexpected network error occurred." });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -459,6 +565,320 @@ export function NewListingClient() {
                 })}
               </div>
             </div>
+            <div className="space-y-1.5 pt-2">
+              <label className="text-[11px] font-bold text-text-muted uppercase tracking-wider block">Neighborhood Notes</label>
+              <textarea
+                placeholder="Describe local neighborhood details, transit access, nearby schools, parks, or community vibes..."
+                value={form.neighborhoodNotes}
+                onChange={(e) => setForm(p => ({ ...p, neighborhoodNotes: e.target.value }))}
+                rows={3}
+                className="w-full text-sm border bg-bg-base text-text-primary border-border-default rounded-xl p-3 focus:outline-none focus:ring-1 focus:ring-accent-primary transition-all resize-none font-medium"
+              />
+            </div>
+
+            {/* ── Category-Specific Attributes ── */}
+            <div className="border-t border-border-default/50 pt-6 space-y-4">
+              <h3 className="text-xs font-bold text-text-primary uppercase tracking-wider block">Category Specifications: {form.category.replace("_", " ")}</h3>
+              
+              {form.category === "apartment" && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 animate-fade-in text-left">
+                  <div className="space-y-1.5 text-left">
+                    <label className="text-[11px] font-bold text-text-muted uppercase tracking-wider">Floor Number *</label>
+                    <Input
+                      type="number"
+                      placeholder="e.g. 4"
+                      value={form.aptFloorNumber}
+                      onChange={(e) => setForm(p => ({ ...p, aptFloorNumber: e.target.value }))}
+                      className="h-10 border-border-default bg-bg-base text-text-primary text-sm rounded-xl"
+                    />
+                  </div>
+                  <div className="space-y-1.5 text-left">
+                    <label className="text-[11px] font-bold text-text-muted uppercase tracking-wider">Total Building Floors *</label>
+                    <Input
+                      type="number"
+                      placeholder="e.g. 12"
+                      value={form.aptTotalFloors}
+                      onChange={(e) => setForm(p => ({ ...p, aptTotalFloors: e.target.value }))}
+                      className="h-10 border-border-default bg-bg-base text-text-primary text-sm rounded-xl"
+                    />
+                  </div>
+                  <div className="space-y-1.5 text-left">
+                    <label className="text-[11px] font-bold text-text-muted uppercase tracking-wider">Monthly Maintenance Fee *</label>
+                    <Input
+                      type="number"
+                      placeholder="e.g. 250"
+                      value={form.aptMaintenanceFee}
+                      onChange={(e) => setForm(p => ({ ...p, aptMaintenanceFee: e.target.value }))}
+                      className="h-10 border-border-default bg-bg-base text-text-primary text-sm rounded-xl"
+                    />
+                  </div>
+                  <div className="space-y-1.5 text-left">
+                    <label className="text-[11px] font-bold text-text-muted uppercase tracking-wider">Parking Slot Number</label>
+                    <Input
+                      placeholder="e.g. P-402 (leave blank if none)"
+                      value={form.aptParkingSlot}
+                      onChange={(e) => setForm(p => ({ ...p, aptParkingSlot: e.target.value }))}
+                      className="h-10 border-border-default bg-bg-base text-text-primary text-sm rounded-xl"
+                    />
+                  </div>
+                  <div className="flex items-center justify-between col-span-2 p-3 bg-bg-alt/30 border border-border-default/45 rounded-xl">
+                    <div className="space-y-0.5 text-left">
+                      <span className="text-xs font-bold text-text-primary">Has Elevator</span>
+                      <p className="text-[10px] text-text-muted">Is elevator service available in the building?</p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setForm(p => ({ ...p, aptHasElevator: !p.aptHasElevator }))}
+                      className={cn(
+                        "relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none",
+                        form.aptHasElevator ? "bg-accent-primary" : "bg-border-default"
+                      )}
+                    >
+                      <span
+                        className={cn(
+                          "pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out",
+                          form.aptHasElevator ? "translate-x-5" : "translate-x-0"
+                        )}
+                      />
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {form.category === "house" && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 animate-fade-in text-left">
+                  <div className="space-y-1.5 text-left">
+                    <label className="text-[11px] font-bold text-text-muted uppercase tracking-wider">Lot Size (Acres) *</label>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      placeholder="e.g. 0.35"
+                      value={form.hseLotAcres}
+                      onChange={(e) => setForm(p => ({ ...p, hseLotAcres: e.target.value }))}
+                      className="h-10 border-border-default bg-bg-base text-text-primary text-sm rounded-xl"
+                    />
+                  </div>
+                  <div className="space-y-1.5 text-left">
+                    <label className="text-[11px] font-bold text-text-muted uppercase tracking-wider">Lot Size (Sq Ft) *</label>
+                    <Input
+                      type="number"
+                      placeholder="e.g. 15240"
+                      value={form.hseLotSqFt}
+                      onChange={(e) => setForm(p => ({ ...p, hseLotSqFt: e.target.value }))}
+                      className="h-10 border-border-default bg-bg-base text-text-primary text-sm rounded-xl"
+                    />
+                  </div>
+                  <div className="space-y-1.5 text-left">
+                    <label className="text-[11px] font-bold text-text-muted uppercase tracking-wider">Garage Spaces *</label>
+                    <Input
+                      type="number"
+                      placeholder="e.g. 2"
+                      value={form.hseGarageSpaces}
+                      onChange={(e) => setForm(p => ({ ...p, hseGarageSpaces: e.target.value }))}
+                      className="h-10 border-border-default bg-bg-base text-text-primary text-sm rounded-xl"
+                    />
+                  </div>
+                  <div className="space-y-1.5 text-left">
+                    <label className="text-[11px] font-bold text-text-muted uppercase tracking-wider">Roof Type *</label>
+                    <select
+                      value={form.hseRoofType}
+                      onChange={(e) => setForm(p => ({ ...p, hseRoofType: e.target.value }))}
+                      className="h-10 w-full text-sm text-text-secondary bg-bg-base border border-border-default rounded-xl px-3 focus:outline-none focus:ring-1"
+                    >
+                      <option value="asphalt_shingle">Asphalt Shingle</option>
+                      <option value="metal">Metal</option>
+                      <option value="clay_tile">Clay Tile</option>
+                      <option value="flat">Flat</option>
+                      <option value="slate">Slate</option>
+                      <option value="wood_shake">Wood Shake</option>
+                    </select>
+                  </div>
+                  <div className="space-y-1.5 text-left">
+                    <label className="text-[11px] font-bold text-text-muted uppercase tracking-wider">Foundation Type *</label>
+                    <select
+                      value={form.hseFoundationType}
+                      onChange={(e) => setForm(p => ({ ...p, hseFoundationType: e.target.value }))}
+                      className="h-10 w-full text-sm text-text-secondary bg-bg-base border border-border-default rounded-xl px-3 focus:outline-none focus:ring-1"
+                    >
+                      <option value="concrete_slab">Concrete Slab</option>
+                      <option value="crawl_space">Crawl Space</option>
+                      <option value="full_basement">Full Basement</option>
+                      <option value="pier_and_beam">Pier & Beam</option>
+                      <option value="stem_wall">Stem Wall</option>
+                    </select>
+                  </div>
+                  <div className="space-y-1.5 text-left">
+                    <label className="text-[11px] font-bold text-text-muted uppercase tracking-wider">HVAC / Heating System *</label>
+                    <Input
+                      placeholder="e.g. Carrier Central HVAC"
+                      value={form.hseHVAC}
+                      onChange={(e) => setForm(p => ({ ...p, hseHVAC: e.target.value }))}
+                      className="h-10 border-border-default bg-bg-base text-text-primary text-sm rounded-xl"
+                    />
+                  </div>
+                  <div className="space-y-1.5 col-span-2 text-left">
+                    <label className="text-[11px] font-bold text-text-muted uppercase tracking-wider">Backyard Area (Sq Ft) *</label>
+                    <Input
+                      type="number"
+                      placeholder="e.g. 2000"
+                      value={form.hseBackyardSqFt}
+                      onChange={(e) => setForm(p => ({ ...p, hseBackyardSqFt: e.target.value }))}
+                      className="h-10 border-border-default bg-bg-base text-text-primary text-sm rounded-xl"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {form.category === "room_share" && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 animate-fade-in text-left">
+                  <div className="space-y-1.5 text-left">
+                    <label className="text-[11px] font-bold text-text-muted uppercase tracking-wider">Room Style *</label>
+                    <select
+                      value={form.rmShareType}
+                      onChange={(e) => setForm(p => ({ ...p, rmShareType: e.target.value }))}
+                      className="h-10 w-full text-sm text-text-secondary bg-bg-base border border-border-default rounded-xl px-3 focus:outline-none focus:ring-1"
+                    >
+                      <option value="private">Private Room</option>
+                      <option value="shared">Shared Room</option>
+                    </select>
+                  </div>
+                  <div className="space-y-1.5 text-left">
+                    <label className="text-[11px] font-bold text-text-muted uppercase tracking-wider">Bathroom Type *</label>
+                    <select
+                      value={form.rmBathType}
+                      onChange={(e) => setForm(p => ({ ...p, rmBathType: e.target.value }))}
+                      className="h-10 w-full text-sm text-text-secondary bg-bg-base border border-border-default rounded-xl px-3 focus:outline-none focus:ring-1"
+                    >
+                      <option value="attached">Attached (Private)</option>
+                      <option value="common">Common (Shared)</option>
+                    </select>
+                  </div>
+                  <div className="space-y-1.5 text-left">
+                    <label className="text-[11px] font-bold text-text-muted uppercase tracking-wider">Current Roommates Count *</label>
+                    <Input
+                      type="number"
+                      placeholder="e.g. 2"
+                      value={form.rmOccupants}
+                      onChange={(e) => setForm(p => ({ ...p, rmOccupants: e.target.value }))}
+                      className="h-10 border-border-default bg-bg-base text-text-primary text-sm rounded-xl"
+                    />
+                  </div>
+                  <div className="space-y-1.5 text-left">
+                    <label className="text-[11px] font-bold text-text-muted uppercase tracking-wider">Gender Preference *</label>
+                    <select
+                      value={form.rmGender}
+                      onChange={(e) => setForm(p => ({ ...p, rmGender: e.target.value }))}
+                      className="h-10 w-full text-sm text-text-secondary bg-bg-base border border-border-default rounded-xl px-3 focus:outline-none focus:ring-1"
+                    >
+                      <option value="any">No Preference (Any)</option>
+                      <option value="male">Male Only</option>
+                      <option value="female">Female Only</option>
+                    </select>
+                  </div>
+                  <div className="space-y-1.5 text-left">
+                    <label className="text-[11px] font-bold text-text-muted uppercase tracking-wider">Min Lease Period (Months) *</label>
+                    <Input
+                      type="number"
+                      placeholder="e.g. 6"
+                      value={form.rmMinLease}
+                      onChange={(e) => setForm(p => ({ ...p, rmMinLease: e.target.value }))}
+                      className="h-10 border-border-default bg-bg-base text-text-primary text-sm rounded-xl"
+                    />
+                  </div>
+                  <div className="space-y-2 col-span-2 text-left">
+                    <label className="text-[11px] font-bold text-text-muted uppercase tracking-wider block">Utilities Included</label>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                      {["wifi", "gas", "water", "electricity", "cable", "trash"].map((util) => {
+                        const isChecked = form.rmUtilities.includes(util);
+                        return (
+                          <button
+                            key={util}
+                            type="button"
+                            onClick={() => {
+                              setForm(p => {
+                                const exists = p.rmUtilities.includes(util);
+                                return {
+                                  ...p,
+                                  rmUtilities: exists
+                                    ? p.rmUtilities.filter(u => u !== util)
+                                    : [...p.rmUtilities, util]
+                                };
+                              });
+                            }}
+                            className={cn(
+                              "p-2 border rounded-lg text-xs font-bold transition-all flex items-center justify-between cursor-pointer",
+                              isChecked
+                                ? "bg-accent-primary/10 border-accent-primary/20 text-accent-primary"
+                                : "bg-bg-base border-border-default text-text-secondary"
+                            )}
+                          >
+                            <span className="capitalize">{util}</span>
+                            {isChecked && <Check className="h-3 w-3 shrink-0" />}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {form.category === "commercial" && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 animate-fade-in text-left">
+                  <div className="space-y-1.5 text-left">
+                    <label className="text-[11px] font-bold text-text-muted uppercase tracking-wider">Zoning Classification *</label>
+                    <select
+                      value={form.commZoning}
+                      onChange={(e) => setForm(p => ({ ...p, commZoning: e.target.value }))}
+                      className="h-10 w-full text-sm text-text-secondary bg-bg-base border border-border-default rounded-xl px-3 focus:outline-none focus:ring-1"
+                    >
+                      <option value="retail">Retail Space</option>
+                      <option value="office">Office Space</option>
+                      <option value="industrial">Industrial Space</option>
+                      <option value="warehouse">Warehouse</option>
+                    </select>
+                  </div>
+                  <div className="space-y-1.5 text-left">
+                    <label className="text-[11px] font-bold text-text-muted uppercase tracking-wider">Loading Docks *</label>
+                    <Input
+                      type="number"
+                      placeholder="e.g. 2"
+                      value={form.commLoadingDocks}
+                      onChange={(e) => setForm(p => ({ ...p, commLoadingDocks: e.target.value }))}
+                      className="h-10 border-border-default bg-bg-base text-text-primary text-sm rounded-xl"
+                    />
+                  </div>
+                  <div className="space-y-1.5 text-left">
+                    <label className="text-[11px] font-bold text-text-muted uppercase tracking-wider">Ceiling Height (Feet) *</label>
+                    <Input
+                      type="number"
+                      placeholder="e.g. 16"
+                      value={form.commCeilingHeight}
+                      onChange={(e) => setForm(p => ({ ...p, commCeilingHeight: e.target.value }))}
+                      className="h-10 border-border-default bg-bg-base text-text-primary text-sm rounded-xl"
+                    />
+                  </div>
+                  <div className="space-y-1.5 text-left">
+                    <label className="text-[11px] font-bold text-text-muted uppercase tracking-wider">Min Lease term (Years) *</label>
+                    <Input
+                      type="number"
+                      placeholder="e.g. 3"
+                      value={form.commMinLeaseYears}
+                      onChange={(e) => setForm(p => ({ ...p, commMinLeaseYears: e.target.value }))}
+                      className="h-10 border-border-default bg-bg-base text-text-primary text-sm rounded-xl"
+                    />
+                  </div>
+                  <div className="space-y-1.5 col-span-2 text-left">
+                    <label className="text-[11px] font-bold text-text-muted uppercase tracking-wider">Electrical Capacity *</label>
+                    <Input
+                      placeholder="e.g. 400A / 3-Phase 480V"
+                      value={form.commElectricCapacity}
+                      onChange={(e) => setForm(p => ({ ...p, commElectricCapacity: e.target.value }))}
+                      className="h-10 border-border-default bg-bg-base text-text-primary text-sm rounded-xl"
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         )}
 
@@ -511,17 +931,63 @@ export function NewListingClient() {
                     input.type = "file";
                     input.accept = "image/*";
                     input.multiple = true;
-                    input.onchange = (e) => {
+                    input.onchange = async (e) => {
                       const files = (e.target as HTMLInputElement).files;
                       if (!files || files.length === 0) return;
                       
-                      const newUrls: string[] = [];
+                      const loadingToastId = toast.loading(`Uploading ${files.length} photo(s) to storage...`);
+                      const uploadedUrls: string[] = [];
+                      let failedCount = 0;
+
                       for (let i = 0; i < files.length; i++) {
-                        newUrls.push(URL.createObjectURL(files[i]));
+                        const file = files[i];
+                        try {
+                          const res = await fetch('/api/upload/presigned', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                              filename: file.name,
+                              contentType: file.type,
+                              folder: 'listings/gallery'
+                            })
+                          });
+
+                          if (!res.ok) throw new Error('Server upload permission denied.');
+                          const data = await res.json();
+                          if (data.status !== 'success' || !data.uploadUrl || !data.publicUrl) {
+                            throw new Error(data.message || 'Invalid upload credentials.');
+                          }
+
+                          const { uploadUrl, publicUrl } = data;
+
+                          const uploadRes = await fetch(uploadUrl, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': file.type },
+                            body: file
+                          });
+
+                          if (!uploadRes.ok) throw new Error('Cloud storage rejected upload.');
+                          uploadedUrls.push(publicUrl);
+                        } catch (err) {
+                          console.error(`Failed to upload ${file.name}:`, err);
+                          failedCount++;
+                        }
                       }
-                      
-                      setForm(p => ({ ...p, images: [...p.images, ...newUrls] }));
-                      toast.success("Photos added", { description: `Successfully added ${files.length} photos to gallery.` });
+
+                      toast.dismiss(loadingToastId);
+
+                      if (uploadedUrls.length > 0) {
+                        setForm(p => ({ ...p, images: [...p.images, ...uploadedUrls] }));
+                        if (failedCount > 0) {
+                          toast.warning(`Uploaded ${uploadedUrls.length} photos`, {
+                            description: `Failed to upload ${failedCount} photos.`
+                          });
+                        } else {
+                          toast.success("Photos added", { description: `Successfully uploaded ${uploadedUrls.length} photos to gallery.` });
+                        }
+                      } else {
+                        toast.error("Upload failed", { description: "Failed to upload photos to storage." });
+                      }
                     };
                     input.click();
                   }}
@@ -555,6 +1021,31 @@ export function NewListingClient() {
                   </button>
                 </div>
               )}
+            </div>
+
+            {/* Video & Virtual Tours */}
+            <div className="border-t border-border-default/50 pt-6 space-y-4 text-left">
+              <h3 className="text-xs font-bold text-text-primary uppercase tracking-wider block">Interactive Virtual Tours</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1.5 text-left">
+                  <label className="text-[11px] font-bold text-text-muted uppercase tracking-wider block">Video Tour URL</label>
+                  <Input
+                    placeholder="e.g. https://www.youtube.com/watch?v=..."
+                    value={form.videoTourUrl}
+                    onChange={(e) => setForm(p => ({ ...p, videoTourUrl: e.target.value }))}
+                    className="h-10 border-border-default bg-bg-base text-text-primary text-sm rounded-xl"
+                  />
+                </div>
+                <div className="space-y-1.5 text-left">
+                  <label className="text-[11px] font-bold text-text-muted uppercase tracking-wider block">3D Virtual Tour URL</label>
+                  <Input
+                    placeholder="e.g. https://my.matterport.com/show/?m=..."
+                    value={form.virtualTourUrl}
+                    onChange={(e) => setForm(p => ({ ...p, virtualTourUrl: e.target.value }))}
+                    className="h-10 border-border-default bg-bg-base text-text-primary text-sm rounded-xl"
+                  />
+                </div>
+              </div>
             </div>
           </div>
         )}
@@ -734,6 +1225,30 @@ export function NewListingClient() {
                   </div>
                 </div>
               </div>
+
+              {/* Extra Interactive Assets & Notes */}
+              {(form.videoTourUrl || form.virtualTourUrl || form.neighborhoodNotes) && (
+                <div className="pt-4 border-t border-border-default space-y-2 text-left">
+                  {form.videoTourUrl && (
+                    <div className="flex justify-between items-center py-1 border-b border-border-default/45">
+                      <span className="text-text-muted">Video Tour Link</span>
+                      <span className="font-bold text-text-primary truncate max-w-[280px]">{form.videoTourUrl}</span>
+                    </div>
+                  )}
+                  {form.virtualTourUrl && (
+                    <div className="flex justify-between items-center py-1 border-b border-border-default/45">
+                      <span className="text-text-muted">3D Virtual Tour Link</span>
+                      <span className="font-bold text-text-primary truncate max-w-[280px]">{form.virtualTourUrl}</span>
+                    </div>
+                  )}
+                  {form.neighborhoodNotes && (
+                    <div className="py-1 text-left">
+                      <span className="text-text-muted block mb-1">Neighborhood Notes</span>
+                      <p className="text-text-secondary leading-relaxed bg-bg-alt/45 p-2.5 rounded-lg text-[11px] font-semibold whitespace-pre-line">{form.neighborhoodNotes}</p>
+                    </div>
+                  )}
+                </div>
+              )}
 
               {form.seoKeywords && (
                 <div className="pt-2 border-t border-border-default">
