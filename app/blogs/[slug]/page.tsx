@@ -1,7 +1,8 @@
 import * as React from "react";
 import { Metadata } from "next";
 import { BlogDetailClient } from "./blog-detail-client";
-import { mockBlogPosts } from "@/src/mocks/blogPostsMock";
+import { connectDB } from "@/lib/db/mongoose";
+import { BlogPost } from "@/lib/db/models/blog-post.model";
 
 interface DetailPageProps {
   params: Promise<{ slug: string }>;
@@ -10,7 +11,9 @@ interface DetailPageProps {
 // Generate dynamic SEO metadata
 export async function generateMetadata({ params }: DetailPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const post = mockBlogPosts.find((p) => p.slug === slug);
+  
+  await connectDB();
+  const post = await BlogPost.findOne({ slug: slug.toLowerCase() }).lean();
 
   if (!post) {
     return {
@@ -18,20 +21,35 @@ export async function generateMetadata({ params }: DetailPageProps): Promise<Met
     };
   }
 
+  const title = post.seo?.title || post.title;
+  const description = post.seo?.metaDescription || post.excerpt;
+  const ogImage = post.seo?.ogImage || post.coverImage;
+  const ogTitle = post.seo?.ogTitle || title;
+  const ogDescription = post.seo?.ogDescription || description;
+  const keywords = post.seo?.keywords || [];
+
   return {
-    title: post.seo.title || post.title,
-    description: post.seo.metaDescription || post.excerpt,
-    keywords: post.seo.keywords,
+    title,
+    description,
+    keywords,
     openGraph: {
-      title: post.seo.title || post.title,
-      description: post.seo.metaDescription || post.excerpt,
-      type: post.seo.ogType || "article",
+      title: ogTitle,
+      description: ogDescription,
+      type: post.seo?.ogType || "article",
+      url: `/blogs/${slug.toLowerCase()}`,
+      siteName: "Brand Estate",
       images: [
         {
-          url: post.seo.ogImage || post.coverImage,
+          url: ogImage,
           alt: post.title,
         },
       ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: ogTitle,
+      description: ogDescription,
+      images: [ogImage],
     },
   };
 }

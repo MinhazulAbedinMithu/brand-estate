@@ -51,18 +51,33 @@ export async function generateMetadata({ params }: DetailPageProps): Promise<Met
     };
   }
 
+  const title = prop.seo?.seoTitle || prop.title;
+  const description = prop.seo?.metaDescription || prop.description;
+  const ogImageUrl = prop.seo?.ogImageUrl || prop.images?.[0] || "";
+  const keywords = prop.seo?.keywords || [];
+
   return {
-    title: prop.seo?.seoTitle || prop.title,
-    description: prop.seo?.metaDescription || prop.description,
+    title,
+    description,
+    keywords,
     openGraph: {
-      title: prop.seo?.seoTitle || prop.title,
-      description: prop.seo?.metaDescription || prop.description,
+      title,
+      description,
+      url: `/property/${slug.toLowerCase()}`,
+      siteName: "Brand Estate",
+      type: "website",
       images: [
         {
-          url: prop.images[0],
+          url: ogImageUrl,
           alt: prop.title,
         },
       ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [ogImageUrl],
     },
   };
 }

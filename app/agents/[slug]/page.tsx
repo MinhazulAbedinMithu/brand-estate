@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { connectDB } from "@/lib/db/mongoose";
-import { User } from "@/lib/db/models/user.model";
+import { User, IUser } from "@/lib/db/models/user.model";
 import { AgentProfileClient } from "./agent-profile-client";
 import type { MockAgent } from "@/src/mocks/agentsMock";
 
@@ -20,11 +20,32 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   await connectDB();
   const agent = await User.findOne({ role: "agent", slug }).lean();
   if (!agent) return { title: "Agent Not Found | Brand Estate" };
+  
+  const title = `${agent.name} — ${agent.title || "Real Estate Agent"} | Brand Estate`;
+  const description = agent.bio?.slice(0, 160) || `Meet ${agent.name}, professional real estate agent at Brand Estate.`;
+  const image = agent.avatar || agent.coverImage || "/og-image.jpg";
+
   return {
-    title: `${agent.name} — ${agent.title || "Real Estate Agent"} | Brand Estate`,
-    description: agent.bio?.slice(0, 160) || "",
+    title,
+    description,
     openGraph: {
-      images: [agent.coverImage || ""],
+      title,
+      description,
+      url: `/agents/${slug}`,
+      siteName: "Brand Estate",
+      type: "profile",
+      images: [
+        {
+          url: image,
+          alt: agent.name,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [image],
     },
   };
 }
@@ -49,8 +70,8 @@ export default async function AgentProfilePage({ params }: Props) {
   const plainRelated = JSON.parse(JSON.stringify(relatedDocs));
 
   // Helper serialize
-  const serializeAgent = (doc: any) => ({
-    id: doc._id,
+  const serializeAgent = (doc: IUser) => ({
+    id: doc._id as unknown as string,
     name: doc.name,
     slug: doc.slug || "",
     email: doc.email,
@@ -73,7 +94,15 @@ export default async function AgentProfilePage({ params }: Props) {
     totalVolume: doc.totalVolume || "$0M+",
     rating: doc.rating ?? 0,
     reviewCount: doc.reviewCount ?? 0,
-    reviews: doc.reviews?.map((r: any) => ({
+    reviews: doc.reviews?.map((r: {
+      id?: string;
+      reviewerName?: string;
+      reviewerAvatar?: string;
+      rating?: number;
+      comment?: string;
+      date?: string;
+      propertyType?: string;
+    }) => ({
       id: r.id || "",
       reviewerName: r.reviewerName || "",
       reviewerAvatar: r.reviewerAvatar || "",

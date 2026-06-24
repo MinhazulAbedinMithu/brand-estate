@@ -14,8 +14,29 @@ import { cn } from "@/lib/utils";
 import type { MockProperty } from "@/src/mocks/propertyTypes";
 
 export const metadata: Metadata = {
-  title: "Search Properties",
+  title: "Search Properties | Brand Estate",
   description: "Browse and filter premium properties available for sale, rent, or co-living roommate shares.",
+  openGraph: {
+    title: "Search Properties | Brand Estate",
+    description: "Browse and filter premium properties available for sale, rent, or co-living roommate shares.",
+    url: "/properties",
+    siteName: "Brand Estate",
+    images: [
+      {
+        url: "/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Search Properties | Brand Estate",
+      },
+    ],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Search Properties | Brand Estate",
+    description: "Browse and filter premium properties available for sale, rent, or co-living roommate shares.",
+    images: ["/og-image.jpg"],
+  },
 };
 
 // Next.js page component

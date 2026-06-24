@@ -12,6 +12,28 @@ import type { MockProperty } from "@/src/mocks/propertyTypes";
 export const metadata = {
   title: "Brand Estate — Premium Real Estate Portal",
   description: "Find your dream home, search luxury properties, rent high-end apartments, and connect with elite real estate agents.",
+  openGraph: {
+    title: "Brand Estate — Premium Real Estate Portal",
+    description: "Find your dream home, search luxury properties, rent high-end apartments, and connect with elite real estate agents.",
+    url: "https://brand-estate.com",
+    siteName: "Brand Estate",
+    images: [
+      {
+        url: "/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Brand Estate — Premium Real Estate Portal",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Brand Estate — Premium Real Estate Portal",
+    description: "Find your dream home, search luxury properties, rent high-end apartments, and connect with elite real estate agents.",
+    images: ["/og-image.jpg"],
+  },
 };
 
 export default async function Homepage() {
@@ -22,10 +44,10 @@ export default async function Homepage() {
   // Convert Mongoose documents/dates/ObjectIds to plain JSON primitives
   const plainDocs = JSON.parse(JSON.stringify(propertiesDocs));
   
-  const properties = plainDocs.map((p: any) => ({
+  const properties = plainDocs.map((p: IProperty) => ({
     ...p,
-    id: p._id,
-    ownerId: p.ownerId,
+    id: p._id as unknown as string,
+    ownerId: p.ownerId as unknown as string,
   })) as unknown as MockProperty[];
 
   return (

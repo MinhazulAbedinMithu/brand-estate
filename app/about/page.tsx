@@ -1,10 +1,31 @@
 import * as React from "react";
 import { Metadata } from "next";
-import { Sparkles, Target, Compass, Award, ShieldCheck, Heart } from "lucide-react";
+import { Sparkles } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "About Us | Brand Estate",
   description: "Discover our real estate legacy, global operations milestones, and meet our executive team.",
+  openGraph: {
+    title: "About Us | Brand Estate",
+    description: "Discover our real estate legacy, global operations milestones, and meet our executive team.",
+    url: "/about",
+    siteName: "Brand Estate",
+    images: [
+      {
+        url: "/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "About Us | Brand Estate",
+      },
+    ],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "About Us | Brand Estate",
+    description: "Discover our real estate legacy, global operations milestones, and meet our executive team.",
+    images: ["/og-image.jpg"],
+  },
 };
 
 const STATS = [

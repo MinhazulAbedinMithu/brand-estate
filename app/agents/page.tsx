@@ -2,13 +2,36 @@ import { Metadata } from "next";
 import { AgentsClientPage } from "./agents-client";
 
 import { connectDB } from "@/lib/db/mongoose";
-import { User } from "@/lib/db/models/user.model";
+import { User, IUser } from "@/lib/db/models/user.model";
 import type { MockAgent } from "@/src/mocks/agentsMock";
 
 export const metadata: Metadata = {
   title: "Find Real Estate Agents | Brand Estate",
   description:
     "Browse our network of verified, top-rated real estate agents across New York, London, Dubai, Sydney, and more. Find the right expert for your property journey.",
+  openGraph: {
+    title: "Find Real Estate Agents | Brand Estate",
+    description:
+      "Browse our network of verified, top-rated real estate agents across New York, London, Dubai, Sydney, and more. Find the right expert for your property journey.",
+    url: "/agents",
+    siteName: "Brand Estate",
+    images: [
+      {
+        url: "/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Find Real Estate Agents | Brand Estate",
+      },
+    ],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Find Real Estate Agents | Brand Estate",
+    description:
+      "Browse our network of verified, top-rated real estate agents across New York, London, Dubai, Sydney, and more. Find the right expert for your property journey.",
+    images: ["/og-image.jpg"],
+  },
 };
 
 export default async function AgentsPage() {
@@ -17,8 +40,8 @@ export default async function AgentsPage() {
   const plainDocs = JSON.parse(JSON.stringify(agentsDocs));
 
   // Serialize documents for client component
-  const agents = plainDocs.map((doc: any) => ({
-    id: doc._id,
+  const agents = plainDocs.map((doc: IUser) => ({
+    id: doc._id as unknown as string,
     name: doc.name,
     slug: doc.slug || "",
     email: doc.email,
@@ -41,7 +64,15 @@ export default async function AgentsPage() {
     totalVolume: doc.totalVolume || "$0M+",
     rating: doc.rating ?? 0,
     reviewCount: doc.reviewCount ?? 0,
-    reviews: doc.reviews?.map((r: any) => ({
+    reviews: doc.reviews?.map((r: {
+      id?: string;
+      reviewerName?: string;
+      reviewerAvatar?: string;
+      rating?: number;
+      comment?: string;
+      date?: string;
+      propertyType?: string;
+    }) => ({
       id: r.id || "",
       reviewerName: r.reviewerName || "",
       reviewerAvatar: r.reviewerAvatar || "",
