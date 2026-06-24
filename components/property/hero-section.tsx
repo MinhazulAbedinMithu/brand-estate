@@ -5,8 +5,7 @@ import { useRouter } from "next/navigation";
 import { Search, MapPin, Building2, Bed, Bath, ChevronLeft, ChevronRight, Sparkles, Building, Key, Landmark, Eye } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { mockFeaturedProperties } from "@/src/mocks/propertiesMock";
-import { buttonVariants } from "@/components/ui/button";
+import type { MockProperty } from "@/src/mocks/propertiesMock";
 import { PRICE_RANGES_SALE, PRICE_RANGES_RENT } from "@/lib/constants";
 
 type TabType = "buy" | "rent" | "sell";
@@ -25,7 +24,7 @@ const PROPERTY_TYPE_MAP: Record<string, string> = {
   commercial: "Commercial",
 };
 
-export function HeroSection() {
+export function HeroSection({ properties = [] }: { properties?: MockProperty[] }) {
   const router = useRouter();
 
   // State for search categories
@@ -36,10 +35,10 @@ export function HeroSection() {
   const [propertyType, setPropertyType] = React.useState<string>("all");
   const [priceRange, setPriceRange] = React.useState<string>("all");
 
-  // Slider State (Right 1/4 Column) - Filter mockProperties for slider (e.g. premium ones)
+  // Slider State (Right 1/4 Column) - Filter properties for slider (e.g. premium ones)
   const bestDeals = React.useMemo(() => {
-    return mockFeaturedProperties.slice(0, 3);
-  }, []);
+    return properties.filter((p) => p.isFeatured).slice(0, 3);
+  }, [properties]);
 
   const [currentSlide, setCurrentSlide] = React.useState(0);
   const [isSliderHovered, setIsSliderHovered] = React.useState(false);
@@ -117,8 +116,11 @@ export function HeroSection() {
     <section className="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 lg:py-4">
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 lg:gap-4 items-stretch">
 
-        {/* ── LEFT COLUMN (3/4 on Desktop) ── */}
-        <div className="lg:col-span-3 relative rounded-3xl overflow-hidden min-h-[460px] sm:min-h-[520px] lg:min-h-[580px] flex flex-col justify-between p-6 sm:p-10 lg:p-12 shadow-xl border border-border-default/20 transition-all duration-300">
+        {/* ── LEFT COLUMN (3/4 or 4/4 on Desktop) ── */}
+        <div className={cn(
+          "relative rounded-3xl overflow-hidden min-h-[460px] sm:min-h-[520px] lg:min-h-[580px] flex flex-col justify-between p-6 sm:p-10 lg:p-12 shadow-xl border border-border-default/20 transition-all duration-300",
+          bestDeals.length > 0 ? "lg:col-span-3" : "lg:col-span-4"
+        )}>
 
           {/* Dynamic Swapping Background Images */}
           {Object.entries(BACKGROUND_IMAGES).map(([tab, url]) => (
@@ -132,12 +134,12 @@ export function HeroSection() {
             />
           ))}
 
-          {/* Focused left-side gradient scrim — keeps bright images visible on the right */}
+          {/* Focused left-side gradient scrim ── keeps bright images visible on the right */}
           <div className="absolute inset-0 bg-linear-to-r from-black/70 via-black/40 to-transparent z-0" />
 
-          {/* Top Label & Headline — wrapped in a localized glass backdrop for daylight contrast */}
+          {/* Top Label & Headline ── wrapped in a localized glass backdrop for daylight contrast */}
           <div className="max-w-2xl space-y-4 sm:space-y-6 relative z-10">
-            {/* Soft radial scrim — fades to transparent at all edges, no visible box border */}
+            {/* Soft radial scrim ── fades to transparent at all edges, no visible box border */}
             <div
               className="absolute -z-10 pointer-events-none"
               style={{
@@ -276,112 +278,114 @@ export function HeroSection() {
         </div>
 
         {/* ── RIGHT COLUMN (1/4 on Desktop) ── */}
-        <div
-          className="relative rounded-3xl overflow-hidden flex flex-col justify-end min-h-[380px] lg:min-h-full p-6 group/slider border border-border-default/10 shadow-xl"
-          onMouseEnter={() => setIsSliderHovered(true)}
-          onMouseLeave={() => setIsSliderHovered(false)}
-        >
-          {/* Slides */}
-          {bestDeals.map((property, idx) => (
-            <div
-              key={property.id}
-              onClick={() => router.push(`/property/${property.slug}`)}
-              className={cn(
-                "absolute inset-0 bg-cover bg-center transition-all duration-1000 ease-in-out cursor-pointer",
-                currentSlide === idx ? "opacity-100 scale-100 visible" : "opacity-0 scale-105 invisible pointer-events-none"
-              )}
-              style={{ backgroundImage: `url('${property.images[0]}')` }}
-            >
-              {/* Bottom gradient overlay of the slide */}
-              <div className="absolute inset-0 bg-linear-to-t from-accent-navy/80 via-accent-navy/20 to-transparent" />
-            </div>
-          ))}
-
-          {/* Top Floating Badge */}
-          <div className="absolute top-4 left-4 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-state-warning/90 backdrop-blur-md shadow-md text-[10px] font-bold uppercase tracking-wider text-white select-none animate-pulse">
-            <Sparkles className="h-3 w-3 fill-white" />
-            Best Deal
-          </div>
-
-          {/* Slide Navigation Arrows */}
-          <div className="absolute top-1/2 -translate-y-1/2 left-3 right-3 flex justify-between opacity-0 group-hover/slider:opacity-100 transition-opacity duration-300 z-10 pointer-events-none">
-            <button
-              onClick={handlePrevSlide}
-              className="h-8 w-8 rounded-full bg-accent-navy/60 hover:bg-accent-primary border border-white/20 flex items-center justify-center text-white cursor-pointer pointer-events-auto transition-all duration-200"
-              aria-label="Previous slide"
-            >
-              <ChevronLeft className="h-5 w-5" />
-            </button>
-            <button
-              onClick={handleNextSlide}
-              className="h-8 w-8 rounded-full bg-accent-navy/60 hover:bg-accent-primary border border-white/20 flex items-center justify-center text-white cursor-pointer pointer-events-auto transition-all duration-200"
-              aria-label="Next slide"
-            >
-              <ChevronRight className="h-5 w-5" />
-            </button>
-          </div>
-
-          {/* Content Info Card Overlay */}
+        {bestDeals.length > 0 && (
           <div
-            onClick={() => router.push(`/property/${bestDeals[currentSlide].slug}`)}
-            className="relative bg-white/10 dark:bg-black/25 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-2xl p-4 cursor-pointer hover:bg-white/15 dark:hover:bg-black/35 hover:scale-[1.01] transition-all duration-300 z-10 space-y-3 shadow-lg select-none"
+            className="relative rounded-3xl overflow-hidden flex flex-col justify-end min-h-[380px] lg:min-h-full p-6 group/slider border border-border-default/10 shadow-xl"
+            onMouseEnter={() => setIsSliderHovered(true)}
+            onMouseLeave={() => setIsSliderHovered(false)}
           >
-            {/* Quick Specs */}
-            <div className="flex items-center justify-between text-white/90 text-xs font-semibold">
-              <span className="font-heading text-lg font-bold text-white tracking-wide">
-                ${bestDeals[currentSlide].price.toLocaleString()}
-              </span>
-              <span className="bg-accent-primary text-white text-[10px] px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider">
-                {bestDeals[currentSlide].transactionType === "buy" ? "For Sale" : "For Rent"}
-              </span>
-            </div>
-
-            <div className="space-y-1">
-              <h3 className="font-heading text-sm sm:text-base font-bold text-white truncate drop-shadow-md">
-                {mockFeaturedProperties[currentSlide].title}
-              </h3>
-              <p className="text-[11px] text-white/80 flex items-center gap-1 font-medium truncate">
-                <MapPin className="h-3.5 w-3.5 shrink-0 text-accent-primary" />
-                {mockFeaturedProperties[currentSlide].city}, {mockFeaturedProperties[currentSlide].state}
-              </p>
-            </div>
-
-            {/* Details Icons bar */}
-            <div className="flex justify-between items-center text-[10px] sm:text-xs text-white/90 pt-2 border-t border-white/15">
-              <span className="flex items-center gap-1.5 font-semibold">
-                <Bed className="h-3.5 w-3.5 text-accent-primary" />
-                {bestDeals[currentSlide].bedrooms} Rooms
-              </span>
-              <span className="flex items-center gap-1.5 font-semibold">
-                <Bath className="h-3.5 w-3.5 text-accent-primary" />
-                {bestDeals[currentSlide].bathrooms} Baths
-              </span>
-              <span className="flex items-center gap-1.5 font-semibold">
-                <Eye className="h-3.5 w-3.5 text-accent-primary" />
-                Built {bestDeals[currentSlide].yearBuilt}
-              </span>
-            </div>
-          </div>
-
-          {/* Dots Indicator bar */}
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
-            {bestDeals.map((_, idx) => (
-              <button
-                key={idx}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setCurrentSlide(idx);
-                }}
+            {/* Slides */}
+            {bestDeals.map((property, idx) => (
+              <div
+                key={property.id}
+                onClick={() => router.push(`/property/${property.slug}`)}
                 className={cn(
-                  "h-1.5 transition-all duration-300 rounded-full cursor-pointer",
-                  currentSlide === idx ? "w-4 bg-accent-primary" : "w-1.5 bg-white/40 hover:bg-white/60"
+                  "absolute inset-0 bg-cover bg-center transition-all duration-1000 ease-in-out cursor-pointer",
+                  currentSlide === idx ? "opacity-100 scale-100 visible" : "opacity-0 scale-105 invisible pointer-events-none"
                 )}
-                aria-label={`Go to slide ${idx + 1}`}
-              />
+                style={{ backgroundImage: `url('${property.images[0]}')` }}
+              >
+                {/* Bottom gradient overlay of the slide */}
+                <div className="absolute inset-0 bg-linear-to-t from-accent-navy/80 via-accent-navy/20 to-transparent" />
+              </div>
             ))}
-          </div>
 
-        </div>
+            {/* Top Floating Badge */}
+            <div className="absolute top-4 left-4 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-state-warning/90 backdrop-blur-md shadow-md text-[10px] font-bold uppercase tracking-wider text-white select-none animate-pulse">
+              <Sparkles className="h-3 w-3 fill-white" />
+              Best Deal
+            </div>
+
+            {/* Slide Navigation Arrows */}
+            <div className="absolute top-1/2 -translate-y-1/2 left-3 right-3 flex justify-between opacity-0 group-hover/slider:opacity-100 transition-opacity duration-300 z-10 pointer-events-none">
+              <button
+                onClick={handlePrevSlide}
+                className="h-8 w-8 rounded-full bg-accent-navy/60 hover:bg-accent-primary border border-white/20 flex items-center justify-center text-white cursor-pointer pointer-events-auto transition-all duration-200"
+                aria-label="Previous slide"
+              >
+                <ChevronLeft className="h-5 w-5" />
+              </button>
+              <button
+                onClick={handleNextSlide}
+                className="h-8 w-8 rounded-full bg-accent-navy/60 hover:bg-accent-primary border border-white/20 flex items-center justify-center text-white cursor-pointer pointer-events-auto transition-all duration-200"
+                aria-label="Next slide"
+              >
+                <ChevronRight className="h-5 w-5" />
+              </button>
+            </div>
+
+            {/* Content Info Card Overlay */}
+            <div
+              onClick={() => router.push(`/property/${bestDeals[currentSlide].slug}`)}
+              className="relative bg-white/10 dark:bg-black/25 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-2xl p-4 cursor-pointer hover:bg-white/15 dark:hover:bg-black/35 hover:scale-[1.01] transition-all duration-300 z-10 space-y-3 shadow-lg select-none"
+            >
+              {/* Quick Specs */}
+              <div className="flex items-center justify-between text-white/90 text-xs font-semibold">
+                <span className="font-heading text-lg font-bold text-white tracking-wide">
+                  ${bestDeals[currentSlide].price.toLocaleString()}
+                </span>
+                <span className="bg-accent-primary text-white text-[10px] px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider">
+                  {bestDeals[currentSlide].transactionType === "buy" ? "For Sale" : "For Rent"}
+                </span>
+              </div>
+
+              <div className="space-y-1">
+                <h3 className="font-heading text-sm sm:text-base font-bold text-white truncate drop-shadow-md">
+                  {bestDeals[currentSlide].title}
+                </h3>
+                <p className="text-[11px] text-white/80 flex items-center gap-1 font-medium truncate">
+                  <MapPin className="h-3.5 w-3.5 shrink-0 text-accent-primary" />
+                  {bestDeals[currentSlide].city}, {bestDeals[currentSlide].state}
+                </p>
+              </div>
+
+              {/* Details Icons bar */}
+              <div className="flex justify-between items-center text-[10px] sm:text-xs text-white/90 pt-2 border-t border-white/15">
+                <span className="flex items-center gap-1.5 font-semibold">
+                  <Bed className="h-3.5 w-3.5 text-accent-primary" />
+                  {bestDeals[currentSlide].bedrooms} Rooms
+                </span>
+                <span className="flex items-center gap-1.5 font-semibold">
+                  <Bath className="h-3.5 w-3.5 text-accent-primary" />
+                  {bestDeals[currentSlide].bathrooms} Baths
+                </span>
+                <span className="flex items-center gap-1.5 font-semibold">
+                  <Eye className="h-3.5 w-3.5 text-accent-primary" />
+                  Built {bestDeals[currentSlide].yearBuilt}
+                </span>
+              </div>
+            </div>
+
+            {/* Dots Indicator bar */}
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
+              {bestDeals.map((_, idx) => (
+                <button
+                  key={idx}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setCurrentSlide(idx);
+                  }}
+                  className={cn(
+                    "h-1.5 transition-all duration-300 rounded-full cursor-pointer",
+                    currentSlide === idx ? "w-4 bg-accent-primary" : "w-1.5 bg-white/40 hover:bg-white/60"
+                  )}
+                  aria-label={`Go to slide ${idx + 1}`}
+                />
+              ))}
+            </div>
+
+          </div>
+        )}
 
       </div>
     </section>

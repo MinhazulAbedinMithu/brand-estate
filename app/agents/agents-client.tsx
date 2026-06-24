@@ -14,7 +14,7 @@ import {
   Filter,
   X,
 } from "lucide-react";
-import { agentsMock, type MockAgent } from "@/src/mocks/agentsMock";
+import type { MockAgent } from "@/src/mocks/agentsMock";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -197,7 +197,7 @@ const TRUST_STATS = [
 // ─────────────────────────────────────────────
 // Main client page
 // ─────────────────────────────────────────────
-export function AgentsClientPage() {
+export function AgentsClientPage({ agents = [] }: { agents?: MockAgent[] }) {
   const [search, setSearch] = React.useState("");
   const [specialty, setSpecialty] = React.useState("All Specialties");
   const [sortBy, setSortBy] = React.useState("rating");
@@ -217,7 +217,7 @@ export function AgentsClientPage() {
 
   // Filter + sort
   const filtered = React.useMemo(() => {
-    let list = [...agentsMock];
+    let list = [...agents];
 
     if (search.trim()) {
       const q = search.toLowerCase();

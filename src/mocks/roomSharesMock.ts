@@ -96,7 +96,7 @@ export const roomSharesMock: RoomShareProperty[] = [
     zipCode: "2026",
     _geo: { lat: -33.8905, lng: 151.2746 },
     neighborhoodNotes:
-      "Bondi Beach — Sydney's most iconic beachside suburb. Steps from the Bondi to Bronte coastal walk, Icebergs Dining Room, and Speedo's Café. Bus access to CBD (30 min) and Bondi Junction (10 min).",
+      "Bondi Beach — Sydney's most iconic beachside suburb. Steps from the Bondi to Bronte coastal walk, Icebergs Dining Room, and Speedo's Café. Box access to CBD (30 min) and Bondi Junction (10 min).",
     squareFeet: 320,
     squareMeters: 29.7,
     totalRooms: 1,
@@ -202,136 +202,6 @@ export const roomSharesMock: RoomShareProperty[] = [
       preferredGender: "any",
       utilitiesIncluded: ["wifi", "water", "electricity", "cable", "trash"],
       minimumLeasePeriodMonths: 1,
-    },
-  },
-
-  // ── ROOM-004: Private — Berlin Mitte Coliving ────────────────────────────
-  {
-    id: "room-004",
-    title: "Mitte Designer Coliving — Private Room with Common Bath",
-    slug: "mitte-designer-coliving-private-room-berlin",
-    description:
-      "A private furnished room in a curated designer flatshare in the heart of Berlin-Mitte. The room is 18m² with a Hay Copenhagen platform bed, a Muuto desk, integrated wardrobe, and large west-facing windows. The flat is shared with 3 international professionals (a product manager, a journalist, and an architect). The common bathroom is shared exclusively between two tenants. A large chef's kitchen (Fisher & Paykel, Bosch, and Mahlkönig espresso grinder), a living room with a vinyl setup, and a garden terrace are part of the common area. All utilities and a Bike Citizen premium bike share subscription included.",
-    transactionType: "roommate_share",
-    propertyCategory: "room_share",
-    price: 1_150,
-    currency: "EUR",
-    taxHistory: [],
-    priceHistory: [
-      { date: "2024-03-01", price: 1_150, currency: "EUR", event: "listed" },
-      { date: "2023-09-01", price: 1_050, currency: "EUR", event: "rented" },
-    ],
-    formattedAddress: "Torstraße 182, Mitte, Berlin 10115",
-    city: "Berlin",
-    state: "Berlin",
-    zipCode: "10115",
-    _geo: { lat: 52.5296, lng: 13.4068 },
-    neighborhoodNotes:
-      "Berlin-Mitte / Rosenthaler Platz — at the intersection of Berlin's creative, tech, and nightlife scenes. Walking distance to Hackescher Markt, Clarchens Ballhaus, and the KW Institute for Contemporary Art. U8 and U2 lines within 3-minute walk.",
-    squareFeet: 194,
-    squareMeters: 18.0,
-    totalRooms: 1,
-    bedrooms: 1,
-    bathrooms: 1,
-    yearBuilt: 1910,
-    images: [
-      "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=1400&q=85",
-      "https://images.unsplash.com/photo-1556912173-3bb406ef7e77?auto=format&fit=crop&w=1400&q=85",
-    ],
-    videoTourUrl: null,
-    virtualTourUrl: null,
-    status: "active",
-    isFeatured: false,
-    ownerId: "user-agent-009",
-    listerProfile: {
-      name: "Elena Rostova",
-      avatar:
-        "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=300&q=80",
-      phone: "+49-30-5555-0812",
-      email: "elena.rostova@brandestate.de",
-      agencyName: "Brand Estate Berlin",
-      licenseNumber: "DE-IVD-2024-B0041",
-      agentSlug: "lena-hoffmann",
-    },
-    seo: {
-      seoTitle: "Private Room to Rent in Berlin Mitte | €1,150/mo — Brand Estate",
-      metaDescription:
-        "Furnished designer room in Mitte flatshare. 18 m², private room, common bath, curated international housemates. All bills + bike share included. €1,150/month.",
-      ogImageUrl:
-        "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=1200&q=80",
-    },
-    roomShare: {
-      roomType: "private",
-      bathroomType: "common",
-      currentOccupantsCount: 3,
-      preferredGender: "any",
-      utilitiesIncluded: ["wifi", "gas", "water", "electricity"],
-      minimumLeasePeriodMonths: 6,
-    },
-  },
-
-  // ── ROOM-005: Private Female-Only — Singapore Tiong Bahru ────────────────
-  {
-    id: "room-005",
-    title: "Tiong Bahru Heritage Shophouse — Female-Only Room Share",
-    slug: "tiong-bahru-heritage-shophouse-female-only-singapore",
-    description:
-      "A beautifully renovated private bedroom in a 1930s Tiong Bahru Art Deco shophouse, shared exclusively among female professionals. The room features a queen-size Tempur mattress, a custom rattan wardrobe, and a writing desk by local maker Nook & Cranny. The apartment retains original terrazzo floors, arched windows, and a breezeway courtyard — all restored to their 1930s glamour. Shared with two female professionals: a flight attendant and a gallery curator. Attached bathroom is shared between two occupants only. Groceries can be delivered daily from the famous Tiong Bahru wet market.",
-    transactionType: "roommate_share",
-    propertyCategory: "room_share",
-    price: 2_200,
-    currency: "SGD",
-    taxHistory: [],
-    priceHistory: [
-      { date: "2024-01-10", price: 2_200, currency: "SGD", event: "listed" },
-      { date: "2023-07-01", price: 2_000, currency: "SGD", event: "rented" },
-    ],
-    formattedAddress: "7 Yong Siak Street, Tiong Bahru, Singapore 168651",
-    city: "Singapore",
-    state: "Central Region",
-    zipCode: "168651",
-    _geo: { lat: 1.2841, lng: 103.8268 },
-    neighborhoodNotes:
-      "Tiong Bahru — Singapore's hippest heritage neighbourhood. Pre-war Art Deco shophouses, bookshops, specialty coffee, and some of Singapore's most celebrated hawker stalls. 5-minute walk to Tiong Bahru MRT (EW Line).",
-    squareFeet: 230,
-    squareMeters: 21.4,
-    totalRooms: 1,
-    bedrooms: 1,
-    bathrooms: 1,
-    yearBuilt: 1936,
-    images: [
-      "https://images.unsplash.com/photo-1615529182904-14819c35db37?auto=format&fit=crop&w=1400&q=85",
-      "https://images.unsplash.com/photo-1556912173-3bb406ef7e77?auto=format&fit=crop&w=1400&q=85",
-    ],
-    videoTourUrl: null,
-    virtualTourUrl: null,
-    status: "active",
-    isFeatured: false,
-    ownerId: "user-agent-005",
-    listerProfile: {
-      name: "Grace Teo",
-      avatar:
-        "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=300&q=80",
-      phone: "+65 9123 4567",
-      email: "grace.teo@brandestate.sg",
-      agencyName: "Brand Estate Singapore",
-      licenseNumber: "CEA-SG-R052183I",
-      agentSlug: "fatima-al-rashidi",
-    },
-    seo: {
-      seoTitle: "Female-Only Room Share in Tiong Bahru Heritage Shophouse | SGD 2,200/mo — Brand Estate",
-      metaDescription:
-        "Private room in a restored 1930s Art Deco shophouse in Tiong Bahru, Singapore. Female professionals only. SGD 2,200/month includes utilities.",
-      ogImageUrl:
-        "https://images.unsplash.com/photo-1615529182904-14819c35db37?auto=format&fit=crop&w=1200&q=80",
-    },
-    roomShare: {
-      roomType: "private",
-      bathroomType: "common",
-      currentOccupantsCount: 2,
-      preferredGender: "female",
-      utilitiesIncluded: ["wifi", "water", "electricity"],
-      minimumLeasePeriodMonths: 3,
     },
   },
 ];

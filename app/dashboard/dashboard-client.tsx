@@ -17,7 +17,6 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { cn } from "@/lib/utils";
-import { mockProperties } from "@/src/mocks/propertiesMock";
 import { mockUserInquiries, mockSavedPriceTrends } from "@/src/mocks/dashboardMock";
 import { Button } from "@/components/ui/button";
 import {
@@ -30,11 +29,32 @@ import {
   CartesianGrid
 } from "recharts";
 
-// Pick first 3 mock properties as "Recent Saved" properties
-const recentSavedProperties = mockProperties.slice(0, 3);
-
 export function DashboardClient() {
   const { currentUser } = useAuth();
+  const [savedProperties, setSavedProperties] = React.useState<any[]>([]);
+  const [loadingSaved, setLoadingSaved] = React.useState(true);
+
+  React.useEffect(() => {
+    async function loadSaved() {
+      try {
+        setLoadingSaved(true);
+        const response = await fetch("/api/users/me/saved");
+        const result = await response.json();
+        if (result.status === "success") {
+          setSavedProperties(result.data || []);
+        }
+      } catch (err) {
+        console.error("Failed to load saved properties:", err);
+      } finally {
+        setLoadingSaved(false);
+      }
+    }
+    loadSaved();
+  }, []);
+
+  const recentSavedProperties = React.useMemo(() => {
+    return savedProperties.slice(0, 3);
+  }, [savedProperties]);
   
   // Custom Greeting based on time
   const greeting = React.useMemo(() => {
@@ -47,7 +67,7 @@ export function DashboardClient() {
   const stats = [
     {
       label: "Saved Properties",
-      value: "3",
+      value: savedProperties.length.toString(),
       change: "+1 new this week",
       icon: Heart,
       color: "text-rose-400 bg-rose-500/10 border-rose-500/20",
@@ -249,8 +269,27 @@ export function DashboardClient() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {recentSavedProperties.map((property) => {
-            const isRent = property.transactionType === "rent" || property.transactionType === "roommate_share";
+          {loadingSaved ? (
+            Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="flex flex-col bg-bg-surface border border-border-default/60 rounded-2xl overflow-hidden animate-pulse">
+                <div className="aspect-video w-full bg-bg-alt shrink-0" />
+                <div className="p-4 space-y-3">
+                  <div className="h-4 bg-bg-alt rounded w-1/3" />
+                  <div className="h-4 bg-bg-alt rounded w-3/4" />
+                  <div className="h-3 bg-bg-alt rounded w-1/2" />
+                </div>
+              </div>
+            ))
+          ) : recentSavedProperties.length === 0 ? (
+            <div className="col-span-full py-8 text-center bg-bg-alt/50 border border-dashed border-border-default/80 rounded-2xl">
+              <p className="text-sm font-semibold text-text-muted">No saved properties yet</p>
+              <Link href="/properties" className="text-xs text-accent-primary font-bold hover:underline mt-1 inline-block">
+                Browse properties
+              </Link>
+            </div>
+          ) : (
+            recentSavedProperties.map((property) => {
+              const isRent = property.transactionType === "rent" || property.transactionType === "roommate_share";
             const symbol = property.currency === "USD" ? "$" : property.currency + " ";
             const price = `${symbol}${property.price.toLocaleString()}${isRent ? "/mo" : ""}`;
 
@@ -292,7 +331,8 @@ export function DashboardClient() {
                 </div>
               </div>
             );
-          })}
+          })
+          )}
         </div>
       </div>
     </div>

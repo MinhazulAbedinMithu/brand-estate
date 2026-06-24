@@ -36,28 +36,43 @@ export async function GET(request: NextRequest) {
       const email = agentMock.email.toLowerCase().trim();
       let user = await User.findOne({ email });
 
+      const agentData = {
+        name: agentMock.name,
+        email,
+        password: passwordHash,
+        role: 'agent' as const,
+        status: 'active' as const,
+        isVerified: true,
+        avatar: agentMock.avatar,
+        phone: agentMock.phone,
+        slug: agentMock.slug,
+        coverImage: agentMock.coverImage,
+        title: agentMock.title,
+        bio: agentMock.bio,
+        location: agentMock.location,
+        specializations: agentMock.specializations,
+        languages: agentMock.languages,
+        yearsExperience: agentMock.yearsExperience,
+        activeListings: agentMock.activeListings,
+        totalSales: agentMock.totalSales,
+        totalVolume: agentMock.totalVolume,
+        rating: agentMock.rating,
+        reviewCount: agentMock.reviewCount,
+        reviews: agentMock.reviews,
+        socialLinks: agentMock.socialLinks,
+        certifications: agentMock.certifications,
+        legalDocs: {
+          licenseNumber: agentMock.licenseNumber,
+          agencyName: agentMock.title || 'Brand Estate Agency',
+          documentUrl: agentMock.avatar,
+          submittedAt: new Date(),
+        },
+      };
+
       if (!user) {
-        user = await User.create({
-          name: agentMock.name,
-          email,
-          password: passwordHash,
-          role: 'agent',
-          status: 'active',
-          isVerified: true,
-          avatar: agentMock.avatar,
-          phone: agentMock.phone,
-          legalDocs: {
-            licenseNumber: agentMock.licenseNumber,
-            agencyName: agentMock.title || 'Brand Estate Agency',
-            documentUrl: agentMock.avatar,
-            submittedAt: new Date(),
-          },
-        });
+        user = await User.create(agentData);
       } else {
-        // Ensure role is agent and status is active
-        user.role = 'agent';
-        user.status = 'active';
-        user.isVerified = true;
+        Object.assign(user, agentData);
         await user.save();
       }
 

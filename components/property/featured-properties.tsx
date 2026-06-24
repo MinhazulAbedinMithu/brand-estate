@@ -3,14 +3,18 @@
 import * as React from "react";
 import Link from "next/link";
 import { ArrowRight, Sparkles } from "lucide-react";
-import { mockFeaturedProperties } from "@/src/mocks/propertiesMock";
 import { PropertyCard } from "./property-card";
+import type { MockProperty } from "@/src/mocks/propertyTypes";
 
-export function FeaturedProperties() {
-  // Use pre-filtered featured properties (isFeatured === true), cap at 4
+interface FeaturedPropertiesProps {
+  properties?: MockProperty[];
+}
+
+export function FeaturedProperties({ properties = [] }: FeaturedPropertiesProps) {
+  // Filter for featured listings (isFeatured === true), cap at 4
   const featuredListings = React.useMemo(() => {
-    return mockFeaturedProperties.slice(0, 4);
-  }, []);
+    return properties.filter((p) => p.isFeatured).slice(0, 4);
+  }, [properties]);
 
   return (
     <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 sm:space-y-12 pt-20 pb-10">

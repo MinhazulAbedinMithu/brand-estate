@@ -25,7 +25,6 @@ import {
   Heart,
 } from "lucide-react";
 import type { MockAgent } from "@/src/mocks/agentsMock";
-import { agentsMock } from "@/src/mocks/agentsMock";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -235,7 +234,7 @@ function RatingBreakdown({ reviews }: { reviews: MockAgent["reviews"] }) {
 // ─────────────────────────────────────────────
 // Main client page
 // ─────────────────────────────────────────────
-export function AgentProfileClient({ agent }: { agent: MockAgent }) {
+export function AgentProfileClient({ agent, relatedAgents = [] }: { agent: MockAgent; relatedAgents?: MockAgent[] }) {
   const { isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
 
@@ -257,10 +256,7 @@ export function AgentProfileClient({ agent }: { agent: MockAgent }) {
     );
   }
 
-  // Related agents (same country, exclude self)
-  const relatedAgents = agentsMock
-    .filter((a) => a.id !== agent.id && a.location.country === agent.location.country)
-    .slice(0, 3);
+  // Related agents (passed from props)
 
   const avgRating = agent.reviews.reduce((sum, r) => sum + r.rating, 0) / agent.reviews.length;
 

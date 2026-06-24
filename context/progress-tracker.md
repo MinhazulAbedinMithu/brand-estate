@@ -314,6 +314,13 @@ Phase 2 specs to be defined and implemented in order:
   - Updated Step 5/6 (Review Summary Layout) of the listing forms to display preview values for the new fields.
   - Modified the properties creation API endpoint `POST /api/properties` to destructure and persist `neighborhoodNotes` inside MongoDB.
   - Linked all inputs into the creation and edit API request payloads.
+- **Mock Data Layer & Mongoose Integration (2026-06-22)**:
+  - Refactored the homepage to query properties directly from MongoDB and pass them as props to both `HeroSection` and `FeaturedProperties`.
+  - Refactored `FeaturedProperties` and `HeroSection` to accept the dynamic `properties` prop.
+  - Refactored the Agents Directory (`/agents`) to fetch active agent profiles directly from MongoDB and pass them to `AgentsClientPage`.
+  - Refactored the Agent Detail Page (`/agents/[slug]`) to query the agent's profile by slug and fetch related agents from MongoDB dynamically, supporting fully dynamic parameters and metadata generation.
+  - Refactored the Buyer Dashboard (`/dashboard`) to load the user's saved listings dynamically via the `/api/users/me/saved` endpoint, featuring custom loading skeletons and empty states.
+  - Cleaned up unused mock imports across dashboards and client views.
 
 
 

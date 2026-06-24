@@ -15,7 +15,6 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { mockUserInquiries, mockViewsHistory } from "@/src/mocks/dashboardMock";
-import { mockProperties } from "@/src/mocks/propertiesMock";
 import { Button } from "@/components/ui/button";
 import {
   ResponsiveContainer,
