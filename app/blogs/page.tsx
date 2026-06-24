@@ -12,7 +12,7 @@ export const metadata: Metadata = {
     siteName: "Brand Estate",
     images: [
       {
-        url: "/og-image.jpg",
+        url: "/og-image.png",
         width: 1200,
         height: 630,
         alt: "Real Estate Insights & Advice | Brand Estate",
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Real Estate Insights & Advice | Brand Estate",
     description: "Browse articles, guides, and market reports on home buying, selling strategies, investment models, and lifestyle tips written by real estate professionals.",
-    images: ["/og-image.jpg"],
+    images: ["/og-image.png"],
   },
 };
 

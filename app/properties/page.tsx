@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     siteName: "Brand Estate",
     images: [
       {
-        url: "/og-image.jpg",
+        url: "/og-image.png",
         width: 1200,
         height: 630,
         alt: "Search Properties | Brand Estate",
@@ -35,7 +35,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Search Properties | Brand Estate",
     description: "Browse and filter premium properties available for sale, rent, or co-living roommate shares.",
-    images: ["/og-image.jpg"],
+    images: ["/og-image.png"],
   },
 };
 

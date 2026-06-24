@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     siteName: "Brand Estate",
     images: [
       {
-        url: "/og-image.jpg",
+        url: "/og-image.png",
         width: 1200,
         height: 630,
         alt: "Contact Us | Brand Estate",
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Contact Us | Brand Estate",
     description: "Have questions regarding property directory listings or our SaaS broker console subscriptions? Drop us a line.",
-    images: ["/og-image.jpg"],
+    images: ["/og-image.png"],
   },
 };
 

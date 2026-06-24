@@ -19,7 +19,7 @@ export const metadata = {
     siteName: "Brand Estate",
     images: [
       {
-        url: "/og-image.jpg",
+        url: "/og-image.png",
         width: 1200,
         height: 630,
         alt: "Brand Estate — Premium Real Estate Portal",
@@ -32,7 +32,7 @@ export const metadata = {
     card: "summary_large_image",
     title: "Brand Estate — Premium Real Estate Portal",
     description: "Find your dream home, search luxury properties, rent high-end apartments, and connect with elite real estate agents.",
-    images: ["/og-image.jpg"],
+    images: ["/og-image.png"],
   },
 };
 

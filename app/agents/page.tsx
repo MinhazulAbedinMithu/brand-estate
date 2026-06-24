@@ -17,7 +17,7 @@ export const metadata: Metadata = {
     siteName: "Brand Estate",
     images: [
       {
-        url: "/og-image.jpg",
+        url: "/og-image.png",
         width: 1200,
         height: 630,
         alt: "Find Real Estate Agents | Brand Estate",
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     title: "Find Real Estate Agents | Brand Estate",
     description:
       "Browse our network of verified, top-rated real estate agents across New York, London, Dubai, Sydney, and more. Find the right expert for your property journey.",
-    images: ["/og-image.jpg"],
+    images: ["/og-image.png"],
   },
 };
 

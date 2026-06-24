@@ -337,11 +337,12 @@ Phase 2 specs to be defined and implemented in order:
     - **User**: Created `/dashboard/blogs/new` and `/dashboard/blogs/[id]/edit` pages.
   - Refactored `AgentBlogsClient`, `AdminBlogsClient`, and `UserBlogsClient` dashboards to navigate to the new page routes instead of managing open Sheet states and local inline form submissions.
 - **OpenGraph & Twitter Card SEO Metadata Integrations**:
-  - Configured static rich metadata for the Homepage (`app/page.tsx`) including `openGraph` and `twitter` card information.
+  - Generated a high-fidelity premium real estate preview card graphic (`og-image.png`) in the `/public` folder to act as the default fallback social sharing preview.
+  - Configured static rich metadata for the Homepage (`app/page.tsx`) including `openGraph` and `twitter` card information using the fallback image.
   - Configured dynamic metadata for the Property Details Page (`app/property/[slug]/page.tsx`) prioritizing `seo.seoTitle`, `seo.metaDescription`, `seo.ogImageUrl` (falling back to the first property image), and `seo.keywords` properties.
   - Configured dynamic metadata for the Blog Details Page (`app/blogs/[slug]/page.tsx`) using the `BlogPost` mongoose model, mapping `seo.title` / `seo.ogTitle`, `seo.metaDescription` / `seo.ogDescription`, `seo.ogImage`, `seo.ogType`, and `seo.keywords` from database documents.
-  - Configured static metadata for About (`app/about/page.tsx`), Properties (`app/properties/page.tsx`), Blogs (`app/blogs/page.tsx`), and Agents listing (`app/agents/page.tsx`) pages.
-  - Configured dynamic metadata for Agent Profiles (`app/agents/[slug]/page.tsx`) mapping bio, avatar/cover images, and title dynamically from the User database model.
+  - Configured static metadata for About (`app/about/page.tsx`), Properties (`app/properties/page.tsx`), Blogs (`app/blogs/page.tsx`), and Agents listing (`app/agents/page.tsx`) pages using the fallback image.
+  - Configured dynamic metadata for Agent Profiles (`app/agents/[slug]/page.tsx`) mapping bio, avatar/cover images, and title dynamically from the User database model (with fallback to the custom `/og-image.png`).
   - Split the Contact page into a Server page (`app/contact/page.tsx` with static metadata) and a Client form component (`app/contact/contact-client.tsx`) to allow server-rendered metadata tags.
   - Verified compilation and linter correctness with zero type errors and zero linter warnings.
 

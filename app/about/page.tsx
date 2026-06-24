@@ -12,7 +12,7 @@ export const metadata: Metadata = {
     siteName: "Brand Estate",
     images: [
       {
-        url: "/og-image.jpg",
+        url: "/og-image.png",
         width: 1200,
         height: 630,
         alt: "About Us | Brand Estate",
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "About Us | Brand Estate",
     description: "Discover our real estate legacy, global operations milestones, and meet our executive team.",
-    images: ["/og-image.jpg"],
+    images: ["/og-image.png"],
   },
 };
 

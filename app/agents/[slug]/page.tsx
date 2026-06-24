@@ -23,7 +23,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   
   const title = `${agent.name} — ${agent.title || "Real Estate Agent"} | Brand Estate`;
   const description = agent.bio?.slice(0, 160) || `Meet ${agent.name}, professional real estate agent at Brand Estate.`;
-  const image = agent.avatar || agent.coverImage || "/og-image.jpg";
+  const image = agent.avatar || agent.coverImage || "/og-image.png";
 
   return {
     title,
