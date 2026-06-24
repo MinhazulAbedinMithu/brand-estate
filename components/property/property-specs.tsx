@@ -2,7 +2,7 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 import type { MockProperty } from "@/src/mocks/propertyTypes";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
-import { Check, X } from "lucide-react";
+import { Check, X, Bed, Bath, Ruler, Calendar } from "lucide-react";
 
 interface PropertySpecsProps {
   property: MockProperty;
@@ -69,12 +69,11 @@ export function PropertySpecs({ property, className }: PropertySpecsProps) {
 
   const renderBaseSpecs = () => {
     const baseItems = [
-      { label: "Total Rooms", value: property.totalRooms },
-      { label: "Bedrooms", value: property.bedrooms },
-      { label: "Bathrooms", value: property.bathrooms },
-      { label: "Square Footage", value: `${property.squareFeet.toLocaleString()} sq ft` },
-      { label: "Square Meters", value: `${property.squareMeters.toLocaleString()} m²` },
-      { label: "Year Built", value: property.yearBuilt },
+      { label: "Bedrooms", value: property.bedrooms, icon: Bed },
+      { label: "Bathrooms", value: property.bathrooms, icon: Bath },
+      { label: "Square Footage", value: `${property.squareFeet.toLocaleString()} sq ft`, icon: Ruler, iconClass: "rotate-90" },
+      { label: "Square Meters", value: `${property.squareMeters.toLocaleString()} m²`, icon: Ruler },
+      { label: "Year Built", value: property.yearBuilt, icon: Calendar },
     ];
 
     return (
@@ -85,16 +84,22 @@ export function PropertySpecs({ property, className }: PropertySpecsProps) {
         <div className="overflow-hidden rounded-2xl border border-border-default/50 bg-bg-surface">
           <Table>
             <TableBody>
-              {baseItems.map((item, idx) => (
-                <TableRow key={idx} className="hover:bg-bg-alt/30 border-border-default/40">
-                  <TableCell className="font-semibold text-text-secondary py-3.5 pl-5">
-                    {item.label}
-                  </TableCell>
-                  <TableCell className="text-right text-text-primary font-medium py-3.5 pr-5">
-                    {item.value}
-                  </TableCell>
-                </TableRow>
-              ))}
+              {baseItems.map((item, idx) => {
+                const Icon = item.icon;
+                return (
+                  <TableRow key={idx} className="hover:bg-bg-alt/30 border-border-default/40">
+                    <TableCell className="font-semibold text-text-secondary py-3.5 pl-5">
+                      <div className="flex items-center gap-2.5">
+                        <Icon className={cn("h-4 w-4 text-accent-primary shrink-0", item.iconClass)} />
+                        <span>{item.label}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-right text-text-primary font-medium py-3.5 pr-5">
+                      {item.value}
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
         </div>

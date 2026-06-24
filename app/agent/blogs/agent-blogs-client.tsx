@@ -9,18 +9,14 @@ import { useBlogs } from "@/lib/blog-context";
 import { useAuth } from "@/lib/auth-context";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { BlogForm } from "@/components/blog/blog-form";
 import { toast } from "sonner";
 import type { BlogPost } from "@/lib/types";
+import { useRouter } from "next/navigation";
 
 export function AgentBlogsClient() {
+  const router = useRouter();
   const { currentUser } = useAuth();
-  const { posts, createPost, updatePost, deletePost } = useBlogs();
-
-  // Sheet state
-  const [sheetOpen, setSheetOpen] = React.useState(false);
-  const [editingPost, setEditingPost] = React.useState<BlogPost | null>(null);
+  const { posts, deletePost } = useBlogs();
 
   // Search posts
   const [searchQuery, setSearchQuery] = React.useState("");
@@ -75,58 +71,12 @@ export function AgentBlogsClient() {
 
   // Handle open compose
   const handleOpenCompose = () => {
-    setEditingPost(null);
-    setSheetOpen(true);
+    router.push("/agent/blogs/new");
   };
 
   // Handle open edit
   const handleOpenEdit = (post: BlogPost) => {
-    setEditingPost(post);
-    setSheetOpen(true);
-  };
-
-  // Submit callback bridging BlogForm payload
-  const handleBlogSubmit = async (
-    formPayload: Omit<BlogPost, "id" | "publishedAt" | "reactions" | "author" | "authorId" | "authorRole">,
-    submitStatus: "draft" | "pending" | "published"
-  ) => {
-    const author = {
-      name: currentUser?.name || "Anonymous Agent",
-      avatar: currentUser?.avatar || "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=300&q=80",
-      role: "Luxury Property Advisor",
-      bio: currentUser?.legalDocs?.agencyName
-        ? `Licensed agent at ${currentUser.legalDocs.agencyName}. Advising buyers and sellers worldwide.`
-        : "Real Estate Agent with expert insights on competitive residential housing markets."
-    };
-
-    const postPayload = {
-      ...formPayload,
-      author,
-      authorId: currentUser?.id,
-      authorRole: currentUser?.role,
-      isFeatured: editingPost ? editingPost.isFeatured : false,
-      status: submitStatus,
-    };
-
-    try {
-      if (editingPost) {
-        await updatePost({
-          ...editingPost,
-          ...postPayload,
-        });
-        toast.success("Blog post revised", {
-          description: submitStatus === "pending" ? "Your changes are now pending moderator review." : "Saved as draft.",
-        });
-      } else {
-        await createPost(postPayload);
-        toast.success("Blog post drafted", {
-          description: submitStatus === "pending" ? "It is now pending review in the admin verification queue." : "Saved as draft.",
-        });
-      }
-      setSheetOpen(false);
-    } catch {
-      toast.error("An error occurred during submission.");
-    }
+    router.push(`/agent/blogs/${post.id}/edit`);
   };
 
   const handleDelete = async (postId: string) => {
@@ -300,26 +250,6 @@ export function AgentBlogsClient() {
           </div>
         )}
       </div>
-
-      {/* Sheet Compose/Edit Drawer */}
-      <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
-        <SheetContent side="right" className="w-full sm:max-w-2xl lg:max-w-3xl xl:max-w-4xl bg-bg-surface border-l border-border-default overflow-y-auto custom-scrollbar p-6">
-          <SheetHeader className="border-b border-border-default/60 pb-4 mb-6">
-            <SheetTitle className="text-xl font-bold font-heading text-text-primary">
-              {editingPost ? "Edit Advisory Post" : "Compose Advisory Post"}
-            </SheetTitle>
-          </SheetHeader>
-
-          {sheetOpen && (
-            <BlogForm
-              initialPost={editingPost}
-              onSubmit={handleBlogSubmit}
-              submitStatusType="pending"
-              defaultCoverImage="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=600&q=80"
-            />
-          )}
-        </SheetContent>
-      </Sheet>
     </div>
   );
 }

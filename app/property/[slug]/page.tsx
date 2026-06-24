@@ -7,7 +7,30 @@ import { PropertySpecs } from "@/components/property/property-specs";
 import { PropertyPriceHistory } from "@/components/property/property-price-history";
 import { AgentContactCard } from "@/components/property/agent-contact-card";
 import { RelatedListings } from "@/components/property/related-listings";
-import { MapPin, Bed, Bath, Ruler, Calendar, Compass, Check } from "lucide-react";
+import {
+  MapPin,
+  Bed,
+  Bath,
+  Ruler,
+  Calendar,
+  Compass,
+  Check,
+  Waves,
+  Dumbbell,
+  Car,
+  Trees,
+  Maximize,
+  ArrowUpDown,
+  ShieldCheck,
+  Wind,
+  Flame,
+  Sofa,
+  Heart,
+  Accessibility,
+  Sunset,
+  Bell,
+  Box
+} from "lucide-react";
 import { Metadata } from "next";
 import type { MockProperty } from "@/src/mocks/propertyTypes";
 
@@ -42,6 +65,27 @@ export async function generateMetadata({ params }: DetailPageProps): Promise<Met
       ],
     },
   };
+}
+
+function getAmenityIcon(amenity: string) {
+  const normalized = amenity.toLowerCase().trim();
+  if (normalized.includes("pool") || normalized.includes("swim")) return Waves;
+  if (normalized.includes("gym") || normalized.includes("fitness") || normalized.includes("center")) return Dumbbell;
+  if (normalized.includes("parking")) return Car;
+  if (normalized.includes("garden") || normalized.includes("yard")) return Trees;
+  if (normalized.includes("balcony")) return Maximize;
+  if (normalized.includes("elevator")) return ArrowUpDown;
+  if (normalized.includes("security")) return ShieldCheck;
+  if (normalized.includes("air cond") || normalized.includes("ac") || normalized.includes("conditioning")) return Wind;
+  if (normalized.includes("heat") || normalized.includes("heating")) return Flame;
+  if (normalized.includes("furnish") || normalized.includes("sofa")) return Sofa;
+  if (normalized.includes("pet")) return Heart;
+  if (normalized.includes("wheelchair") || normalized.includes("access")) return Accessibility;
+  if (normalized.includes("rooftop") || normalized.includes("terrace")) return Sunset;
+  if (normalized.includes("concierge")) return Bell;
+  if (normalized.includes("storage")) return Box;
+  
+  return Check;
 }
 
 export default async function PropertyDetailPage({ params }: DetailPageProps) {
@@ -128,50 +172,40 @@ export default async function PropertyDetailPage({ params }: DetailPageProps) {
                 <span className="bg-bg-elevated border border-border-default/80 text-text-secondary text-[9px] font-bold px-3 py-1 rounded-full tracking-wider uppercase select-none">
                   {property.status.replace("_", " ")}
                 </span>
-                {property.seo?.keywords && property.seo.keywords.length > 0 && (
-                  <div className="flex flex-wrap gap-1.5 ml-1">
-                    {property.seo.keywords.map((tag: string) => (
-                      <span
-                        key={tag}
-                        className="bg-accent-primary/8 text-accent-primary border border-accent-primary/15 text-[9px] font-extrabold px-2.5 py-0.5 rounded-md uppercase tracking-wider transition-colors hover:bg-accent-primary/12"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                )}
               </div>
 
               <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold font-heading text-text-primary tracking-tight leading-tight">
                 {property.title}
               </h1>
 
-              {/* Quick Specs horizontal row */}
-              <div className="flex flex-wrap items-center gap-y-2 gap-x-6 text-sm text-text-secondary font-medium pt-2 border-t border-border-default/45">
-                <span className="flex items-center gap-1.5">
-                  <MapPin className="h-4 w-4 text-accent-primary" />
-                  {property.city}, {property.state}
-                </span>
+              {/* Location row */}
+              <div className="flex items-center gap-2 text-sm text-text-secondary font-medium pt-1">
+                <MapPin className="h-4.5 w-4.5 text-accent-primary shrink-0" />
+                <span>{property.formattedAddress}</span>
+              </div>
+
+              {/* Quick Specs 4-columns grid */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-border-default/45">
                 {property.propertyCategory !== "commercial" && (
                   <>
-                    <span className="flex items-center gap-1.5">
-                      <Bed className="h-4 w-4 text-accent-primary" />
-                      {property.bedrooms} Bed
-                    </span>
-                    <span className="flex items-center gap-1.5">
-                      <Bath className="h-4 w-4 text-accent-primary" />
-                      {property.bathrooms} Bath
-                    </span>
+                    <div className="flex items-center gap-2.5 px-4 py-3 rounded-xl border border-border-default/50 bg-bg-surface">
+                      <Bed className="h-5 w-5 text-accent-primary shrink-0" />
+                      <span className="text-xs font-semibold text-text-secondary">{property.bedrooms} Bedrooms</span>
+                    </div>
+                    <div className="flex items-center gap-2.5 px-4 py-3 rounded-xl border border-border-default/50 bg-bg-surface">
+                      <Bath className="h-5 w-5 text-accent-primary shrink-0" />
+                      <span className="text-xs font-semibold text-text-secondary">{property.bathrooms} Bathrooms</span>
+                    </div>
                   </>
                 )}
-                <span className="flex items-center gap-1.5">
-                  <Ruler className="h-4 w-4 text-accent-primary rotate-90" />
-                  {property.squareFeet.toLocaleString()} sq ft ({property.squareMeters.toLocaleString()} m²)
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <Calendar className="h-4 w-4 text-accent-primary" />
-                  Built {property.yearBuilt}
-                </span>
+                <div className="flex items-center gap-2.5 px-4 py-3 rounded-xl border border-border-default/50 bg-bg-surface">
+                  <Ruler className="h-5 w-5 text-accent-primary shrink-0 rotate-90" />
+                  <span className="text-xs font-semibold text-text-secondary truncate">{property.squareFeet.toLocaleString()} sq ft</span>
+                </div>
+                <div className="flex items-center gap-2.5 px-4 py-3 rounded-xl border border-border-default/50 bg-bg-surface">
+                  <Calendar className="h-5 w-5 text-accent-primary shrink-0" />
+                  <span className="text-xs font-semibold text-text-secondary">Built {property.yearBuilt}</span>
+                </div>
               </div>
             </div>
 
@@ -220,17 +254,20 @@ export default async function PropertyDetailPage({ params }: DetailPageProps) {
                     Amenities & Facilities
                   </h3>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                    {property.amenities.map((amenity: string) => (
-                      <div
-                        key={amenity}
-                        className="flex items-center gap-2.5 px-4 py-3 rounded-xl border border-border-default/50 bg-bg-surface text-xs font-semibold text-text-secondary select-none"
-                      >
-                        <span className="h-4.5 w-4.5 rounded-full bg-accent-primary/10 flex items-center justify-center text-accent-primary shrink-0">
-                          <Check className="h-3 w-3" />
-                        </span>
-                        <span>{amenity}</span>
-                      </div>
-                    ))}
+                    {property.amenities.map((amenity: string) => {
+                      const AmenityIcon = getAmenityIcon(amenity);
+                      return (
+                        <div
+                          key={amenity}
+                          className="flex items-center gap-2.5 px-4 py-3 rounded-xl border border-border-default/50 bg-bg-surface text-xs font-semibold text-text-secondary select-none"
+                        >
+                          <span className="h-4.5 w-4.5 rounded-full bg-accent-primary/10 flex items-center justify-center text-accent-primary shrink-0">
+                            <AmenityIcon className="h-3 w-3" />
+                          </span>
+                          <span>{amenity}</span>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               )}
@@ -319,6 +356,25 @@ export default async function PropertyDetailPage({ params }: DetailPageProps) {
                 </div>
               </div>
             </div>
+
+            {/* Tags / Keywords list */}
+            {property.seo?.keywords && property.seo.keywords.length > 0 && (
+              <div className="rounded-2xl border border-border-default bg-bg-surface p-5 sm:p-6 shadow-sm space-y-3">
+                <h4 className="font-body text-sm font-bold text-text-primary uppercase tracking-wider border-b border-border-default pb-3">
+                  Property Tags
+                </h4>
+                <div className="flex flex-wrap gap-2 pt-1">
+                  {property.seo.keywords.map((tag: string) => (
+                    <span
+                      key={tag}
+                      className="bg-accent-primary/8 text-accent-primary border border-accent-primary/15 text-[10px] font-extrabold px-3 py-1.5 rounded-lg uppercase tracking-wider transition-colors hover:bg-accent-primary/12"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
 
           </div>
 

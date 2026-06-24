@@ -4,24 +4,20 @@ import * as React from "react";
 import Link from "next/link";
 import { 
   FileText, Plus, FileEdit, Trash2, Heart, FileCheck, RefreshCw, 
-  HelpCircle, Eye, Globe 
+  HelpCircle, Eye 
 } from "lucide-react";
 import { useBlogs } from "@/lib/blog-context";
 import { useAuth } from "@/lib/auth-context";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { BlogForm } from "@/components/blog/blog-form";
 import { toast } from "sonner";
 import type { BlogPost } from "@/lib/types";
+import { useRouter } from "next/navigation";
 
 export function UserBlogsClient() {
+  const router = useRouter();
   const { currentUser } = useAuth();
-  const { posts, createPost, updatePost, deletePost } = useBlogs();
-  
-  // Sheet open state
-  const [sheetOpen, setSheetOpen] = React.useState(false);
-  const [editingPost, setEditingPost] = React.useState<BlogPost | null>(null);
+  const { posts, deletePost } = useBlogs();
 
   // Filter posts authored by current logged-in user
   const userPosts = React.useMemo(() => {
@@ -52,55 +48,12 @@ export function UserBlogsClient() {
 
   // Handle compose action
   const handleOpenCompose = () => {
-    setEditingPost(null);
-    setSheetOpen(true);
+    router.push("/dashboard/blogs/new");
   };
 
   // Handle edit action
   const handleOpenEdit = (post: BlogPost) => {
-    setEditingPost(post);
-    setSheetOpen(true);
-  };
-
-  // Form Submit handler bridging BlogForm payload
-  const handleBlogSubmit = async (
-    formPayload: Omit<BlogPost, "id" | "publishedAt" | "reactions" | "author" | "authorId" | "authorRole">,
-    submitStatus: "draft" | "pending" | "published"
-  ) => {
-    const author = {
-      name: currentUser?.name || "Anonymous Member",
-      avatar: currentUser?.avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80",
-      role: "Premium Member",
-      bio: `BrandEstate contributor since ${new Date(currentUser?.createdAt || "").toLocaleDateString()}`,
-    };
-
-    const finalPayload = {
-      ...formPayload,
-      author,
-      authorId: currentUser?.id,
-      authorRole: currentUser?.role,
-      status: submitStatus,
-    };
-
-    try {
-      if (editingPost) {
-        await updatePost({
-          ...editingPost,
-          ...finalPayload,
-        });
-        toast.success("Blog updated successfully", {
-          description: submitStatus === "pending" ? "Your revisions are now pending review." : "Saved as draft.",
-        });
-      } else {
-        await createPost(finalPayload);
-        toast.success("Blog post submitted", {
-          description: submitStatus === "pending" ? "It is now pending admin review before publishing." : "Saved as draft.",
-        });
-      }
-      setSheetOpen(false);
-    } catch {
-      toast.error("Failed to submit blog post");
-    }
+    router.push(`/dashboard/blogs/${post.id}/edit`);
   };
 
   const handleDelete = async (postId: string) => {
@@ -251,25 +204,6 @@ export function UserBlogsClient() {
           </div>
         )}
       </div>
-
-      {/* Slide Drawer Component */}
-      <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
-        <SheetContent side="right" className="w-full sm:max-w-2xl lg:max-w-3xl xl:max-w-4xl bg-bg-surface border-l border-border-default overflow-y-auto custom-scrollbar p-6">
-          <SheetHeader className="border-b border-border-default/60 pb-4 mb-6">
-            <SheetTitle className="text-xl font-bold font-heading text-text-primary">
-              {editingPost ? "Edit Blog Post" : "Compose Blog Post"}
-            </SheetTitle>
-          </SheetHeader>
-
-          {sheetOpen && (
-            <BlogForm
-              initialPost={editingPost}
-              onSubmit={handleBlogSubmit}
-              submitStatusType="pending"
-            />
-          )}
-        </SheetContent>
-      </Sheet>
     </div>
   );
 }

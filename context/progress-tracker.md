@@ -321,6 +321,26 @@ Phase 2 specs to be defined and implemented in order:
   - Refactored the Agent Detail Page (`/agents/[slug]`) to query the agent's profile by slug and fetch related agents from MongoDB dynamically, supporting fully dynamic parameters and metadata generation.
   - Refactored the Buyer Dashboard (`/dashboard`) to load the user's saved listings dynamically via the `/api/users/me/saved` endpoint, featuring custom loading skeletons and empty states.
   - Cleaned up unused mock imports across dashboards and client views.
+- **Dynamic Amenities Icons**:
+  - Replaced the static `<Check>` icon in the "Amenities & Facilities" section of the Property Details Page (`app/property/[slug]/page.tsx`) with dynamic icons resolved from amenity names (e.g. `Waves` for swimming pools, `Dumbbell` for gyms, `Car` for parking, `Trees` for gardens, etc.).
+- **Removed Total Rooms Display**:
+  - Removed "Total Rooms" row from the specs table in `components/property/property-specs.tsx` on the Property Details page.
+- **Specifications Table Icons**:
+  - Added Lucide icons (e.g. `Bed`, `Bath`, `Ruler`, `Calendar`) inline next to labels in the Key Information specifications list in `components/property/property-specs.tsx`.
+- **Property Details Layout Updates**:
+  - Rearranged the page header layout in `app/property/[slug]/page.tsx` to render the Title first, followed by the Location row (displaying the rich `formattedAddress`), and then the 4 specs columns (Bedrooms, Bathrooms, Area, Year Built) inside a structured grid.
+  - Relocated the SEO Keywords Tag list from the header row to a card at the bottom of the right sticky sidebar column.
+- **Blog Compose & Edit Pages Migration**:
+  - Migrated the blog creation and edit forms from right-side popup Sheet drawers to dedicated full-page routes across all three workspace modules (Agent, Admin, and User):
+    - **Agent**: Created `/agent/blogs/new` and `/agent/blogs/[id]/edit` pages.
+    - **Admin**: Created `/admin/blogs/new` and `/admin/blogs/[id]/edit` pages.
+    - **User**: Created `/dashboard/blogs/new` and `/dashboard/blogs/[id]/edit` pages.
+  - Refactored `AgentBlogsClient`, `AdminBlogsClient`, and `UserBlogsClient` dashboards to navigate to the new page routes instead of managing open Sheet states and local inline form submissions.
+
+
+
+
+
 
 
 

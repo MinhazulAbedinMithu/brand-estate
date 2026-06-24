@@ -4,21 +4,20 @@ import * as React from "react";
 import Link from "next/link";
 import { 
   FileText, CheckCircle2, XCircle, Eye, Trash2, Plus, 
-  FileEdit, HelpCircle, Search 
+  FileEdit, Search 
 } from "lucide-react";
 import { useBlogs } from "@/lib/blog-context";
-import { useAuth } from "@/lib/auth-context";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { BlogForm } from "@/components/blog/blog-form";
 import { toast } from "sonner";
 import type { BlogPost } from "@/lib/types";
+import { useRouter } from "next/navigation";
 
 export function AdminBlogsClient() {
-  const { currentUser } = useAuth();
-  const { posts, createPost, updatePost, deletePost, reviewPost } = useBlogs();
+  const router = useRouter();
+  const { posts, deletePost, reviewPost } = useBlogs();
 
   // Active Tab
   const [activeTab, setActiveTab] = React.useState<"queue" | "catalog">("queue");
@@ -36,10 +35,6 @@ export function AdminBlogsClient() {
   // Inspector Drawer State
   const [inspectPost, setInspectPost] = React.useState<BlogPost | null>(null);
   const [inspectOpen, setInspectOpen] = React.useState(false);
-
-  // Compose/Edit Form Drawer State
-  const [composeOpen, setComposeOpen] = React.useState(false);
-  const [editingPost, setEditingPost] = React.useState<BlogPost | null>(null);
 
   // Pending Posts Filter
   const pendingPosts = React.useMemo(() => {
@@ -114,55 +109,11 @@ export function AdminBlogsClient() {
 
   // Compose forms actions
   const handleOpenCompose = () => {
-    setEditingPost(null);
-    setComposeOpen(true);
+    router.push("/admin/blogs/new");
   };
 
   const handleOpenEdit = (post: BlogPost) => {
-    setEditingPost(post);
-    setComposeOpen(true);
-  };
-
-  // Form Submit handler bridging BlogForm payload
-  const handleBlogSubmit = async (
-    formPayload: Omit<BlogPost, "id" | "publishedAt" | "reactions" | "author" | "authorId" | "authorRole">,
-    submitStatus: "draft" | "pending" | "published"
-  ) => {
-    const author = {
-      name: currentUser?.name || "Moderator Admin",
-      avatar: currentUser?.avatar || "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=300&q=80",
-      role: "Platform Editor",
-      bio: "Platform Administrator. Fact-checking real estate trends and market policies."
-    };
-
-    const postPayload = {
-      ...formPayload,
-      author,
-      authorId: currentUser?.id,
-      authorRole: currentUser?.role,
-      isFeatured: editingPost ? editingPost.isFeatured : false,
-      status: submitStatus,
-    };
-
-    try {
-      if (editingPost) {
-        await updatePost({
-          ...editingPost,
-          ...postPayload,
-        });
-        toast.success("Article updated", {
-          description: submitStatus === "published" ? "Changes have been published instantly." : "Saved as draft.",
-        });
-      } else {
-        await createPost(postPayload);
-        toast.success("New article published", {
-          description: submitStatus === "published" ? "It is now visible on the public insights catalog." : "Saved as draft.",
-        });
-      }
-      setComposeOpen(false);
-    } catch {
-      toast.error("An error occurred during submission.");
-    }
+    router.push(`/admin/blogs/${post.id}/edit`);
   };
 
   const handleDelete = async (postId: string) => {
@@ -570,26 +521,6 @@ export function AdminBlogsClient() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-
-      {/* COMPOSE/EDIT SHEET FOR ADMIN AUTO-PUBLISHED ARTICLES */}
-      <Sheet open={composeOpen} onOpenChange={setComposeOpen}>
-        <SheetContent side="right" className="w-full sm:max-w-2xl lg:max-w-3xl xl:max-w-4xl bg-bg-surface border-l border-border-default overflow-y-auto custom-scrollbar p-6">
-          <SheetHeader className="border-b border-border-default/60 pb-4 mb-6">
-            <SheetTitle className="text-xl font-bold font-heading text-text-primary">
-              {editingPost ? "Edit Article" : "Compose Editor Article"}
-            </SheetTitle>
-          </SheetHeader>
-
-          {composeOpen && (
-            <BlogForm
-              initialPost={editingPost}
-              onSubmit={handleBlogSubmit}
-              submitStatusType="published"
-              defaultCoverImage="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=600&q=80"
-            />
-          )}
-        </SheetContent>
-      </Sheet>
     </div>
   );
 }
