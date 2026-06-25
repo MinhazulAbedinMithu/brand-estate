@@ -31,10 +31,11 @@ import type { User, UserStatus } from "@/lib/types";
 import { DocumentViewer } from "@/components/shared/document-viewer";
  
 export function UsersClient() {
-  const { getUsers, updateUserStatus, deleteUser, currentUser } = useAuth();
+  const { getUsers, updateUserStatus, deleteUser, currentUser, updateUserNidStatus } = useAuth();
   
   const [users, setUsers] = React.useState<User[]>([]);
   const [showDocViewer, setShowDocViewer] = React.useState(false);
+  const [showNidDocViewer, setShowNidDocViewer] = React.useState(false);
   const [search, setSearch] = React.useState("");
   const [roleFilter, setRoleFilter] = React.useState("all");
   const [statusFilter, setStatusFilter] = React.useState("all");
@@ -429,6 +430,57 @@ export function UsersClient() {
                 </div>
               )}
 
+              {/* NID Documentation Details (Buyer/Member) */}
+              {inspectedUser.role === "auth_user" && inspectedUser.nidStatus && inspectedUser.nidStatus !== "unsubmitted" && (
+                <div className="space-y-3 p-4 rounded-xl border border-border-default bg-bg-alt/30">
+                  <h5 className="text-[10px] font-bold text-text-primary uppercase tracking-widest flex items-center gap-1.5">
+                    <FileText className="h-3.5 w-3.5 text-accent-primary" /> Submitted NID Verification
+                  </h5>
+                  <div className="space-y-2 text-xs font-medium">
+                    <div className="flex justify-between py-1.5 border-b border-border-default">
+                      <span className="text-text-muted">NID Card Number</span>
+                      <span className="font-mono font-bold text-text-primary">{inspectedUser.nidCardNumber || "—"}</span>
+                    </div>
+                    <div className="flex justify-between py-1.5 border-b border-border-default">
+                      <span className="text-text-muted">NID Status</span>
+                      <span className={cn("font-bold uppercase text-[9px] px-2 py-0.5 rounded border tracking-wider",
+                        inspectedUser.nidStatus === "verified" ? "text-emerald-600 dark:text-emerald-400 bg-emerald-500/5 border-emerald-500/20" :
+                        inspectedUser.nidStatus === "pending" ? "text-amber-600 dark:text-amber-400 bg-amber-500/5 border-amber-500/20" :
+                        "text-rose-600 dark:text-rose-400 bg-rose-500/5 border-rose-500/20"
+                      )}>
+                        {inspectedUser.nidStatus}
+                      </span>
+                    </div>
+                    {inspectedUser.nidDocumentUrl && (
+                      <div className="flex justify-between py-1.5 border-b border-border-default">
+                        <span className="text-text-muted">NID Card Document</span>
+                        <span 
+                          onClick={() => setShowNidDocViewer(true)}
+                          className="font-bold text-accent-primary flex items-center gap-1.5 cursor-pointer hover:underline animate-pulse"
+                        >
+                          <Eye className="h-3.5 w-3.5" />
+                          View Document
+                        </span>
+                      </div>
+                    )}
+                    {inspectedUser.nidSubmittedAt && (
+                      <div className="flex justify-between py-1.5 border-b border-border-default">
+                        <span className="text-text-muted">Submitted Date</span>
+                        <span className="font-bold text-text-secondary">
+                          {new Date(inspectedUser.nidSubmittedAt).toLocaleDateString()}
+                        </span>
+                      </div>
+                    )}
+                    {inspectedUser.nidStatus === "rejected" && inspectedUser.nidRejectionReason && (
+                      <div className="pt-1.5 text-rose-500 text-xs">
+                        <span className="font-bold block uppercase text-[9px] tracking-wider mb-1">Rejection Reason</span>
+                        <p className="italic font-semibold">&ldquo;{inspectedUser.nidRejectionReason}&rdquo;</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
               {/* Suspension Reason log if suspended */}
               {inspectedUser.status === "suspended" && inspectedUser.suspendedReason && (
                 <div className="space-y-2 p-4 rounded-xl border border-rose-500/20 bg-rose-500/5 text-xs text-left">
@@ -472,6 +524,37 @@ export function UsersClient() {
 
           {/* Drawer moderation controls */}
           <div className="border-t border-border-default pt-4 space-y-2 mt-4 shrink-0">
+            {inspectedUser && inspectedUser.role === "auth_user" && inspectedUser.nidStatus === "pending" && (
+              <div className="flex gap-3">
+                <Button
+                  onClick={async () => {
+                    const reason = prompt("Enter NID rejection reason:") || "Verification documents rejected.";
+                    const res = await updateUserNidStatus(inspectedUser.id, "rejected", reason);
+                    if (res.success) {
+                      toast.error("NID Rejected", { description: `Identity docs for ${inspectedUser.name} rejected.` });
+                      refreshUsersList();
+                      setInspectedUser(null);
+                    }
+                  }}
+                  className="flex-1 h-10 rounded-xl font-bold text-white bg-rose-600 hover:bg-rose-500 cursor-pointer"
+                >
+                  Reject NID
+                </Button>
+                <Button
+                  onClick={async () => {
+                    const res = await updateUserNidStatus(inspectedUser.id, "verified");
+                    if (res.success) {
+                      toast.success("NID Approved", { description: `Identity docs for ${inspectedUser.name} verified.` });
+                      refreshUsersList();
+                      setInspectedUser(null);
+                    }
+                  }}
+                  className="flex-1 h-10 rounded-xl font-bold text-white bg-emerald-600 hover:bg-emerald-500 cursor-pointer"
+                >
+                  Approve NID
+                </Button>
+              </div>
+            )}
             <div className="flex gap-3">
               {inspectedUser && inspectedUser.status === "pending" && (
                 <Button
@@ -577,6 +660,18 @@ export function UsersClient() {
           agentName={inspectedUser.name}
           licenseNumber={inspectedUser.legalDocs.licenseNumber}
           agencyName={inspectedUser.legalDocs.agencyName}
+        />
+      )}
+
+      {/* ── NID Document Viewer Modal ── */}
+      {inspectedUser && inspectedUser.nidDocumentUrl && (
+        <DocumentViewer
+          isOpen={showNidDocViewer}
+          onClose={() => setShowNidDocViewer(false)}
+          documentUrl={inspectedUser.nidDocumentUrl}
+          agentName={inspectedUser.name}
+          licenseNumber={inspectedUser.nidCardNumber}
+          agencyName="Buyer NID Card"
         />
       )}
       

@@ -23,6 +23,11 @@ export interface User {
     documentUrl: string;
     submittedAt: string;
   };
+  nidStatus?: 'unsubmitted' | 'pending' | 'verified' | 'rejected';
+  nidCardNumber?: string;
+  nidDocumentUrl?: string;
+  nidSubmittedAt?: string;
+  nidRejectionReason?: string;
 }
 
 export interface PricingPackage {

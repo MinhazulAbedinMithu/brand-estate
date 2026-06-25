@@ -163,6 +163,8 @@ interface AuthContextValue {
   updateUserStatus: (userId: string, status: UserStatus, reason?: string) => void;
   deleteUser: (userId: string) => void;
   submitLegalDocs: (licenseNumber: string, agencyName: string, docName: string) => Promise<{ success: boolean; user: User }>;
+  submitNidDocs: (nidCardNumber: string, docUrl: string) => Promise<{ success: boolean; user: User | null }>;
+  updateUserNidStatus: (userId: string, nidStatus: 'unsubmitted' | 'pending' | 'verified' | 'rejected', reason?: string) => Promise<{ success: boolean }>;
   
   // Pricing Packages Helpers
   getPackages: () => PricingPackage[];
@@ -189,6 +191,11 @@ function mapApiUser(data: {
     documentUrl: string;
     submittedAt: string;
   };
+  nidStatus?: 'unsubmitted' | 'pending' | 'verified' | 'rejected';
+  nidCardNumber?: string;
+  nidDocumentUrl?: string;
+  nidSubmittedAt?: string;
+  nidRejectionReason?: string;
 }): User {
   return {
     id: data.id,
@@ -199,6 +206,11 @@ function mapApiUser(data: {
     avatar: data.avatar ?? '',
     isVerified: data.isVerified,
     legalDocs: data.legalDocs,
+    nidStatus: data.nidStatus || 'unsubmitted',
+    nidCardNumber: data.nidCardNumber,
+    nidDocumentUrl: data.nidDocumentUrl,
+    nidSubmittedAt: data.nidSubmittedAt,
+    nidRejectionReason: data.nidRejectionReason,
     createdAt: new Date().toISOString(),
     savedProperties: [],
   };
@@ -476,6 +488,124 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     [currentUser]
   );
 
+  // ─── Submit NID Docs (Buyer Only) ───
+  const submitNidDocs = React.useCallback(
+    async (nidCardNumber: string, docUrl: string): Promise<{ success: boolean; user: User | null }> => {
+      setIsLoading(true);
+      if (!currentUser) throw new Error("No user logged in");
+
+      const isSeedUser = currentUser.id.startsWith('usr-') || 
+        SEED_USERS.some((u) => u.email.toLowerCase() === currentUser.email.toLowerCase()) ||
+        currentUser.id.startsWith('mock-');
+
+      if (!isSeedUser) {
+        try {
+          const res = await fetch('/api/user/submit-nid', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({
+              nidCardNumber,
+              nidDocumentUrl: docUrl,
+            }),
+          });
+          
+          if (!res.ok) {
+            setIsLoading(false);
+            return { success: false, user: currentUser };
+          }
+          
+          const meRes = await fetch('/api/auth/me', { credentials: 'include' });
+          if (meRes.ok) {
+            const meData = await meRes.json();
+            const updated = mapApiUser(meData.data);
+            setCurrentUser(updated);
+            setIsLoading(false);
+            return { success: true, user: updated };
+          }
+        } catch (err) {
+          console.error('[submitNidDocs] API error:', err);
+          setIsLoading(false);
+          return { success: false, user: currentUser };
+        }
+      }
+
+      await new Promise((r) => setTimeout(r, 1000));
+      const updatedUser: User = {
+        ...currentUser,
+        nidStatus: "pending",
+        nidCardNumber,
+        nidDocumentUrl: docUrl,
+        nidSubmittedAt: new Date().toISOString(),
+      };
+
+      try {
+        const stored = localStorage.getItem(USERS_DB_KEY);
+        if (stored) {
+          const dbUsers: User[] = JSON.parse(stored);
+          const idx = dbUsers.findIndex((u) => u.id === currentUser.id);
+          if (idx !== -1) {
+            dbUsers[idx] = updatedUser;
+            localStorage.setItem(USERS_DB_KEY, JSON.stringify(dbUsers));
+          }
+        }
+      } catch (e) {
+        console.error(e);
+      }
+
+      persistUser(updatedUser);
+      setIsLoading(false);
+      return { success: true, user: updatedUser };
+    },
+    [currentUser]
+  );
+
+  // ─── Update User NID Status (Admin Only) ───
+  const updateUserNidStatus = React.useCallback(
+    async (userId: string, nidStatus: 'unsubmitted' | 'pending' | 'verified' | 'rejected', reason?: string): Promise<{ success: boolean }> => {
+      const isSeed = userId.startsWith('usr-') || userId.startsWith('mock-');
+      
+      if (!isSeed) {
+        try {
+          const res = await fetch(`/api/admin/users/${userId}/nid-status`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ nidStatus, reason }),
+          });
+          if (res.ok) {
+            await refreshBackendUsers();
+            return { success: true };
+          }
+        } catch (err) {
+          console.error('[updateUserNidStatus] backend error:', err);
+        }
+        return { success: false };
+      }
+
+      try {
+        const stored = localStorage.getItem(USERS_DB_KEY);
+        const dbUsers: User[] = stored ? JSON.parse(stored) : [...SEED_USERS];
+        const index = dbUsers.findIndex((u) => u.id === userId);
+        if (index !== -1) {
+          dbUsers[index].nidStatus = nidStatus;
+          if (nidStatus === "rejected") {
+            dbUsers[index].nidRejectionReason = reason || "Incomplete documentation.";
+          } else {
+            delete dbUsers[index].nidRejectionReason;
+          }
+          localStorage.setItem(USERS_DB_KEY, JSON.stringify(dbUsers));
+        }
+        await refreshBackendUsers();
+        return { success: true };
+      } catch (err) {
+        console.error(err);
+        return { success: false };
+      }
+    },
+    [refreshBackendUsers]
+  );
+
   // ─── Real API Login ───
   const login = React.useCallback(
     async (
@@ -678,13 +808,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       updateUserStatus,
       deleteUser,
       submitLegalDocs,
+      submitNidDocs,
+      updateUserNidStatus,
 
       // Packages
       getPackages,
       updatePackage,
       createPackage,
     }),
-    [currentUser, isLoading, login, register, logout, getUsers, updateUserStatus, deleteUser, submitLegalDocs, getPackages, updatePackage, createPackage]
+    [currentUser, isLoading, login, register, logout, getUsers, updateUserStatus, deleteUser, submitLegalDocs, submitNidDocs, updateUserNidStatus, getPackages, updatePackage, createPackage]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

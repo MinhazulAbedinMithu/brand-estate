@@ -18,6 +18,8 @@ import type { MockAgent } from "@/src/mocks/agentsMock";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useAuth } from "@/lib/auth-context";
+import { toast } from "sonner";
 
 // ─────────────────────────────────────────────
 // Static filter options
@@ -76,13 +78,28 @@ function StarRating({ rating, count }: { rating: number; count: number }) {
 // Agent Card
 // ─────────────────────────────────────────────
 function AgentCard({ agent }: { agent: MockAgent }) {
+  const { currentUser } = useAuth();
+  const isNidVerified = currentUser
+    ? (currentUser.role !== 'auth_user' || currentUser.nidStatus === 'verified')
+    : false;
+
   return (
     <Link
-      href={`/agents/${agent.slug}`}
+      href={isNidVerified ? `/agents/${agent.slug}` : "#"}
+      onClick={(e) => {
+        if (!isNidVerified) {
+          e.preventDefault();
+          toast.error("NID Verification Required", {
+            description: currentUser 
+              ? "Please submit and verify your NID in settings to unlock agent details."
+              : "Please log in and verify your NID to unlock agent details.",
+          });
+        }
+      }}
       className="group relative flex flex-col rounded-2xl overflow-hidden border border-border-default/60 bg-bg-surface hover:border-accent-primary/40 hover:shadow-xl hover:shadow-accent-primary/8 transition-all duration-300 hover:-translate-y-1"
     >
       {/* Cover image */}
-      <div className="relative h-36 overflow-hidden bg-bg-elevated">
+      <div className={cn("relative h-36 overflow-hidden bg-bg-elevated", !isNidVerified && "blur-md select-none pointer-events-none")}>
         <img
           src={agent.coverImage}
           alt={`${agent.name} cover`}
@@ -105,7 +122,10 @@ function AgentCard({ agent }: { agent: MockAgent }) {
             <img
               src={agent.avatar}
               alt={agent.name}
-              className="h-[68px] w-[68px] rounded-2xl object-cover border-[3px] border-bg-surface shadow-lg"
+              className={cn(
+                "h-[68px] w-[68px] rounded-2xl object-cover border-[3px] border-bg-surface shadow-lg",
+                !isNidVerified && "blur-md select-none pointer-events-none"
+              )}
             />
             {/* Verified badge */}
             <div className="absolute -bottom-1.5 -right-1.5 h-5 w-5 rounded-full bg-state-success flex items-center justify-center border-2 border-bg-surface">
@@ -116,11 +136,11 @@ function AgentCard({ agent }: { agent: MockAgent }) {
       </div>
 
       {/* Content */}
-      <div className="flex flex-col flex-1 px-5 pb-5 gap-3">
+      <div className={cn("flex flex-col flex-1 px-5 pb-5 gap-3", !isNidVerified && "blur-xs select-none pointer-events-none")}>
         {/* Name + title */}
         <div>
           <h3 className="text-[15px] font-bold text-text-primary font-heading leading-tight group-hover:text-accent-primary transition-colors duration-200">
-            {agent.name}
+            {isNidVerified ? agent.name : "Agent Name Locked"}
           </h3>
           <p className="text-[11px] text-text-muted mt-0.5 leading-snug">{agent.title}</p>
         </div>
@@ -180,6 +200,23 @@ function AgentCard({ agent }: { agent: MockAgent }) {
           </svg>
         </div>
       </div>
+
+      {/* Lock Overlay */}
+      {!isNidVerified && (
+        <div className="absolute inset-0 z-20 bg-bg-surface/50 backdrop-blur-xs flex flex-col items-center justify-center p-5 text-center">
+          <div className="h-9 w-9 rounded-xl bg-accent-primary/10 border border-accent-primary/20 flex items-center justify-center text-accent-primary mb-2 shadow-sm">
+            <svg className="h-4.5 w-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
+          </div>
+          <span className="text-[11px] font-bold text-text-primary tracking-wide">Identity Locked</span>
+          <span className="text-[9px] text-text-muted mt-1 leading-snug max-w-[150px] mx-auto">
+            {currentUser 
+              ? "Verify NID in dashboard to access details" 
+              : "Register & verify NID to view profiles"}
+          </span>
+        </div>
+      )}
     </Link>
   );
 }

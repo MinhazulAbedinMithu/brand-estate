@@ -83,13 +83,18 @@ export function BlogDetailClient({ slug }: BlogDetailClientProps) {
       post.authorRole === "agent"
   ) ?? null;
 
+  const isNidVerified = currentUser
+    ? (currentUser.role !== 'auth_user' || currentUser.nidStatus === 'verified')
+    : false;
+
   const handleAgentProfileClick = (e: React.MouseEvent, agentSlug: string) => {
-    if (!currentUser) {
+    if (!isNidVerified) {
       e.preventDefault();
-      toast.warning("Authentication Required", {
-        description: "Please sign in or register to view full agent profile details.",
+      toast.error("NID Verification Required", {
+        description: currentUser 
+          ? "Please submit and verify NID in profile settings to view agent profiles."
+          : "Please register and verify NID to view agent profiles.",
       });
-      router.push(`/login?redirect=/agents/${agentSlug}`);
     }
   };
 
@@ -265,47 +270,64 @@ export function BlogDetailClient({ slug }: BlogDetailClientProps) {
           {/* Right Column / Sticky Sidebar (1/3 width) */}
           <div className="lg:sticky lg:top-24 space-y-6">
             {/* Author Profile Card */}
-            <div className="rounded-2xl border border-border-default bg-bg-surface p-5 sm:p-6 shadow-sm space-y-4">
+            <div className="rounded-2xl border border-border-default bg-bg-surface p-5 sm:p-6 shadow-sm space-y-4 relative overflow-hidden">
               <h4 className="font-body text-sm font-bold text-text-primary uppercase tracking-wider border-b border-border-default pb-3">
                 About the Author
               </h4>
-              <div className="flex items-center gap-3.5">
-                <img
-                  src={post.author.avatar}
-                  alt={post.author.name}
-                  className="h-12 w-12 rounded-full border border-border-default object-cover"
-                />
-                <div>
-                  {matchingAgent ? (
+              <div className={cn("space-y-4", (post.authorRole === "agent" || matchingAgent !== null) && !isNidVerified && "blur-md select-none pointer-events-none")}>
+                <div className="flex items-center gap-3.5">
+                  <img
+                    src={post.author.avatar}
+                    alt={post.author.name}
+                    className="h-12 w-12 rounded-full border border-border-default object-cover"
+                  />
+                  <div>
+                    {matchingAgent ? (
+                      <Link
+                        href={`/agents/${matchingAgent.slug}`}
+                        onClick={(e) => handleAgentProfileClick(e, matchingAgent.slug)}
+                        className="text-sm font-bold text-text-primary hover:text-accent-primary hover:underline transition-colors block cursor-pointer"
+                      >
+                        {post.author.name}
+                      </Link>
+                    ) : (
+                      <h5 className="text-sm font-bold text-text-primary">{post.author.name}</h5>
+                    )}
+                    <span className="text-[10px] text-accent-primary font-bold uppercase tracking-wider block mt-0.5">
+                      {post.author.role}
+                    </span>
+                  </div>
+                </div>
+                {post.author.bio && (
+                  <p className="text-xs text-text-secondary leading-relaxed font-body font-medium">
+                    {post.author.bio}
+                  </p>
+                )}
+                {matchingAgent && (
+                  <div className="pt-2 border-t border-border-default/40">
                     <Link
                       href={`/agents/${matchingAgent.slug}`}
                       onClick={(e) => handleAgentProfileClick(e, matchingAgent.slug)}
-                      className="text-sm font-bold text-text-primary hover:text-accent-primary hover:underline transition-colors block cursor-pointer"
+                      className="text-xs font-bold text-accent-primary hover:text-accent-primary-hov flex items-center gap-1 cursor-pointer transition-colors"
                     >
-                      {post.author.name}
+                      View Agent Profile →
                     </Link>
-                  ) : (
-                    <h5 className="text-sm font-bold text-text-primary">{post.author.name}</h5>
-                  )}
-                  <span className="text-[10px] text-accent-primary font-bold uppercase tracking-wider block mt-0.5">
-                    {post.author.role}
-                  </span>
-                </div>
+                  </div>
+                )}
               </div>
-              {post.author.bio && (
-                <p className="text-xs text-text-secondary leading-relaxed font-body font-medium">
-                  {post.author.bio}
-                </p>
-              )}
-              {matchingAgent && (
-                <div className="pt-2 border-t border-border-default/40">
-                  <Link
-                    href={`/agents/${matchingAgent.slug}`}
-                    onClick={(e) => handleAgentProfileClick(e, matchingAgent.slug)}
-                    className="text-xs font-bold text-accent-primary hover:text-accent-primary-hov flex items-center gap-1 cursor-pointer transition-colors"
-                  >
-                    View Agent Profile →
-                  </Link>
+
+              {/* NID Lock Banner Overlay inside Author Profile Card */}
+              {(post.authorRole === "agent" || matchingAgent !== null) && !isNidVerified && (
+                <div className="absolute inset-0 z-10 bg-bg-surface/50 backdrop-blur-xs flex flex-col items-center justify-center p-4 text-center">
+                  <div className="h-8 w-8 rounded-lg bg-accent-primary/10 border border-accent-primary/20 flex items-center justify-center text-accent-primary mb-1.5 shadow-sm animate-pulse">
+                    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
+                  </div>
+                  <span className="text-[11px] font-bold text-text-primary tracking-wide leading-none">Identity Locked</span>
+                  <p className="text-[9px] text-text-muted mt-1 leading-snug max-w-[130px] mx-auto">
+                    Verify NID in profile settings to view author details.
+                  </p>
                 </div>
               )}
             </div>

@@ -51,7 +51,7 @@ import type { MockProperty } from "@/src/mocks/propertyTypes";
 import { DocumentViewer } from "@/components/shared/document-viewer";
  
 export function AdminDashboardClient() {
-  const { getUsers, updateUserStatus } = useAuth();
+  const { getUsers, updateUserStatus, updateUserNidStatus } = useAuth();
   const [users, setUsers] = React.useState<User[]>([]);
   const [pendingListings, setPendingListings] = React.useState<MockProperty[]>([]);
   const [analytics, setAnalytics] = React.useState<AdminStats | null>(null);
@@ -63,13 +63,74 @@ export function AdminDashboardClient() {
   const [banUserName, setBanUserName] = React.useState("");
   const [banReason, setBanReason] = React.useState("");
 
+  // NID rejection dialog states
+  const [showNidRejectDialog, setShowNidRejectDialog] = React.useState(false);
+  const [nidRejectUserId, setNidRejectUserId] = React.useState("");
+  const [nidRejectUserName, setNidRejectUserName] = React.useState("");
+  const [nidRejectReason, setNidRejectReason] = React.useState("");
+
   // Document Viewer Modal State
   const [showDocViewer, setShowDocViewer] = React.useState(false);
   const [selectedAgentForDoc, setSelectedAgentForDoc] = React.useState<User | null>(null);
 
+  // NID Document Viewer Modal State
+  const [showNidDocViewer, setShowNidDocViewer] = React.useState(false);
+  const [selectedUserForNid, setSelectedUserForNid] = React.useState<User | null>(null);
+
   const handleViewDoc = (agent: User) => {
     setSelectedAgentForDoc(agent);
     setShowDocViewer(true);
+  };
+
+  const handleViewNid = (user: User) => {
+    setSelectedUserForNid(user);
+    setShowNidDocViewer(true);
+  };
+
+  const handleApproveNid = async (userId: string, userName: string) => {
+    try {
+      const res = await updateUserNidStatus(userId, "verified");
+      if (res.success) {
+        toast.success("NID Approved", {
+          description: `Identity documents for ${userName} have been verified.`
+        });
+        refreshList();
+      } else {
+        toast.error("Failed to approve NID");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("An error occurred during NID approval.");
+    }
+  };
+
+  const handleTriggerNidReject = (userId: string, userName: string) => {
+    setNidRejectUserId(userId);
+    setNidRejectUserName(userName);
+    setNidRejectReason("");
+    setShowNidRejectDialog(true);
+  };
+
+  const confirmNidRejection = async () => {
+    if (!nidRejectReason.trim()) {
+      toast.error("Reason required", { description: "Please explain why you are rejecting this NID." });
+      return;
+    }
+    try {
+      const res = await updateUserNidStatus(nidRejectUserId, "rejected", nidRejectReason.trim());
+      if (res.success) {
+        toast.error("NID Rejected", {
+          description: `Identity documents for ${nidRejectUserName} have been rejected.`
+        });
+        setShowNidRejectDialog(false);
+        refreshList();
+      } else {
+        toast.error("Failed to reject NID");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("An error occurred during NID rejection.");
+    }
   };
 
   const refreshList = React.useCallback(() => {
@@ -150,6 +211,10 @@ export function AdminDashboardClient() {
 
   const agentsWithDocs = React.useMemo(() => {
     return users.filter(u => (u.role === "agent" || u.role === "owner") && u.legalDocs);
+  }, [users]);
+
+  const pendingNidUsers = React.useMemo(() => {
+    return users.filter(u => u.role === "auth_user" && u.nidStatus === "pending");
   }, [users]);
 
   const triggerSuspension = (userId: string, name: string) => {
@@ -440,6 +505,92 @@ export function AdminDashboardClient() {
  
       </div>
 
+      {/* ── Pending NID Verifications Queue ── */}
+      <div className="rounded-2xl border border-border-default bg-bg-surface p-5 sm:p-6 shadow-sm">
+        <div className="space-y-4">
+          <div className="flex items-center justify-between border-b border-border-default/50 pb-4">
+            <div>
+              <h3 className="font-heading text-base font-bold text-text-primary">Buyer NID Verification Queue</h3>
+              <p className="text-xs text-text-muted font-medium mt-0.5">Verify buyer identities to unlock agent/owner contact details and inquiries</p>
+            </div>
+            <span className="text-[10px] font-bold text-text-muted uppercase tracking-widest bg-bg-alt px-2.5 py-1 rounded-lg border border-border-default shrink-0">
+              Pending: {pendingNidUsers.length}
+            </span>
+          </div>
+
+          <div className="overflow-x-auto">
+            {pendingNidUsers.length === 0 ? (
+              <div className="py-12 text-center text-text-muted text-xs font-bold flex flex-col items-center gap-2">
+                <CheckCircle className="h-8 w-8 text-emerald-500" />
+                <span>All buyer NID verifications cleared!</span>
+              </div>
+            ) : (
+              <table className="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr className="border-b border-border-default text-text-muted font-extrabold uppercase select-none">
+                    <th className="py-2.5 px-3">Buyer Name</th>
+                    <th className="py-2.5 px-3">Email Address</th>
+                    <th className="py-2.5 px-3">NID Card Number</th>
+                    <th className="py-2.5 px-3">Document Preview</th>
+                    <th className="py-2.5 px-3">Submitted At</th>
+                    <th className="py-2.5 px-3 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border-default/40 text-text-secondary font-medium">
+                  {pendingNidUsers.map((user) => (
+                    <tr key={user.id} className="hover:bg-bg-alt/40 transition-colors">
+                      <td className="py-2.5 px-3">
+                        <span className="font-bold text-text-primary block">{user.name}</span>
+                      </td>
+                      <td className="py-2.5 px-3">
+                        <span className="text-text-secondary block">{user.email}</span>
+                      </td>
+                      <td className="py-2.5 px-3">
+                        <span className="font-mono text-text-primary block">{user.nidCardNumber || "—"}</span>
+                      </td>
+                      <td className="py-2.5 px-3">
+                        {user.nidDocumentUrl ? (
+                          <button
+                            onClick={() => handleViewNid(user)}
+                            className="text-accent-primary hover:underline font-bold text-[11px] uppercase cursor-pointer"
+                          >
+                            View Document
+                          </button>
+                        ) : (
+                          <span className="text-text-muted">No document</span>
+                        )}
+                      </td>
+                      <td className="py-2.5 px-3 text-text-muted">
+                        {user.nidSubmittedAt ? new Date(user.nidSubmittedAt).toLocaleDateString() : "—"}
+                      </td>
+                      <td className="py-2.5 px-3 text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          <Button
+                            onClick={() => handleTriggerNidReject(user.id, user.name)}
+                            size="sm"
+                            variant="outline"
+                            className="h-8 text-rose-500 hover:text-rose-600 border-border-default font-bold text-[11px] px-2.5 rounded-lg cursor-pointer"
+                          >
+                            Reject
+                          </Button>
+                          <Button
+                            onClick={() => handleApproveNid(user.id, user.name)}
+                            size="sm"
+                            className="h-8 bg-emerald-500/10 hover:bg-emerald-500 text-emerald-600 dark:text-emerald-400 hover:text-white border border-emerald-500/20 hover:border-transparent transition-all font-bold text-[11px] px-2.5 rounded-lg cursor-pointer"
+                          >
+                            Approve
+                          </Button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
+        </div>
+      </div>
+
       {/* ── Custom Suspension Dialog ── */}
       <Dialog open={showBanDialog} onOpenChange={setShowBanDialog}>
         <DialogContent className="max-w-md bg-bg-surface border-border-default text-text-primary rounded-3xl p-6 shadow-2xl">
@@ -500,6 +651,69 @@ export function AdminDashboardClient() {
           agentName={selectedAgentForDoc.name}
           licenseNumber={selectedAgentForDoc.legalDocs.licenseNumber}
           agencyName={selectedAgentForDoc.legalDocs.agencyName}
+        />
+      )}
+
+      {/* ── Custom NID Rejection Dialog ── */}
+      <Dialog open={showNidRejectDialog} onOpenChange={setShowNidRejectDialog}>
+        <DialogContent className="max-w-md bg-bg-surface border-border-default text-text-primary rounded-3xl p-6 shadow-2xl">
+          <DialogHeader className="flex flex-col items-center justify-center text-center pb-4 border-b border-border-default">
+            <div className="h-12 w-12 rounded-full bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-500 mb-3">
+              <ShieldAlert className="h-6 w-6" />
+            </div>
+            <DialogTitle className="text-text-primary text-lg font-bold font-heading">Reject NID Submission</DialogTitle>
+            <DialogDescription className="text-text-muted text-xs mt-1">
+              Specify the reason why &ldquo;{nidRejectUserName}&rdquo;&apos;s NID submission is being rejected.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 py-4">
+            <div className="space-y-1.5">
+              <label className="text-[11px] font-bold text-text-muted uppercase tracking-wider">
+                Reason for Rejection *
+              </label>
+              <textarea
+                placeholder="e.g. NID image is blurry, name does not match profile, etc."
+                value={nidRejectReason}
+                onChange={(e) => setNidRejectReason(e.target.value)}
+                rows={4}
+                className="w-full text-sm border bg-bg-base text-text-primary border-border-default rounded-xl p-3 focus:outline-none focus:ring-1 focus:ring-accent-primary transition-all resize-none font-medium"
+                required
+              />
+            </div>
+          </div>
+
+          <div className="flex gap-3">
+            <Button
+              onClick={() => setShowNidRejectDialog(false)}
+              variant="outline"
+              className="flex-1 h-10 rounded-xl border-border-default text-text-secondary cursor-pointer"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={confirmNidRejection}
+              disabled={!nidRejectReason.trim()}
+              className="flex-1 h-10 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs"
+            >
+              Reject NID
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* ── NID Document Viewer Modal ── */}
+      {selectedUserForNid && selectedUserForNid.nidDocumentUrl && (
+        <DocumentViewer
+          isOpen={showNidDocViewer}
+          onClose={() => {
+            setShowNidDocViewer(false);
+            setSelectedUserForNid(null);
+          }}
+          documentUrl={selectedUserForNid.nidDocumentUrl}
+          agentName={selectedUserForNid.name}
+          licenseNumber={selectedUserForNid.nidCardNumber}
+          agencyName="Buyer NID Card"
         />
       )}
  

@@ -235,23 +235,20 @@ function RatingBreakdown({ reviews }: { reviews: MockAgent["reviews"] }) {
 // Main client page
 // ─────────────────────────────────────────────
 export function AgentProfileClient({ agent, relatedAgents = [] }: { agent: MockAgent; relatedAgents?: MockAgent[] }) {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isLoading, currentUser } = useAuth();
   const router = useRouter();
 
-  React.useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
-      toast.error("Authentication required", { description: "Please sign in to view agent profiles." });
-      router.push("/login?callbackUrl=" + encodeURIComponent(window.location.pathname));
-    }
-  }, [isLoading, isAuthenticated, router]);
+  const isNidVerified = currentUser
+    ? (currentUser.role !== 'auth_user' || currentUser.nidStatus === 'verified')
+    : false;
 
   const [saved, setSaved] = React.useState(false);
 
-  if (isLoading || !isAuthenticated) {
+  if (isLoading) {
     return (
       <div className="min-h-screen bg-bg-base flex flex-col items-center justify-center gap-4 text-text-primary">
         <Loader2 className="h-10 w-10 text-accent-primary animate-spin" />
-        <p className="text-sm font-semibold text-text-muted">Loading profile security guards...</p>
+        <p className="text-sm font-semibold text-text-muted">Loading profile details...</p>
       </div>
     );
   }
@@ -270,27 +267,27 @@ export function AgentProfileClient({ agent, relatedAgents = [] }: { agent: MockA
   };
 
   return (
-    <div className="min-h-screen bg-bg-base">
+    <div className="min-h-screen bg-bg-base relative">
       {/* ── Hero banner ─────────────────────────────────── */}
       <div className="relative h-64 sm:h-80 overflow-hidden">
         <img
           src={agent.coverImage}
           alt="Agent cover"
-          className="w-full h-full object-cover"
+          className={cn("w-full h-full object-cover", !isNidVerified && "blur-md select-none pointer-events-none")}
         />
         <div className="absolute inset-0 bg-linear-to-t from-accent-navy/90 via-accent-navy/50 to-transparent" />
 
         {/* Back button */}
         <Link
           href="/agents"
-          className="absolute top-5 left-4 sm:left-8 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/40 backdrop-blur-sm border border-white/15 text-white text-[12px] font-semibold hover:bg-black/60 transition-all duration-200"
+          className="absolute top-5 left-4 sm:left-8 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/40 backdrop-blur-sm border border-white/15 text-white text-[12px] font-semibold hover:bg-black/60 transition-all duration-200 z-10"
         >
           <ArrowLeft className="h-3.5 w-3.5" />
           All Agents
         </Link>
 
         {/* Action buttons */}
-        <div className="absolute top-5 right-4 sm:right-8 flex items-center gap-2">
+        <div className="absolute top-5 right-4 sm:right-8 flex items-center gap-2 z-10">
           <button
             onClick={() => { setSaved(!saved); toast.success(saved ? "Removed from saved" : "Agent saved!"); }}
             className={cn(
@@ -314,7 +311,7 @@ export function AgentProfileClient({ agent, relatedAgents = [] }: { agent: MockA
       </div>
 
       {/* ── Page content ──────────────────────────────────── */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className={cn("max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative", !isNidVerified && "blur-md select-none pointer-events-none")}>
         {/* Agent identity row */}
         <div className="relative -mt-16 sm:-mt-20 mb-8 flex flex-col sm:flex-row sm:items-end gap-4">
           {/* Avatar */}
@@ -580,6 +577,57 @@ export function AgentProfileClient({ agent, relatedAgents = [] }: { agent: MockA
           </div>
         )}
       </div>
+
+      {!isNidVerified && (
+        <div className="absolute inset-x-0 bottom-0 top-24 z-30 flex items-center justify-center p-4 sm:p-8 bg-bg-base/30 backdrop-blur-xs">
+          <div className="max-w-md w-full rounded-3xl border border-border-default/80 bg-bg-surface/90 backdrop-blur-xl p-6 sm:p-8 shadow-2xl text-center space-y-5 animate-in fade-in zoom-in-95 duration-300">
+            <div className="h-14 w-14 rounded-2xl bg-accent-primary/10 border border-accent-primary/20 flex items-center justify-center text-accent-primary mx-auto shadow-sm">
+              <svg className="h-7 w-7 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              </svg>
+            </div>
+            <div className="space-y-2">
+              <h2 className="text-xl sm:text-2xl font-bold font-heading text-text-primary">Identity Verification Required</h2>
+              <p className="text-xs sm:text-sm text-text-secondary leading-relaxed">
+                To protect our agents and owners, detailed contact info, experience metrics, client reviews, and direct inquiries are locked behind National ID verification.
+              </p>
+            </div>
+
+            <div className="pt-2">
+              {currentUser ? (
+                <div className="space-y-4">
+                  <div className="p-3.5 rounded-2xl bg-accent-primary/5 border border-accent-primary/10 text-left">
+                    <span className="text-[10px] font-bold text-accent-primary uppercase tracking-widest block mb-0.5">Verification Status</span>
+                    <span className="text-xs font-semibold text-text-primary capitalize">
+                      {currentUser.nidStatus === 'pending' ? 'Verification Pending Admin Review' : 
+                       currentUser.nidStatus === 'rejected' ? 'Verification Rejected (Resubmission Needed)' : 
+                       'Unverified (Action Required)'}
+                    </span>
+                  </div>
+                  <Link href="/dashboard/profile" className="block">
+                    <Button className="w-full h-11 rounded-xl bg-accent-primary text-white hover:bg-accent-primary-hov font-bold text-xs shadow-lg shadow-accent-primary/20 cursor-pointer">
+                      Submit NID Documentation
+                    </Button>
+                  </Link>
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 gap-3">
+                  <Link href="/login" className="block">
+                    <Button variant="outline" className="w-full h-11 rounded-xl border-border-default text-text-secondary font-bold text-xs cursor-pointer">
+                      Sign In
+                    </Button>
+                  </Link>
+                  <Link href="/register" className="block">
+                    <Button className="w-full h-11 rounded-xl bg-accent-primary text-white hover:bg-accent-primary-hov font-bold text-xs shadow-lg shadow-accent-primary/20 cursor-pointer">
+                      Register Now
+                    </Button>
+                  </Link>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

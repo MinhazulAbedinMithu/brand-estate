@@ -43,6 +43,11 @@ export interface IUser extends Document {
     documentUrl: string;
     submittedAt: Date;
   };
+  nidStatus?: 'unsubmitted' | 'pending' | 'verified' | 'rejected';
+  nidCardNumber?: string;
+  nidDocumentUrl?: string;
+  nidSubmittedAt?: Date;
+  nidRejectionReason?: string;
   verificationToken?: string;
   verificationTokenExpires?: Date;
   resetPasswordToken?: string;
@@ -119,6 +124,15 @@ const UserSchema = new Schema<IUser>(
       documentUrl: { type: String },
       submittedAt: { type: Date },
     },
+    nidStatus: {
+      type: String,
+      enum: ['unsubmitted', 'pending', 'verified', 'rejected'],
+      default: 'unsubmitted',
+    },
+    nidCardNumber: { type: String },
+    nidDocumentUrl: { type: String },
+    nidSubmittedAt: { type: Date },
+    nidRejectionReason: { type: String },
     avatar: {
       type: String,
       default: '',

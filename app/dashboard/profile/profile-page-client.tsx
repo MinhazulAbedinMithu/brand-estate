@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { User, Shield, Bell, AlertTriangle, Key, Mail, Phone, FileText, Check } from "lucide-react";
+import { User, Shield, Bell, AlertTriangle, Key, Mail, Phone, FileText, Check, UploadCloud, Loader2 } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -11,7 +11,18 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
 export function ProfilePageClient() {
-  const { currentUser } = useAuth();
+  const { currentUser, submitNidDocs } = useAuth();
+  
+  // NID form states
+  const [nidNumber, setNidNumber] = React.useState(currentUser?.nidCardNumber || "");
+  const [nidFile, setNidFile] = React.useState<File | null>(null);
+  const [uploadedUrl, setUploadedUrl] = React.useState(currentUser?.nidDocumentUrl || "");
+  const [uploading, setUploading] = React.useState(false);
+  const [progress, setProgress] = React.useState(0);
+  const [uploadComplete, setUploadComplete] = React.useState(!!currentUser?.nidDocumentUrl);
+  const [nidSubmitting, setNidSubmitting] = React.useState(false);
+
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
   
   // Form details states
   const [profileForm, setProfileForm] = React.useState({
@@ -44,13 +55,109 @@ export function ProfilePageClient() {
   const [deleteOpen, setDeleteOpen] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
 
-  // Initials
   const initials = profileForm.name
     .split(" ")
     .map((n) => n[0])
     .join("")
     .toUpperCase()
     .slice(0, 2);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      const selectedFile = files[0];
+      setNidFile(selectedFile);
+      startR2Upload(selectedFile);
+    }
+  };
+
+  const startR2Upload = async (selectedFile: File) => {
+    setUploading(true);
+    setProgress(5);
+    setUploadComplete(false);
+    setUploadedUrl("");
+
+    try {
+      const res = await fetch('/api/upload/presigned', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          filename: selectedFile.name,
+          contentType: selectedFile.type,
+          folder: 'buyers/nid'
+        })
+      });
+
+      if (!res.ok) throw new Error('Authorization or server permission error.');
+      const data = await res.json();
+      if (data.status !== 'success' || !data.uploadUrl || !data.publicUrl) {
+        throw new Error(data.message || 'Failed to acquire upload parameters.');
+      }
+
+      const { uploadUrl, publicUrl } = data;
+      setProgress(20);
+
+      const xhr = new XMLHttpRequest();
+      xhr.open('PUT', uploadUrl, true);
+      xhr.setRequestHeader('Content-Type', selectedFile.type);
+
+      xhr.upload.onprogress = (event) => {
+        if (event.lengthComputable) {
+          const percentage = Math.round((event.loaded / event.total) * 75) + 20; // 20% to 95%
+          setProgress(percentage);
+        }
+      };
+
+      xhr.onload = () => {
+        if (xhr.status === 200 || xhr.status === 201) {
+          setProgress(100);
+          setUploading(false);
+          setUploadComplete(true);
+          setUploadedUrl(publicUrl);
+          toast.success("Document uploaded successfully", { description: "File is ready for NID verification submission." });
+        } else {
+          setUploading(false);
+          toast.error("Upload failed", { description: `R2 endpoint rejected the file with status: ${xhr.status}` });
+        }
+      };
+
+      xhr.onerror = () => {
+        setUploading(false);
+        toast.error("Upload failed", { description: "Network error occurred during document upload." });
+      };
+
+      xhr.send(selectedFile);
+    } catch (err: unknown) {
+      const error = err as Error;
+      console.error(error);
+      setUploading(false);
+      toast.error("Upload failed", { description: error.message || "An unexpected error occurred." });
+    }
+  };
+
+  const handleNidSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!nidNumber.trim() || !uploadedUrl) {
+      toast.error("Form error", { description: "NID number and uploaded NID document are required." });
+      return;
+    }
+
+    setNidSubmitting(true);
+    try {
+      const res = await submitNidDocs(nidNumber, uploadedUrl);
+      if (res.success) {
+        toast.success("NID Submitted", { description: "Your identity details are now pending review." });
+      } else {
+        toast.error("Submission failed", { description: "Could not submit your identity details." });
+      }
+    } catch (err: unknown) {
+      const error = err as Error;
+      console.error(error);
+      toast.error("Submission error", { description: error.message || "Something went wrong." });
+    } finally {
+      setNidSubmitting(false);
+    }
+  };
 
   const handleProfileSave = (e: React.FormEvent) => {
     e.preventDefault();
@@ -166,6 +273,143 @@ export function ProfilePageClient() {
         {/* Right Side: Settings Forms */}
         <div className="lg:col-span-2 space-y-8">
           
+          {/* Card: Identity Verification (NID) - ONLY FOR BUYERS */}
+          {currentUser?.role === 'auth_user' && (
+            <div className="rounded-2xl border border-border-default/60 bg-bg-surface p-5 sm:p-6 shadow-sm space-y-5">
+              <h3 className="font-heading text-base font-bold text-text-primary border-b border-border-default/50 pb-3 flex items-center gap-2">
+                <Shield className="h-5 w-5 text-accent-primary" />
+                National ID (NID) Verification
+              </h3>
+
+              {currentUser.nidStatus === 'verified' && (
+                <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-4 space-y-2">
+                  <div className="flex items-center gap-2 text-xs font-bold text-emerald-400">
+                    <Check className="h-4 w-4 shrink-0" />
+                    <span>Identity Verified via NID</span>
+                  </div>
+                  <p className="text-[11px] text-text-secondary leading-relaxed">
+                    Your identity has been verified. You now have full access to agent details and inquiry forms.
+                  </p>
+                  <div className="text-xs pt-2 border-t border-emerald-500/10 grid grid-cols-2 gap-2 text-text-secondary">
+                    <div>
+                      <span className="text-[9px] text-text-muted uppercase tracking-wider block">NID Card Number</span>
+                      <span className="font-semibold">{currentUser.nidCardNumber ? `${currentUser.nidCardNumber.slice(0, 4)}-XXXX-XXXX` : 'Verified'}</span>
+                    </div>
+                    <div>
+                      <span className="text-[9px] text-text-muted uppercase tracking-wider block">Verified Date</span>
+                      <span className="font-semibold">{currentUser.nidSubmittedAt ? new Date(currentUser.nidSubmittedAt).toLocaleDateString() : 'N/A'}</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {currentUser.nidStatus === 'pending' && (
+                <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-4 space-y-2">
+                  <div className="flex items-center gap-2 text-xs font-bold text-amber-400">
+                    <Loader2 className="h-4 w-4 animate-spin shrink-0" />
+                    <span>Verification Pending Review</span>
+                  </div>
+                  <p className="text-[11px] text-text-secondary leading-relaxed">
+                    Your National ID (NID) details have been submitted. Our administrators are currently reviewing your documents.
+                  </p>
+                  <div className="text-xs pt-2 border-t border-amber-500/10 grid grid-cols-1 gap-2 text-text-secondary">
+                    <div>
+                      <span className="text-[9px] text-text-muted uppercase tracking-wider block">Submitted NID Number</span>
+                      <span className="font-semibold">{currentUser.nidCardNumber}</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {(currentUser.nidStatus === 'unsubmitted' || currentUser.nidStatus === 'rejected') && (
+                <div className="space-y-4">
+                  {currentUser.nidStatus === 'rejected' && (
+                    <div className="rounded-xl border border-rose-500/20 bg-rose-500/5 p-4 space-y-1">
+                      <div className="flex items-center gap-2 text-xs font-bold text-rose-400">
+                        <AlertTriangle className="h-4 w-4 shrink-0" />
+                        <span>Verification Rejected</span>
+                      </div>
+                      <p className="text-[11px] text-text-secondary leading-relaxed">
+                        Rejection Reason: <span className="font-semibold text-rose-300">{currentUser.nidRejectionReason || 'No reason specified'}</span>. Please submit again.
+                      </p>
+                    </div>
+                  )}
+
+                  <p className="text-xs text-text-secondary leading-relaxed">
+                    To unlock agent listings, contact information, and property inquiry submissions, please provide your National ID details.
+                  </p>
+
+                  <form onSubmit={handleNidSubmit} className="space-y-4">
+                    <div className="space-y-1.5">
+                      <label className="text-[11px] font-bold text-text-secondary uppercase tracking-wider">NID Card Number <span className="text-rose-500">*</span></label>
+                      <Input
+                        placeholder="e.g. 19954712896541"
+                        value={nidNumber}
+                        onChange={(e) => setNidNumber(e.target.value)}
+                        className="h-10 rounded-xl border-border-default bg-bg-base text-sm text-text-primary"
+                        required
+                      />
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <label className="text-[11px] font-bold text-text-secondary uppercase tracking-wider">NID Document (PDF/Image) <span className="text-rose-500">*</span></label>
+                      <div className="flex flex-col gap-2">
+                        <div 
+                          onClick={() => fileInputRef.current?.click()}
+                          className={cn(
+                            "flex flex-col items-center justify-center border border-dashed rounded-xl p-5 cursor-pointer bg-bg-base/30 transition-all hover:bg-bg-base/50",
+                            uploadComplete ? "border-emerald-500/40 bg-emerald-500/5" : "border-border-default hover:border-accent-primary"
+                          )}
+                        >
+                          <input
+                            type="file"
+                            ref={fileInputRef}
+                            onChange={handleFileChange}
+                            className="hidden"
+                            accept="image/*,application/pdf"
+                          />
+                          {uploading ? (
+                            <div className="flex flex-col items-center gap-2">
+                              <Loader2 className="h-6 w-6 text-accent-primary animate-spin" />
+                              <span className="text-[10px] text-text-secondary font-medium">Uploading document ({progress}%)</span>
+                            </div>
+                          ) : uploadComplete ? (
+                            <div className="flex flex-col items-center gap-1.5">
+                              <Check className="h-6 w-6 text-emerald-400" />
+                              <span className="text-xs font-bold text-text-primary">NID Document Uploaded</span>
+                              <span className="text-[9px] text-text-muted truncate max-w-xs">{nidFile?.name || "Uploaded document"}</span>
+                            </div>
+                          ) : (
+                            <div className="flex flex-col items-center gap-1">
+                              <UploadCloud className="h-6 w-6 text-accent-primary" />
+                              <span className="text-xs font-bold text-text-primary">Drag & drop or click to upload NID document</span>
+                              <span className="text-[9px] text-text-muted">Accepts JPEG, PNG, or PDF formats</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    <Button
+                      type="submit"
+                      disabled={nidSubmitting || !uploadComplete || !nidNumber.trim()}
+                      className="w-full h-10 rounded-xl bg-accent-primary hover:bg-accent-primary/95 text-white font-bold text-xs shadow-md transition-all active:scale-98 flex items-center justify-center gap-2"
+                    >
+                      {nidSubmitting ? (
+                        <>
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                          <span>Submitting verification request...</span>
+                        </>
+                      ) : (
+                        <span>Submit NID for Verification</span>
+                      )}
+                    </Button>
+                  </form>
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Card 1: Personal Details */}
           <div className="rounded-2xl border border-border-default/60 bg-bg-surface p-5 sm:p-6 shadow-sm space-y-5">
             <h3 className="font-heading text-base font-bold text-text-primary border-b border-border-default/50 pb-3">
