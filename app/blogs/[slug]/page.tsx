@@ -3,6 +3,7 @@ import { Metadata } from "next";
 import { BlogDetailClient } from "./blog-detail-client";
 import { connectDB } from "@/lib/db/mongoose";
 import { BlogPost } from "@/lib/db/models/blog-post.model";
+import { getBlogPostSchema } from "@/lib/seo-json-ld";
 
 interface DetailPageProps {
   params: Promise<{ slug: string }>;
@@ -56,5 +57,20 @@ export async function generateMetadata({ params }: DetailPageProps): Promise<Met
 
 export default async function BlogPostDetailPage({ params }: DetailPageProps) {
   const { slug } = await params;
-  return <BlogDetailClient slug={slug} />;
+
+  await connectDB();
+  const post = await BlogPost.findOne({ slug: slug.toLowerCase() }).lean();
+  const jsonLd = getBlogPostSchema(post);
+
+  return (
+    <>
+      {jsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      )}
+      <BlogDetailClient slug={slug} />
+    </>
+  );
 }

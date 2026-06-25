@@ -293,11 +293,12 @@ export function UsersClient() {
                         <span className={cn(
                           "text-[9px] font-bold px-2.5 py-0.5 rounded-full border uppercase tracking-wider",
                           u.role === "agent" ? "text-emerald-600 dark:text-emerald-400 bg-emerald-500/5 border-emerald-500/20" :
+                          u.role === "owner" ? "text-cyan-600 dark:text-cyan-400 bg-cyan-500/5 border-cyan-500/20" :
                           u.role === "admin" ? "text-violet-600 bg-violet-500/5 border border-violet-500/20 dark:text-violet-400" :
                           u.role === "super_admin" ? "text-amber-600 dark:text-amber-400 bg-amber-500/5 border-amber-500/20" :
                           "text-blue-600 dark:text-blue-400 bg-blue-500/5 border-blue-500/20"
                         )}>
-                          {u.role === "auth_user" ? "Member" : u.role === "super_admin" ? "Super Admin" : u.role}
+                          {u.role === "auth_user" ? "Member" : u.role === "super_admin" ? "Super Admin" : u.role === "owner" ? "Owner" : u.role}
                         </span>
                       </td>
 
@@ -389,19 +390,19 @@ export function UsersClient() {
                 <span className="text-[10px] text-text-muted font-semibold block mt-1">{inspectedUser.email}</span>
               </div>
 
-              {/* Legal Documentation Details (Agent only) */}
-              {inspectedUser.role === "agent" && inspectedUser.legalDocs ? (
+              {/* Legal Documentation Details (Agent / Owner) */}
+              {(inspectedUser.role === "agent" || inspectedUser.role === "owner") && inspectedUser.legalDocs ? (
                 <div className="space-y-3 p-4 rounded-xl border border-border-default bg-bg-alt/30">
                   <h5 className="text-[10px] font-bold text-text-primary uppercase tracking-widest flex items-center gap-1.5">
                     <FileText className="h-3.5 w-3.5 text-accent-primary" /> Submitted Credentials
                   </h5>
                   <div className="space-y-2 text-xs font-medium">
                     <div className="flex justify-between py-1.5 border-b border-border-default">
-                      <span className="text-text-muted">License Number</span>
+                      <span className="text-text-muted">{inspectedUser.role === "owner" ? "Land / Property ID" : "License Number"}</span>
                       <span className="font-mono font-bold text-text-primary">{inspectedUser.legalDocs.licenseNumber}</span>
                     </div>
                     <div className="flex justify-between py-1.5 border-b border-border-default">
-                      <span className="text-text-muted">Agency / Brokerage</span>
+                      <span className="text-text-muted">{inspectedUser.role === "owner" ? "Business / Property" : "Agency / Brokerage"}</span>
                       <span className="font-bold text-text-primary">{inspectedUser.legalDocs.agencyName}</span>
                     </div>
                     <div className="flex justify-between py-1.5 border-b border-border-default">
@@ -422,7 +423,7 @@ export function UsersClient() {
                     </div>
                   </div>
                 </div>
-              ) : inspectedUser.role === "agent" && (
+              ) : (inspectedUser.role === "agent" || inspectedUser.role === "owner") && (
                 <div className="p-4 rounded-xl border border-dashed border-border-default bg-bg-alt/20 text-center text-xs text-text-muted font-bold">
                   No licensing documentation submitted yet.
                 </div>

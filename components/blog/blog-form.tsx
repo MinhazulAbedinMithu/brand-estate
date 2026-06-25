@@ -68,7 +68,18 @@ export function BlogForm({
   const [ogDescription, setOgDescription] = React.useState(initialPost?.seo.ogDescription || "");
   const [ogImage, setOgImage] = React.useState(initialPost?.seo.ogImage || "");
   const [useCoverAsOg, setUseCoverAsOg] = React.useState(
-    !initialPost?.seo.ogImage || initialPost?.seo.ogImage === initialPost?.coverImage
+    !initialPost || !initialPost.seo.ogImage || initialPost.seo.ogImage === initialPost.coverImage
+  );
+
+  // Sync state options
+  const [syncTitle, setSyncTitle] = React.useState(
+    !initialPost || !initialPost.seo.title || initialPost.seo.title === initialPost.title
+  );
+  const [syncDesc, setSyncDesc] = React.useState(
+    !initialPost || !initialPost.seo.metaDescription || initialPost.seo.metaDescription === initialPost.excerpt
+  );
+  const [syncKeywords, setSyncKeywords] = React.useState(
+    !initialPost || !initialPost.seo.keywords || initialPost.seo.keywords.join(", ") === initialPost.tags.join(", ")
   );
 
   const [isSubmitting, setIsSubmitting] = React.useState(false);
@@ -95,6 +106,9 @@ export function BlogForm({
         setUseCoverAsOg(
           !initialPost.seo.ogImage || initialPost.seo.ogImage === initialPost.coverImage
         );
+        setSyncTitle(!initialPost.seo.title || initialPost.seo.title === initialPost.title);
+        setSyncDesc(!initialPost.seo.metaDescription || initialPost.seo.metaDescription === initialPost.excerpt);
+        setSyncKeywords(!initialPost.seo.keywords || initialPost.seo.keywords.join(", ") === initialPost.tags.join(", "));
       });
     }
   }, [initialPost]);
@@ -170,7 +184,14 @@ export function BlogForm({
             required
             placeholder="e.g. Navigating the Hamptons Summer Market"
             value={title}
-            onChange={(e) => setTitle(e.target.value)}
+            onChange={(e) => {
+              const val = e.target.value;
+              setTitle(val);
+              if (syncTitle) {
+                setSeoTitle(val);
+                setOgTitle(val);
+              }
+            }}
             className="w-full h-10 px-3.5 rounded-xl border border-border-default bg-bg-base text-text-primary focus:border-accent-primary outline-none transition-colors"
           />
         </div>
@@ -183,7 +204,14 @@ export function BlogForm({
             maxLength={160}
             placeholder="Enter a brief summary (150-160 characters for optimal search results)."
             value={excerpt}
-            onChange={(e) => setExcerpt(e.target.value)}
+            onChange={(e) => {
+              const val = e.target.value;
+              setExcerpt(val);
+              if (syncDesc) {
+                setSeoDescription(val);
+                setOgDescription(val);
+              }
+            }}
             className="w-full p-3 rounded-xl border border-border-default bg-bg-base text-text-primary focus:border-accent-primary outline-none transition-colors"
           />
           <span className="text-[10px] text-text-muted float-right">{excerpt.length}/160 characters</span>
@@ -206,7 +234,12 @@ export function BlogForm({
           <div className="col-span-2">
             <TagInput
               value={tagsInput}
-              onChange={setTagsInput}
+              onChange={(val) => {
+                setTagsInput(val);
+                if (syncKeywords) {
+                  setSeoKeywords(val);
+                }
+              }}
               label="Tags"
               labelInfo="(select preset or type & press Enter/comma)"
               placeholder="e.g. Valuation, Selling, Hacks"
@@ -217,7 +250,12 @@ export function BlogForm({
 
         <ImageUploader
           value={coverImage}
-          onChange={setCoverImage}
+          onChange={(val) => {
+            setCoverImage(val);
+            if (useCoverAsOg) {
+              setOgImage(val);
+            }
+          }}
           label="Cover Image"
           required
         />
@@ -231,124 +269,248 @@ export function BlogForm({
       </div>
 
       {/* SEO Metadata Section */}
-      <div className="space-y-4 pt-4 border-t border-border-default/45">
-        <h4 className="text-xs font-bold text-accent-primary uppercase tracking-wider border-b border-border-default pb-1 flex items-center gap-1">
-          <Globe className="h-3.5 w-3.5" />
-          SEO Search Engine Meta Settings
-        </h4>
-
-        <div className="space-y-1.5">
-          <label className="text-xs font-bold text-text-secondary">SEO Meta Title</label>
-          <input
-            type="text"
-            placeholder="Custom browser title tag override"
-            value={seoTitle}
-            onChange={(e) => setSeoTitle(e.target.value)}
-            className="w-full h-10 px-3.5 rounded-xl border border-border-default bg-bg-base text-text-primary focus:border-accent-primary outline-none transition-colors"
-          />
+      <div className="space-y-6 pt-6 border-t border-border-default/45">
+        <div>
+          <h4 className="text-sm font-bold text-text-primary font-heading flex items-center gap-2">
+            <Globe className="h-4.5 w-4.5 text-accent-primary" />
+            SEO Search Engine Optimization
+          </h4>
+          <p className="text-[11px] text-text-muted mt-1 leading-normal font-medium">
+            Brand Estate automates metadata mapping by default. Use the toggle switchboard below to override specific SEO and social parameters.
+          </p>
         </div>
 
-        <div className="space-y-1.5">
-          <label className="text-xs font-bold text-text-secondary">SEO Meta Description</label>
-          <textarea
-            rows={2}
-            maxLength={160}
-            placeholder="Custom search description in SERP results"
-            value={seoDescription}
-            onChange={(e) => setSeoDescription(e.target.value)}
-            className="w-full p-3 rounded-xl border border-border-default bg-bg-base text-text-primary focus:border-accent-primary outline-none transition-colors"
-          />
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <TagInput
-            value={seoKeywords}
-            onChange={setSeoKeywords}
-            label="Target Keywords"
-            labelInfo="(select preset or type & press Enter/comma)"
-            placeholder="e.g. real estate ROI, mortgage tips"
-            suggestions={SUGGESTED_TAGS}
-          />
-
-          <div className="space-y-1.5 col-span-2">
-            <label className="text-xs font-bold text-text-secondary">Canonical URL</label>
-            <input
-              type="text"
-              placeholder="Cross-site canonical link tag reference"
-              value={canonicalUrl}
-              onChange={(e) => setCanonicalUrl(e.target.value)}
-              className="w-full h-10 px-3.5 rounded-xl border border-border-default bg-bg-base text-text-primary focus:border-accent-primary outline-none transition-colors"
-            />
-          </div>
-        </div>
-
-        {/* Indexing Option */}
-        <div className="flex items-center justify-between p-3.5 rounded-xl bg-bg-elevated border border-border-default/60">
-          <div>
-            <span className="text-xs font-bold text-text-primary block">Search Engine Visibility</span>
-            <span className="text-[10px] text-text-muted">Disable this to request search engines not to index this article.</span>
-          </div>
-          <label className="relative inline-flex items-center cursor-pointer select-none">
-            <input
-              type="checkbox"
-              checked={!noIndex}
-              onChange={(e) => setNoIndex(!e.target.checked)}
-              className="sr-only peer"
-            />
-            <div className="w-9 h-5 bg-bg-base peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-text-muted after:border-border-default after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-accent-primary peer-checked:after:bg-white"></div>
-          </label>
-        </div>
-
-        {/* OpenGraph / Social Section */}
-        <div className="space-y-4 pt-3 border-t border-border-default/40 border-dashed">
-          <span className="text-[11px] font-bold text-text-muted uppercase tracking-widest block">OpenGraph (Social Share Preview) Settings</span>
-
-          <div className="space-y-1.5">
-            <label className="text-xs font-bold text-text-secondary">OG Title</label>
-            <input
-              type="text"
-              placeholder="Social title card shown when shared on Slack, Facebook, etc."
-              value={ogTitle}
-              onChange={(e) => setOgTitle(e.target.value)}
-              className="w-full h-10 px-3.5 rounded-xl border border-border-default bg-bg-base text-text-primary focus:border-accent-primary outline-none transition-colors"
-            />
-          </div>
-
-          <div className="space-y-1.5">
-            <label className="text-xs font-bold text-text-secondary">OG Description</label>
-            <textarea
-              rows={2}
-              placeholder="Custom description snippet shown when shared"
-              value={ogDescription}
-              onChange={(e) => setOgDescription(e.target.value)}
-              className="w-full p-3 rounded-xl border border-border-default bg-bg-base text-text-primary focus:border-accent-primary outline-none transition-colors"
-            />
-          </div>
-
-          {/* Option to toggle custom OG image */}
-          <div className="flex items-center justify-between p-3.5 rounded-xl bg-bg-elevated border border-border-default/60">
-            <div>
-              <span className="text-xs font-bold text-text-primary block">Use Cover Photo as Social Preview</span>
-              <span className="text-[10px] text-text-muted">Automatically use the cover image as the social share preview image (highly recommended).</span>
+        {/* ─── Sync Control Switchboard ─── */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 bg-bg-alt/40 p-4 rounded-2xl border border-border-default/60">
+          
+          {/* Sync Title */}
+          <div className="flex items-center justify-between p-3.5 rounded-xl bg-bg-surface border border-border-default shadow-xs">
+            <div className="space-y-0.5">
+              <span className="text-xs font-bold text-text-primary block">Auto-Sync Title</span>
+              <p className="text-[9px] text-text-muted leading-tight">Use article title for search & social</p>
             </div>
-            <label className="relative inline-flex items-center cursor-pointer select-none">
-              <input 
-                type="checkbox" 
-                checked={useCoverAsOg} 
-                onChange={(e) => setUseCoverAsOg(e.target.checked)} 
-                className="sr-only peer" 
+            <label className="relative inline-flex items-center cursor-pointer select-none shrink-0">
+              <input
+                type="checkbox"
+                checked={syncTitle}
+                onChange={(e) => {
+                  const checked = e.target.checked;
+                  setSyncTitle(checked);
+                  if (checked) {
+                    setSeoTitle(title);
+                    setOgTitle(title);
+                  }
+                }}
+                className="sr-only peer"
               />
-              <div className="w-9 h-5 bg-bg-base peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-text-muted after:border-border-default after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-accent-primary peer-checked:after:bg-white"></div>
+              <div className="w-8 h-4.5 bg-bg-base peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-text-muted after:border-border-default after:border after:rounded-full after:h-3.5 after:w-3.5 after:transition-all peer-checked:bg-accent-primary peer-checked:after:bg-white"></div>
             </label>
           </div>
 
-          {!useCoverAsOg && (
-            <ImageUploader
-              value={ogImage}
-              onChange={setOgImage}
-              label="Custom Social Share (OG) Preview Image"
-            />
+          {/* Sync Description */}
+          <div className="flex items-center justify-between p-3.5 rounded-xl bg-bg-surface border border-border-default shadow-xs">
+            <div className="space-y-0.5">
+              <span className="text-xs font-bold text-text-primary block">Auto-Sync Desc</span>
+              <p className="text-[9px] text-text-muted leading-tight">Use excerpt summary for metadata</p>
+            </div>
+            <label className="relative inline-flex items-center cursor-pointer select-none shrink-0">
+              <input
+                type="checkbox"
+                checked={syncDesc}
+                onChange={(e) => {
+                  const checked = e.target.checked;
+                  setSyncDesc(checked);
+                  if (checked) {
+                    setSeoDescription(excerpt);
+                    setOgDescription(excerpt);
+                  }
+                }}
+                className="sr-only peer"
+              />
+              <div className="w-8 h-4.5 bg-bg-base peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-text-muted after:border-border-default after:border after:rounded-full after:h-3.5 after:w-3.5 after:transition-all peer-checked:bg-accent-primary peer-checked:after:bg-white"></div>
+            </label>
+          </div>
+
+          {/* Sync Keywords */}
+          <div className="flex items-center justify-between p-3.5 rounded-xl bg-bg-surface border border-border-default shadow-xs">
+            <div className="space-y-0.5">
+              <span className="text-xs font-bold text-text-primary block">Auto-Sync Keywords</span>
+              <p className="text-[9px] text-text-muted leading-tight">Use tags list for target keywords</p>
+            </div>
+            <label className="relative inline-flex items-center cursor-pointer select-none shrink-0">
+              <input
+                type="checkbox"
+                checked={syncKeywords}
+                onChange={(e) => {
+                  const checked = e.target.checked;
+                  setSyncKeywords(checked);
+                  if (checked) {
+                    setSeoKeywords(tagsInput);
+                  }
+                }}
+                className="sr-only peer"
+              />
+              <div className="w-8 h-4.5 bg-bg-base peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-text-muted after:border-border-default after:border after:rounded-full after:h-3.5 after:w-3.5 after:transition-all peer-checked:bg-accent-primary peer-checked:after:bg-white"></div>
+            </label>
+          </div>
+
+          {/* Sync OG Image */}
+          <div className="flex items-center justify-between p-3.5 rounded-xl bg-bg-surface border border-border-default shadow-xs">
+            <div className="space-y-0.5">
+              <span className="text-xs font-bold text-text-primary block">Sync Social Image</span>
+              <p className="text-[9px] text-text-muted leading-tight">Use cover photo for social cards</p>
+            </div>
+            <label className="relative inline-flex items-center cursor-pointer select-none shrink-0">
+              <input
+                type="checkbox"
+                checked={useCoverAsOg}
+                onChange={(e) => {
+                  const checked = e.target.checked;
+                  setUseCoverAsOg(checked);
+                  if (checked) {
+                    setOgImage(coverImage);
+                  }
+                }}
+                className="sr-only peer"
+              />
+              <div className="w-8 h-4.5 bg-bg-base peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-text-muted after:border-border-default after:border after:rounded-full after:h-3.5 after:w-3.5 after:transition-all peer-checked:bg-accent-primary peer-checked:after:bg-white"></div>
+            </label>
+          </div>
+
+        </div>
+
+        {/* ─── Google SERP Visual Preview ─── */}
+        <div className="border border-border-default rounded-2xl p-5 bg-[#0F172A] text-left shadow-lg select-none space-y-2">
+          <div className="flex items-center gap-2 text-slate-400 text-[10px] uppercase font-bold tracking-wider mb-1">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" /> Google Search Preview (Live)
+          </div>
+          <div className="space-y-1">
+            <div className="text-xs text-slate-400 font-normal truncate leading-tight">
+              brandestate.com/blogs/{(initialPost?.slug || title.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "")) || "article-slug"}
+            </div>
+            <div className="text-[17px] text-[#8ab4f8] hover:underline font-normal font-sans leading-snug cursor-pointer truncate">
+              {seoTitle.trim() || title.trim() || "Untitled Blog Post"}
+            </div>
+            <div className="text-sm text-slate-300 leading-normal font-normal line-clamp-2 max-w-2xl font-sans">
+              {seoDescription.trim() || excerpt.trim() || "No meta description has been specified. Search engines will automatically scrape the article body..."}
+            </div>
+          </div>
+        </div>
+
+        {/* ─── Custom SEO Overrides ─── */}
+        <div className="space-y-4">
+          
+          {/* Custom Titles override */}
+          {!syncTitle && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 rounded-2xl border border-border-default/80 bg-bg-alt/10 animate-fade-in">
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-text-secondary">SEO Meta Title</label>
+                <input
+                  type="text"
+                  placeholder="Custom browser title tag override"
+                  value={seoTitle}
+                  onChange={(e) => setSeoTitle(e.target.value)}
+                  className="w-full h-10 px-3.5 rounded-xl border border-border-default bg-bg-base text-text-primary focus:border-accent-primary outline-none transition-colors"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-text-secondary">Social OG Title</label>
+                <input
+                  type="text"
+                  placeholder="Social title card shown when shared"
+                  value={ogTitle}
+                  onChange={(e) => setOgTitle(e.target.value)}
+                  className="w-full h-10 px-3.5 rounded-xl border border-border-default bg-bg-base text-text-primary focus:border-accent-primary outline-none transition-colors"
+                />
+              </div>
+            </div>
           )}
+
+          {/* Custom Descriptions override */}
+          {!syncDesc && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 rounded-2xl border border-border-default/80 bg-bg-alt/10 animate-fade-in">
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-text-secondary">SEO Meta Description</label>
+                <textarea
+                  rows={2}
+                  maxLength={160}
+                  placeholder="Custom search description override"
+                  value={seoDescription}
+                  onChange={(e) => setSeoDescription(e.target.value)}
+                  className="w-full p-3 rounded-xl border border-border-default bg-bg-base text-text-primary focus:border-accent-primary outline-none transition-colors resize-none"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-text-secondary">Social OG Description</label>
+                <textarea
+                  rows={2}
+                  placeholder="Custom social description card shown when shared"
+                  value={ogDescription}
+                  onChange={(e) => setOgDescription(e.target.value)}
+                  className="w-full p-3 rounded-xl border border-border-default bg-bg-base text-text-primary focus:border-accent-primary outline-none transition-colors resize-none"
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Custom Keywords override */}
+          {!syncKeywords && (
+            <div className="p-4 rounded-2xl border border-border-default/80 bg-bg-alt/10 animate-fade-in">
+              <TagInput
+                value={seoKeywords}
+                onChange={setSeoKeywords}
+                label="Target Search Keywords"
+                labelInfo="(select preset or type & press Enter/comma)"
+                placeholder="e.g. real estate ROI, mortgage tips"
+                suggestions={SUGGESTED_TAGS}
+              />
+            </div>
+          )}
+
+          {/* Custom OG Image override */}
+          {!useCoverAsOg && (
+            <div className="p-4 rounded-2xl border border-border-default/80 bg-bg-alt/10 animate-fade-in">
+              <ImageUploader
+                value={ogImage}
+                onChange={setOgImage}
+                label="Custom Social Share (OG) Preview Image"
+              />
+            </div>
+          )}
+
+          {/* Shared always-on settings */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-text-secondary">Canonical URL</label>
+              <input
+                type="text"
+                placeholder="Cross-site canonical link tag reference"
+                value={canonicalUrl}
+                onChange={(e) => setCanonicalUrl(e.target.value)}
+                className="w-full h-10 px-3.5 rounded-xl border border-border-default bg-bg-base text-text-primary focus:border-accent-primary outline-none transition-colors"
+              />
+            </div>
+
+            {/* Indexing Option */}
+            <div className="flex items-center justify-between p-3.5 rounded-xl bg-bg-elevated border border-border-default/60">
+              <div>
+                <span className="text-xs font-bold text-text-primary block">Search Engine Visibility</span>
+                <span className="text-[10px] text-text-muted leading-tight">Enable indexing of this article in search engines.</span>
+              </div>
+              <label className="relative inline-flex items-center cursor-pointer select-none shrink-0">
+                <input
+                  type="checkbox"
+                  checked={!noIndex}
+                  onChange={(e) => setNoIndex(!e.target.checked)}
+                  className="sr-only peer"
+                />
+                <div className="w-8 h-4.5 bg-bg-base peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-text-muted after:border-border-default after:border after:rounded-full after:h-3.5 after:w-3.5 after:transition-all peer-checked:bg-accent-primary peer-checked:after:bg-white"></div>
+              </label>
+            </div>
+          </div>
+
         </div>
       </div>
 

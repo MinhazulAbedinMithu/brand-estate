@@ -154,7 +154,7 @@ export async function PATCH(
         bathroomType: (r.bathroomType as string | undefined) as never || (prop.roomShare?.bathroomType ?? 'common'),
         currentOccupantsCount: (r.currentOccupantsCount as number | undefined) ?? (prop.roomShare?.currentOccupantsCount ?? 0),
         preferredGender: (r.preferredGender as string | undefined) as never || (prop.roomShare?.preferredGender ?? 'any'),
-        utilitiesIncluded: (r.utilitiesIncluded as any) || (prop.roomShare?.utilitiesIncluded ?? []),
+        utilitiesIncluded: (r.utilitiesIncluded as string[] | undefined) as never || (prop.roomShare?.utilitiesIncluded ?? []),
         minimumLeasePeriodMonths: (r.minimumLeasePeriodMonths as number | undefined) ?? (prop.roomShare?.minimumLeasePeriodMonths ?? 0),
       };
     } else if (cat === 'commercial' && diff.commercial && typeof diff.commercial === 'object') {

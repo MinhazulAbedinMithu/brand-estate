@@ -2,7 +2,7 @@
 // User & Auth
 // ─────────────────────────────────────────────
 
-export type UserRole = 'guest' | 'auth_user' | 'agent' | 'admin' | 'super_admin';
+export type UserRole = 'guest' | 'auth_user' | 'agent' | 'owner' | 'admin' | 'super_admin';
 export type UserStatus = 'active' | 'pending' | 'suspended' | 'unsubmitted';
 
 export interface User {

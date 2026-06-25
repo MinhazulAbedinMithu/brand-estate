@@ -92,6 +92,7 @@ export function RolesClient() {
     guest: "Guest",
     auth_user: "Member",
     agent: "Agent",
+    owner: "Owner",
     admin: "Admin",
     super_admin: "Super Admin",
   };
@@ -100,6 +101,7 @@ export function RolesClient() {
     guest: "text-slate-400 bg-slate-500/10 border-slate-500/20",
     auth_user: "text-blue-400 bg-blue-500/10 border-blue-500/20",
     agent: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20",
+    owner: "text-cyan-400 bg-cyan-500/10 border-cyan-500/20",
     admin: "text-violet-400 bg-violet-500/10 border-violet-500/20",
     super_admin: "text-amber-400 bg-amber-500/10 border-amber-500/20",
   };

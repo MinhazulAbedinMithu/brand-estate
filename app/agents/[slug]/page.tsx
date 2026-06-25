@@ -4,6 +4,7 @@ import { connectDB } from "@/lib/db/mongoose";
 import { User, IUser } from "@/lib/db/models/user.model";
 import { AgentProfileClient } from "./agent-profile-client";
 import type { MockAgent } from "@/src/mocks/agentsMock";
+import { getAgentSchema } from "@/lib/seo-json-ld";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -119,6 +120,17 @@ export default async function AgentProfilePage({ params }: Props) {
 
   const agent = serializeAgent(plainAgent) as unknown as MockAgent;
   const relatedAgents = plainRelated.map(serializeAgent) as unknown as MockAgent[];
+  const jsonLd = getAgentSchema(agent);
 
-  return <AgentProfileClient agent={agent} relatedAgents={relatedAgents} />;
+  return (
+    <>
+      {jsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      )}
+      <AgentProfileClient agent={agent} relatedAgents={relatedAgents} />
+    </>
+  );
 }

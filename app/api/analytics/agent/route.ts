@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Role check
-    const isAllowed = ['agent', 'admin', 'super_admin'].includes(payload.role);
+    const isAllowed = ['agent', 'owner', 'admin', 'super_admin'].includes(payload.role);
     if (!isAllowed) {
       return NextResponse.json(
         { status: 'error', error: 'Forbidden', message: 'You do not have permission to view agent analytics.' },

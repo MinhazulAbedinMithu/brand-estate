@@ -7,7 +7,7 @@ import { generateVerificationToken, hoursFromNow } from '@/lib/auth/tokens';
 import { sendVerificationEmail } from '@/lib/auth/mailer';
 
 // Only these roles may self-register via the public endpoint
-const ALLOWED_ROLES = new Set(['auth_user', 'agent']);
+const ALLOWED_ROLES = new Set(['auth_user', 'agent', 'owner']);
 
 export async function POST(request: NextRequest) {
   try {
@@ -110,7 +110,7 @@ export async function POST(request: NextRequest) {
       email: email.toLowerCase().trim(),
       password: hashedPassword,
       role: resolvedRole,
-      status: resolvedRole === 'agent' ? 'unsubmitted' : 'active',
+      status: (resolvedRole === 'agent' || resolvedRole === 'owner') ? 'unsubmitted' : 'active',
       isVerified: false,
       verificationToken,
       verificationTokenExpires,

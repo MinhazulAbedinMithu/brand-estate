@@ -46,7 +46,7 @@ export interface IBlogPost extends Document {
     bio?: string;
   };
   authorId: mongoose.Types.ObjectId;
-  authorRole: 'guest' | 'auth_user' | 'agent' | 'admin' | 'super_admin';
+  authorRole: 'guest' | 'auth_user' | 'agent' | 'owner' | 'admin' | 'super_admin';
   isFeatured: boolean;
   readTimeMinutes: number;
   status: 'draft' | 'pending' | 'published' | 'rejected';
@@ -116,7 +116,7 @@ const BlogPostSchema = new Schema<IBlogPost>(
     },
     authorRole: {
       type: String,
-      enum: ['guest', 'auth_user', 'agent', 'admin', 'super_admin'],
+      enum: ['guest', 'auth_user', 'agent', 'owner', 'admin', 'super_admin'],
       required: true,
     },
     isFeatured: {

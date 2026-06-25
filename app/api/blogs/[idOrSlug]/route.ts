@@ -154,7 +154,7 @@ export async function PUT(
       post.title = title;
       // If title changed, update slug
       if (title.toLowerCase().trim() !== post.title.toLowerCase().trim()) {
-        let baseSlug = generateSlug(title);
+        const baseSlug = generateSlug(title);
         let slug = baseSlug;
         let counter = 1;
         while (await BlogPost.findOne({ slug, _id: { $ne: post._id } })) {

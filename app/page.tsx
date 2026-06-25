@@ -8,6 +8,7 @@ import { CtaSection } from "@/components/property/cta-section";
 import { connectDB } from "@/lib/db/mongoose";
 import { Property, IProperty } from "@/lib/db/models/property.model";
 import type { MockProperty } from "@/src/mocks/propertyTypes";
+import { getOrganizationSchema, getWebsiteSchema } from "@/lib/seo-json-ld";
 
 export const metadata = {
   title: "Brand Estate — Premium Real Estate Portal",
@@ -50,8 +51,19 @@ export default async function Homepage() {
     ownerId: p.ownerId as unknown as string,
   })) as unknown as MockProperty[];
 
+  const orgSchema = getOrganizationSchema();
+  const websiteSchema = getWebsiteSchema();
+
   return (
     <div className="bg-bg-base min-h-screen pb-16 overflow-hidden">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(orgSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
+      />
 
       {/* 1. HERO SECTION */}
       <HeroSection properties={properties} />

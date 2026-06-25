@@ -8,6 +8,7 @@ export const USER_ROLES: UserRole[] = [
   'guest',
   'auth_user',
   'agent',
+  'owner',
   'admin',
   'super_admin',
 ];
@@ -16,6 +17,7 @@ export const USER_ROLE_LABELS: Record<UserRole, string> = {
   guest: 'Guest',
   auth_user: 'User',
   agent: 'Agent',
+  owner: 'Owner',
   admin: 'Admin',
   super_admin: 'Super Admin',
 };

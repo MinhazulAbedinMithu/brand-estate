@@ -19,14 +19,19 @@ const PROTECTED_ROUTES: Array<{
     allowedRoles: ['admin', 'super_admin'],
   },
   {
+    // Owner + admin + super admin
+    pattern: /^\/owner(\/|$)/,
+    allowedRoles: ['owner', 'admin', 'super_admin'],
+  },
+  {
     // Agent + admin + super admin
     pattern: /^\/agent(\/|$)/,
     allowedRoles: ['agent', 'admin', 'super_admin'],
   },
   {
-    // Any authenticated user (auth_user, agent, admin, super_admin)
+    // Any authenticated user (auth_user, agent, owner, admin, super_admin)
     pattern: /^\/dashboard(\/|$)/,
-    allowedRoles: ['auth_user', 'agent', 'admin', 'super_admin'],
+    allowedRoles: ['auth_user', 'agent', 'owner', 'admin', 'super_admin'],
   },
 ];
 
@@ -78,6 +83,7 @@ function redirectToLogin(request: NextRequest, from: string): NextResponse {
 export const config = {
   matcher: [
     '/dashboard/:path*',
+    '/owner/:path*',
     '/agent/:path*',
     '/admin/:path*',
     '/super-admin/:path*',

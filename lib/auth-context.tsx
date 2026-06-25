@@ -85,13 +85,13 @@ const SEED_USERS: User[] = [
     role: "agent",
     status: "pending",
     createdAt: "2026-06-15T09:00:00Z",
+    savedProperties: [],
     legalDocs: {
       licenseNumber: "LIC-pending-12",
       agencyName: "Douglas Elliman",
       documentUrl: "agent_license_draft.pdf",
       submittedAt: "2026-06-15T10:30:00Z"
     },
-    savedProperties: [],
   },
   {
     id: "usr-08",
@@ -100,6 +100,15 @@ const SEED_USERS: User[] = [
     role: "agent",
     status: "unsubmitted",
     createdAt: "2026-06-16T11:00:00Z",
+    savedProperties: [],
+  },
+  {
+    id: "usr-09",
+    name: "Robert Davis",
+    email: "owner@brandestate.com",
+    role: "owner",
+    status: "active",
+    createdAt: "2026-05-15T11:00:00Z",
     savedProperties: [],
   }
 ];
@@ -111,6 +120,8 @@ export function getDashboardRoute(role: UserRole): string {
   switch (role) {
     case "agent":
       return "/agent/dashboard";
+    case "owner":
+      return "/owner/dashboard";
     case "admin":
       return "/admin/dashboard";
     case "super_admin":
@@ -627,7 +638,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         name: name.trim(),
         email: emailLower,
         role,
-        status: role === "agent" ? "unsubmitted" : "active",
+        status: (role === "agent" || role === "owner") ? "unsubmitted" : "active",
         createdAt: new Date().toISOString(),
         savedProperties: [],
       };

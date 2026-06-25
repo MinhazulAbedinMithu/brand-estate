@@ -33,6 +33,7 @@ import {
 } from "lucide-react";
 import { Metadata } from "next";
 import type { MockProperty } from "@/src/mocks/propertyTypes";
+import { getPropertySchema } from "@/lib/seo-json-ld";
 
 interface DetailPageProps {
   params: Promise<{ slug: string }>;
@@ -157,8 +158,16 @@ export default async function PropertyDetailPage({ params }: DetailPageProps) {
   const symbol = property.currency === "USD" ? "$" : property.currency + " ";
   const formattedPrice = `${symbol}${property.price.toLocaleString()}${isRent ? "/mo" : ""}`;
 
+  const jsonLd = getPropertySchema(property);
+
   return (
     <div className="min-h-screen bg-bg-base">
+      {jsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      )}
       {/* SECTION A: Hero Gallery (Full Width) */}
       <PropertyGallery
         images={property.images}

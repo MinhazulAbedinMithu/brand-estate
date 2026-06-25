@@ -149,7 +149,7 @@ export function AdminDashboardClient() {
   };
 
   const agentsWithDocs = React.useMemo(() => {
-    return users.filter(u => u.role === "agent" && u.legalDocs);
+    return users.filter(u => (u.role === "agent" || u.role === "owner") && u.legalDocs);
   }, [users]);
 
   const triggerSuspension = (userId: string, name: string) => {
@@ -335,7 +335,7 @@ export function AdminDashboardClient() {
         <div className="rounded-2xl border border-border-default bg-bg-surface p-5 sm:p-6 shadow-sm flex flex-col justify-between">
           <div className="space-y-4">
             <div className="flex items-center justify-between border-b border-border-default/50 pb-4">
-              <h3 className="font-heading text-base font-bold text-text-primary">Agent Credentials Verification</h3>
+              <h3 className="font-heading text-base font-bold text-text-primary">Credentials Verification Queue</h3>
               <Link href="/admin/users" className="text-xs text-accent-primary font-bold hover:underline">
                 Manage all accounts
               </Link>
@@ -345,13 +345,13 @@ export function AdminDashboardClient() {
               {agentsWithDocs.length === 0 ? (
                 <div className="py-12 text-center text-text-muted text-xs font-bold flex flex-col items-center gap-2">
                   <FileText className="h-8 w-8 text-text-faint" />
-                  <span>No agent credential submissions found.</span>
+                  <span>No credential submissions found.</span>
                 </div>
               ) : (
                 <table className="w-full text-left text-xs border-collapse">
                   <thead>
                     <tr className="border-b border-border-default text-text-muted font-extrabold uppercase select-none">
-                      <th className="py-2.5 px-3">Agent</th>
+                      <th className="py-2.5 px-3">User</th>
                       <th className="py-2.5 px-3">Credentials</th>
                       <th className="py-2.5 px-3">Status</th>
                       <th className="py-2.5 px-3 text-right">Actions</th>
@@ -362,13 +362,21 @@ export function AdminDashboardClient() {
                       <tr key={agent.id} className="hover:bg-bg-alt/40 transition-colors">
                         <td className="py-2.5 px-3">
                           <span className="font-bold text-text-primary block">{agent.name}</span>
-                          <span className="text-[10px] text-text-muted font-semibold block mt-0.5">{agent.email}</span>
+                          <span className="text-[10px] text-text-muted font-semibold block mt-0.5">
+                            {agent.email}
+                            <span className={cn(
+                              "ml-2 text-[8px] font-extrabold px-1.5 py-0.5 rounded uppercase tracking-wider border",
+                              agent.role === "agent" ? "text-emerald-500 bg-emerald-500/10 border-emerald-500/20" : "text-cyan-500 bg-cyan-500/10 border-cyan-500/20"
+                            )}>
+                              {agent.role}
+                            </span>
+                          </span>
                         </td>
                         <td className="py-2.5 px-3">
                           <div className="space-y-0.5">
                             <span className="font-bold text-text-primary block">{agent.legalDocs?.agencyName}</span>
                             <span className="text-[10px] text-text-muted font-mono flex items-center gap-1.5 mt-0.5">
-                              Lic: {agent.legalDocs?.licenseNumber}
+                              {agent.role === "owner" ? "Doc ID: " : "Lic: "}{agent.legalDocs?.licenseNumber}
                               {agent.legalDocs?.documentUrl && (
                                 <button
                                   onClick={() => handleViewDoc(agent)}

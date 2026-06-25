@@ -22,6 +22,7 @@ import type { UserRole } from "@/lib/types";
 function getRoleBadgeColor(role: UserRole): string {
   switch (role) {
     case "agent": return "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400";
+    case "owner": return "bg-cyan-500/10 text-cyan-600 dark:text-cyan-400";
     case "admin": return "bg-violet-500/10 text-violet-600 dark:text-violet-400";
     case "super_admin": return "bg-amber-500/10 text-amber-600 dark:text-amber-400";
     default: return "bg-accent-primary-dim text-accent-primary";
@@ -32,6 +33,7 @@ function getRoleLabel(role: UserRole): string {
   switch (role) {
     case "auth_user": return "Member";
     case "agent": return "Agent";
+    case "owner": return "Owner";
     case "admin": return "Admin";
     case "super_admin": return "Super Admin";
     default: return "Guest";
@@ -41,6 +43,7 @@ function getRoleLabel(role: UserRole): string {
 function getDashboardLabel(role: UserRole): string {
   switch (role) {
     case "agent": return "Agent Panel";
+    case "owner": return "Owner Panel";
     case "admin": return "Admin Panel";
     case "super_admin": return "Super Admin Panel";
     default: return "My Dashboard";

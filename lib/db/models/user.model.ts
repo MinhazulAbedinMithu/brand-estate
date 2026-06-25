@@ -31,7 +31,7 @@ export interface IUser extends Document {
   name: string;
   email: string;
   password: string; // bcrypt-hashed
-  role: 'auth_user' | 'agent' | 'admin' | 'super_admin';
+  role: 'auth_user' | 'agent' | 'owner' | 'admin' | 'super_admin';
   avatar: string;
   phone?: string;
   isVerified: boolean;
@@ -102,7 +102,7 @@ const UserSchema = new Schema<IUser>(
     },
     role: {
       type: String,
-      enum: ['auth_user', 'agent', 'admin', 'super_admin'],
+      enum: ['auth_user', 'agent', 'owner', 'admin', 'super_admin'],
       default: 'auth_user',
     },
     status: {

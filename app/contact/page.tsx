@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import { ContactClient } from "./contact-client";
+import { getContactPageSchema, getOrganizationSchema } from "@/lib/seo-json-ld";
 
 export const metadata: Metadata = {
   title: "Contact Us | Brand Estate",
@@ -28,5 +29,20 @@ export const metadata: Metadata = {
 };
 
 export default function ContactPage() {
-  return <ContactClient />;
+  const contactSchema = getContactPageSchema();
+  const orgSchema = getOrganizationSchema();
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(contactSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(orgSchema) }}
+      />
+      <ContactClient />
+    </>
+  );
 }

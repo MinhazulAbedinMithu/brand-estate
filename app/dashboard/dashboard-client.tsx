@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { cn } from "@/lib/utils";
+import type { MockProperty } from "@/src/mocks/propertyTypes";
 import { mockUserInquiries, mockSavedPriceTrends } from "@/src/mocks/dashboardMock";
 import { Button } from "@/components/ui/button";
 import {
@@ -31,7 +32,7 @@ import {
 
 export function DashboardClient() {
   const { currentUser } = useAuth();
-  const [savedProperties, setSavedProperties] = React.useState<any[]>([]);
+  const [savedProperties, setSavedProperties] = React.useState<MockProperty[]>([]);
   const [loadingSaved, setLoadingSaved] = React.useState(true);
 
   React.useEffect(() => {

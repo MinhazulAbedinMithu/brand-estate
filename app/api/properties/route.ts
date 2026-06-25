@@ -202,7 +202,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Role check
-    const isAllowed = ['agent', 'admin', 'super_admin'].includes(user.role);
+    const isAllowed = ['agent', 'owner', 'admin', 'super_admin'].includes(user.role);
     if (!isAllowed) {
       return NextResponse.json(
         { status: 'error', error: 'Forbidden', message: 'You do not have permission to list properties.' },
@@ -210,10 +210,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Status check for agents
-    if (user.role === 'agent' && user.status !== 'active') {
+    // Status check for agents and owners
+    if (['agent', 'owner'].includes(user.role) && user.status !== 'active') {
       return NextResponse.json(
-        { status: 'error', error: 'Forbidden', message: 'Your agent status is not active. Submit documents for approval first.' },
+        { status: 'error', error: 'Forbidden', message: 'Your status is not active. Submit documents for approval first.' },
         { status: 403 }
       );
     }

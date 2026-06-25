@@ -45,7 +45,7 @@ export async function GET(request: NextRequest) {
       currentUser = verifyJwt(token);
     }
 
-    const query: Record<string, any> = {};
+    const query: Record<string, unknown> = {};
 
     if (!currentUser) {
       // Guest: only published posts
@@ -152,8 +152,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Role check: must be agent, admin, or super_admin to create blog posts
-    if (!['agent', 'admin', 'super_admin'].includes(decoded.role)) {
+    // Role check: must be agent, owner, admin, or super_admin to create blog posts
+    if (!['agent', 'owner', 'admin', 'super_admin'].includes(decoded.role)) {
       return NextResponse.json(
         { status: 'error', error: 'Forbidden', message: 'You do not have permission to publish articles.' },
         { status: 403 }
@@ -182,7 +182,7 @@ export async function POST(request: NextRequest) {
     }
 
     // 3. Generate Unique Slug
-    let baseSlug = generateSlug(title);
+    const baseSlug = generateSlug(title);
     let slug = baseSlug;
     let counter = 1;
     while (await BlogPost.findOne({ slug })) {

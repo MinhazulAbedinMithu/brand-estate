@@ -73,6 +73,14 @@ const ROLE_NAV_ITEMS: Record<UserRole, NavItem[]> = {
     { label: "My Blogs", href: "/agent/blogs", icon: FileText },
     { label: "Pricing Packages", href: "/agent/packages", icon: Sparkles },
   ],
+  owner: [
+    { label: "Owner Overview", href: "/owner/dashboard", icon: LayoutDashboard },
+    { label: "My Listings", href: "/owner/listings", icon: Building },
+    { label: "Create Listing", href: "/owner/listings/new", icon: PlusCircle },
+    { label: "Leads & Inquiries", href: "/owner/leads", icon: Inbox },
+    { label: "My Blogs", href: "/owner/blogs", icon: FileText },
+    { label: "Pricing Packages", href: "/owner/packages", icon: Sparkles },
+  ],
   admin: [
     { label: "Admin Overview", href: "/admin/dashboard", icon: LayoutDashboard },
     { label: "Manage Users", href: "/admin/users", icon: Users },
@@ -92,6 +100,7 @@ function getRoleLabel(role: UserRole): string {
   switch (role) {
     case "auth_user": return "Member";
     case "agent": return "Agent";
+    case "owner": return "Owner";
     case "admin": return "Admin";
     case "super_admin": return "Super Admin";
     default: return "Guest";
@@ -101,6 +110,7 @@ function getRoleLabel(role: UserRole): string {
 function getRoleColor(role: UserRole): string {
   switch (role) {
     case "agent": return "text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border-emerald-500/20";
+    case "owner": return "text-cyan-600 dark:text-cyan-400 bg-cyan-500/10 border-cyan-500/20";
     case "admin": return "text-violet-600 dark:text-violet-400 bg-violet-500/10 border-violet-500/20";
     case "super_admin": return "text-amber-600 dark:text-amber-400 bg-amber-500/10 border-amber-500/20";
     default: return "text-blue-600 dark:text-blue-400 bg-blue-500/10 border-blue-500/20";
@@ -136,6 +146,7 @@ export function DashboardShell({ children, allowedRoles }: DashboardShellProps) 
       guest: "",
       auth_user: "user@brandestate.com",
       agent: "agent@brandestate.com",
+      owner: "owner@brandestate.com",
       admin: "admin@brandestate.com",
       super_admin: "superadmin@brandestate.com",
     };
@@ -357,6 +368,10 @@ export function DashboardShell({ children, allowedRoles }: DashboardShellProps) 
                   <DropdownMenuItem onClick={() => handleRoleSwitch("agent")} className="rounded-lg text-xs font-semibold py-2 px-2.5 cursor-pointer hover:bg-bg-elevated flex items-center justify-between">
                     <span>Real Estate Agent</span>
                     {currentUser.role === "agent" && <span className="h-1.5 w-1.5 rounded-full bg-accent-primary" />}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleRoleSwitch("owner")} className="rounded-lg text-xs font-semibold py-2 px-2.5 cursor-pointer hover:bg-bg-elevated flex items-center justify-between">
+                    <span>Property Owner</span>
+                    {currentUser.role === "owner" && <span className="h-1.5 w-1.5 rounded-full bg-accent-primary" />}
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => handleRoleSwitch("admin")} className="rounded-lg text-xs font-semibold py-2 px-2.5 cursor-pointer hover:bg-bg-elevated flex items-center justify-between">
                     <span>Moderation Admin</span>

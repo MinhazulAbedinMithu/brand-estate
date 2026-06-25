@@ -14,6 +14,7 @@ import {
   CheckCircle2,
   Home,
   Briefcase,
+  Key,
   MailCheck,
 } from "lucide-react";
 
@@ -52,6 +53,15 @@ const ROLE_OPTIONS: Array<{
     features: ["Publish & manage listings", "Receive buyer inquiries", "Agent analytics dashboard"],
     accentClass: "border-emerald-500 dark:border-emerald-400",
     bgClass: "bg-emerald-500/5 dark:bg-emerald-500/10",
+  },
+  {
+    role: "owner",
+    label: "Property Owner",
+    sublabel: "I own land or property",
+    icon: Key,
+    features: ["List owned properties", "Direct client inquiries", "Verification document submission"],
+    accentClass: "border-cyan-500 dark:border-cyan-400",
+    bgClass: "bg-cyan-500/5 dark:bg-cyan-500/10",
   },
 ];
 
@@ -276,7 +286,7 @@ export default function RegisterPage() {
         {/* ─── Role Selector ──────────────────────────────── */}
         <div>
           <p className="text-[13px] font-semibold text-text-secondary dark:text-[#C7CEDE] mb-2.5 tracking-tight">I am joining as a</p>
-          <div className="grid grid-cols-2 gap-2.5">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
             {ROLE_OPTIONS.map(({ role, label, sublabel, icon: Icon, features, accentClass, bgClass }) => {
               const isSelected = selectedRole === role;
               return (

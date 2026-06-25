@@ -27,10 +27,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Enforce role authorization (only 'agent' can submit agent credentials)
-    if (payload.role !== 'agent') {
+    // Enforce role authorization (only 'agent' or 'owner' can submit credentials)
+    if (payload.role !== 'agent' && payload.role !== 'owner') {
       return NextResponse.json(
-        { status: 'error', error: 'Forbidden', message: 'Only agents can submit credentials.' },
+        { status: 'error', error: 'Forbidden', message: 'Only agents or owners can submit credentials.' },
         { status: 403 }
       );
     }

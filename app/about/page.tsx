@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Metadata } from "next";
 import { Sparkles } from "lucide-react";
+import { getAboutPageSchema, getOrganizationSchema } from "@/lib/seo-json-ld";
 
 export const metadata: Metadata = {
   title: "About Us | Brand Estate",
@@ -64,8 +65,19 @@ const TEAM = [
 ];
 
 export default function AboutPage() {
+  const aboutSchema = getAboutPageSchema();
+  const orgSchema = getOrganizationSchema();
+
   return (
     <div className="bg-bg-base min-h-screen text-text-primary">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(aboutSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(orgSchema) }}
+      />
       
       {/* ── Section 1: Hero Banner ── */}
       <section className="relative overflow-hidden bg-bg-surface py-20 border-b border-border-default/45">
