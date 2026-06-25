@@ -9,6 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { DocumentViewer } from "@/components/shared/document-viewer";
 
 export function ProfilePageClient() {
   const { currentUser, submitNidDocs } = useAuth();
@@ -21,6 +22,7 @@ export function ProfilePageClient() {
   const [progress, setProgress] = React.useState(0);
   const [uploadComplete, setUploadComplete] = React.useState(!!currentUser?.nidDocumentUrl);
   const [nidSubmitting, setNidSubmitting] = React.useState(false);
+  const [showNidDocViewer, setShowNidDocViewer] = React.useState(false);
 
   const fileInputRef = React.useRef<HTMLInputElement>(null);
   
@@ -109,7 +111,7 @@ export function ProfilePageClient() {
       };
 
       xhr.onload = () => {
-        if (xhr.status === 200 || xhr.status === 201) {
+        if (xhr.status >= 200 && xhr.status < 300) {
           setProgress(100);
           setUploading(false);
           setUploadComplete(true);
@@ -137,8 +139,12 @@ export function ProfilePageClient() {
 
   const handleNidSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!nidNumber.trim() || !uploadedUrl) {
-      toast.error("Form error", { description: "NID number and uploaded NID document are required." });
+    if (!nidNumber.trim()) {
+      toast.error("Form error", { description: "Please enter your NID Card Number." });
+      return;
+    }
+    if (!uploadedUrl) {
+      toast.error("Form error", { description: "Please upload your NID document (PDF or Image)." });
       return;
     }
 
@@ -281,42 +287,78 @@ export function ProfilePageClient() {
                 National ID (NID) Verification
               </h3>
 
+              {/* Status Banner */}
+              <div className="flex items-center justify-between p-3.5 rounded-xl border border-border-default bg-bg-alt/30 text-xs font-semibold">
+                <span className="text-text-muted">Verification Status:</span>
+                <span className={cn("font-bold uppercase text-[9px] px-2.5 py-1 rounded-full border tracking-wider",
+                  currentUser.nidStatus === "verified" ? "text-emerald-500 bg-emerald-500/10 border-emerald-500/20" :
+                  currentUser.nidStatus === "pending" ? "text-amber-500 bg-amber-500/10 border-amber-500/20" :
+                  currentUser.nidStatus === "rejected" ? "text-rose-500 bg-rose-500/10 border-rose-500/20" :
+                  "text-slate-400 bg-slate-500/10 border-slate-500/20"
+                )}>
+                  {currentUser.nidStatus === "verified" ? "Approved / Verified" :
+                   currentUser.nidStatus === "pending" ? "Pending Review" :
+                   currentUser.nidStatus === "rejected" ? "Rejected" :
+                   "Not Verified"}
+                </span>
+              </div>
+
               {currentUser.nidStatus === 'verified' && (
-                <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-4 space-y-2">
+                <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-4 space-y-3">
                   <div className="flex items-center gap-2 text-xs font-bold text-emerald-400">
                     <Check className="h-4 w-4 shrink-0" />
                     <span>Identity Verified via NID</span>
                   </div>
                   <p className="text-[11px] text-text-secondary leading-relaxed">
-                    Your identity has been verified. You now have full access to agent details and inquiry forms.
+                    Your identity has been successfully verified. You now have full access to agent details, lister profiles, and inquiry forms.
                   </p>
-                  <div className="text-xs pt-2 border-t border-emerald-500/10 grid grid-cols-2 gap-2 text-text-secondary">
+                  <div className="text-xs pt-3 border-t border-emerald-500/10 grid grid-cols-2 gap-4 text-text-secondary font-medium">
                     <div>
-                      <span className="text-[9px] text-text-muted uppercase tracking-wider block">NID Card Number</span>
-                      <span className="font-semibold">{currentUser.nidCardNumber ? `${currentUser.nidCardNumber.slice(0, 4)}-XXXX-XXXX` : 'Verified'}</span>
+                      <span className="text-[9px] text-text-muted uppercase tracking-wider block mb-0.5">NID Card Number</span>
+                      <span className="font-mono font-bold text-text-primary">
+                        {currentUser.nidCardNumber ? `${currentUser.nidCardNumber.slice(0, 4)}-XXXX-XXXX` : 'Verified'}
+                      </span>
                     </div>
-                    <div>
-                      <span className="text-[9px] text-text-muted uppercase tracking-wider block">Verified Date</span>
-                      <span className="font-semibold">{currentUser.nidSubmittedAt ? new Date(currentUser.nidSubmittedAt).toLocaleDateString() : 'N/A'}</span>
-                    </div>
+                    {currentUser.nidDocumentUrl && (
+                      <div>
+                        <span className="text-[9px] text-text-muted uppercase tracking-wider block mb-0.5">Verified Document</span>
+                        <button 
+                          onClick={() => setShowNidDocViewer(true)}
+                          className="font-bold text-accent-primary hover:underline flex items-center gap-1 text-[11px]"
+                        >
+                          View Uploaded NID
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
 
               {currentUser.nidStatus === 'pending' && (
-                <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-4 space-y-2">
+                <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-4 space-y-3">
                   <div className="flex items-center gap-2 text-xs font-bold text-amber-400">
                     <Loader2 className="h-4 w-4 animate-spin shrink-0" />
                     <span>Verification Pending Review</span>
                   </div>
                   <p className="text-[11px] text-text-secondary leading-relaxed">
-                    Your National ID (NID) details have been submitted. Our administrators are currently reviewing your documents.
+                    Your National ID (NID) details have been submitted. Our administrators are currently reviewing your document. This is typically processed within 24 hours.
                   </p>
-                  <div className="text-xs pt-2 border-t border-amber-500/10 grid grid-cols-1 gap-2 text-text-secondary">
+                  <div className="text-xs pt-3 border-t border-amber-500/10 grid grid-cols-2 gap-4 text-text-secondary font-medium">
                     <div>
-                      <span className="text-[9px] text-text-muted uppercase tracking-wider block">Submitted NID Number</span>
-                      <span className="font-semibold">{currentUser.nidCardNumber}</span>
+                      <span className="text-[9px] text-text-muted uppercase tracking-wider block mb-0.5">Submitted NID Number</span>
+                      <span className="font-mono font-bold text-text-primary">{currentUser.nidCardNumber}</span>
                     </div>
+                    {currentUser.nidDocumentUrl && (
+                      <div>
+                        <span className="text-[9px] text-text-muted uppercase tracking-wider block mb-0.5">Submitted Document</span>
+                        <button 
+                          onClick={() => setShowNidDocViewer(true)}
+                          className="font-bold text-accent-primary hover:underline flex items-center gap-1 text-[11px]"
+                        >
+                          View Uploaded NID
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
@@ -330,7 +372,7 @@ export function ProfilePageClient() {
                         <span>Verification Rejected</span>
                       </div>
                       <p className="text-[11px] text-text-secondary leading-relaxed">
-                        Rejection Reason: <span className="font-semibold text-rose-300">{currentUser.nidRejectionReason || 'No reason specified'}</span>. Please submit again.
+                        Rejection Reason: <span className="font-semibold text-rose-300">{currentUser.nidRejectionReason || 'No reason specified'}</span>. Please verify your details and upload a clear document image to resubmit.
                       </p>
                     </div>
                   )}
@@ -392,7 +434,7 @@ export function ProfilePageClient() {
 
                     <Button
                       type="submit"
-                      disabled={nidSubmitting || !uploadComplete || !nidNumber.trim()}
+                      disabled={nidSubmitting || uploading}
                       className="w-full h-10 rounded-xl bg-accent-primary hover:bg-accent-primary/95 text-white font-bold text-xs shadow-md transition-all active:scale-98 flex items-center justify-center gap-2"
                     >
                       {nidSubmitting ? (
@@ -624,6 +666,18 @@ export function ProfilePageClient() {
         </div>
 
       </div>
+
+      {/* ── NID Document Viewer Modal ── */}
+      {currentUser && currentUser.nidDocumentUrl && (
+        <DocumentViewer
+          isOpen={showNidDocViewer}
+          onClose={() => setShowNidDocViewer(false)}
+          documentUrl={currentUser.nidDocumentUrl}
+          agentName={currentUser.name}
+          licenseNumber={currentUser.nidCardNumber}
+          agencyName="Buyer NID Card"
+        />
+      )}
     </div>
   );
 }

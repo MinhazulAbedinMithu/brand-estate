@@ -52,6 +52,11 @@ export async function GET(request: NextRequest) {
           avatar: user.avatar,
           status: user.status,
           legalDocs: user.legalDocs,
+          nidStatus: user.nidStatus || 'unsubmitted',
+          nidCardNumber: user.nidCardNumber,
+          nidDocumentUrl: user.nidDocumentUrl,
+          nidSubmittedAt: user.nidSubmittedAt?.toISOString(),
+          nidRejectionReason: user.nidRejectionReason,
         },
       },
       { status: 200 }

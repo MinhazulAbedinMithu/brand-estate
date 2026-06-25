@@ -44,6 +44,11 @@ export async function GET(request: NextRequest) {
         documentUrl: u.legalDocs.documentUrl,
         submittedAt: u.legalDocs.submittedAt?.toISOString()
       } : undefined,
+      nidStatus: u.nidStatus || 'unsubmitted',
+      nidCardNumber: u.nidCardNumber,
+      nidDocumentUrl: u.nidDocumentUrl,
+      nidSubmittedAt: u.nidSubmittedAt?.toISOString(),
+      nidRejectionReason: u.nidRejectionReason,
       createdAt: u.createdAt.toISOString(),
       updatedAt: u.updatedAt.toISOString(),
     }));

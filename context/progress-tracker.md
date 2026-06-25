@@ -366,6 +366,20 @@ Phase 2 specs to be defined and implemented in order:
   - Configured dynamic metadata for Agent Profiles (`app/agents/[slug]/page.tsx`) mapping bio, avatar/cover images, and title dynamically from the User database model (with fallback to the custom `/og-image.png`).
   - Split the Contact page into a Server page (`app/contact/page.tsx` with static metadata) and a Client form component (`app/contact/contact-client.tsx`) to allow server-rendered metadata tags.
   - Verified compilation and linter correctness with zero type errors and zero linter warnings.
+- **Buyer NID Verification Visual Barrier & Moderation Dashboard**:
+  - Designed and integrated client-side blurring and access barriers on `/agents`, `/agents/[slug]`, blog author cards, and property contact/inquiry widgets. Users who are guest or whose NID verification status is not verified are blocked from viewing agent/owner details and submitting listing inquiries.
+  - Implemented the Admin dashboard pending buyer verifications queue and extended the user detailed inspector drawer with NID actions (approve/reject with reasoning).
+  - Enhanced the NID submission form so the verification submit button is enabled upon R2 upload completion.
+- **Perfect JSON-LD SEO Integrations**:
+  - Created a robust structured schema.org data mapper (`lib/seo-json-ld.ts`) for Homepage, Property details, Blog articles, Agent Profiles, About, and Contact pages, with structured validation fallbacks.
+- **Document Viewer TypeError Fix**:
+  - Refactored `components/shared/document-viewer.tsx` to handle missing or undefined `documentUrl` prop values safely. Prevented runtime crashes when inspecting users with incomplete NID credentials by reverting to certificate view templates.
+- **Admin User Inspector NID Visibility Fix**:
+  - Mapped database fields (`nidStatus`, `nidCardNumber`, `nidDocumentUrl`, `nidSubmittedAt`, and `nidRejectionReason`) in administrative users retrieval endpoint `app/api/admin/users/route.ts` to expose uploaded NIDs to the User Account Inspector on the admin panel.
+- **User NID Status Tracker & Preview on Profile**:
+  - Redesigned the NID verification section in the user profile `app/dashboard/profile/profile-page-client.tsx` to render a persistent **Verification Status Bar** (Approved, Pending, Rejected, Not Verified). When submitted, renders cards displaying the NID number, document preview buttons, and status guidelines. Integrated the `<DocumentViewer />` component to allow users to review their uploaded documents directly on the profile.
+- **Auth Session NID Mapping Fix**:
+  - Mapped all NID validation attributes (`nidStatus`, `nidCardNumber`, `nidDocumentUrl`, `nidSubmittedAt`, and `nidRejectionReason`) inside current user endpoint `app/api/auth/me/route.ts` and login route `app/api/auth/login/route.ts`, ensuring verified statuses are instantly reflected upon session initialization.
 
 
 

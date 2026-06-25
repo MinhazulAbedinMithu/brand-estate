@@ -22,7 +22,7 @@ import { cn } from "@/lib/utils";
 interface DocumentViewerProps {
   isOpen: boolean;
   onClose: () => void;
-  documentUrl: string;
+  documentUrl?: string;
   agentName: string;
   licenseNumber?: string;
   agencyName?: string;
@@ -40,8 +40,9 @@ export function DocumentViewer({
   const [rotation, setRotation] = React.useState(0);
   const [isFullscreen, setIsFullscreen] = React.useState(false);
 
-  const isRealUrl = documentUrl.startsWith("http://") || documentUrl.startsWith("https://") || documentUrl.startsWith("/");
-  const isPdf = documentUrl.toLowerCase().endsWith(".pdf") || documentUrl.includes(".pdf?");
+  const safeUrl = documentUrl || "";
+  const isRealUrl = safeUrl.startsWith("http://") || safeUrl.startsWith("https://") || safeUrl.startsWith("/");
+  const isPdf = safeUrl.toLowerCase().endsWith(".pdf") || safeUrl.includes(".pdf?");
 
   const handleZoomIn = () => setZoom(prev => Math.min(prev + 10, 150));
   const handleZoomOut = () => setZoom(prev => Math.max(prev - 10, 70));
@@ -56,9 +57,9 @@ export function DocumentViewer({
   const handleDownload = () => {
     if (isRealUrl) {
       const link = document.createElement('a');
-      link.href = documentUrl;
+      link.href = safeUrl;
       link.target = '_blank';
-      link.download = documentUrl.split('/').pop() || 'document';
+      link.download = safeUrl.split('/').pop() || 'document';
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -188,7 +189,7 @@ export function DocumentViewer({
             >
               {isPdf ? (
                 <iframe
-                  src={isPdf ? `${documentUrl}#toolbar=0` : documentUrl}
+                  src={isPdf ? `${safeUrl}#toolbar=0` : safeUrl}
                   className="w-full aspect-[1/1.4] min-h-[65vh] rounded-2xl bg-white border border-border-default shadow-lg"
                   title="Verification Document"
                 />
@@ -196,7 +197,7 @@ export function DocumentViewer({
                 <div className="w-full bg-white border border-border-default rounded-2xl shadow-lg p-3 sm:p-5 flex items-center justify-center">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
-                    src={documentUrl}
+                    src={safeUrl}
                     alt="Verification Document"
                     className="max-w-full max-h-[70vh] object-contain rounded-xl"
                   />
