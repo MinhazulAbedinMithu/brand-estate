@@ -8,6 +8,8 @@ import { BlogProvider } from "@/lib/blog-context";
 import { Toaster } from "@/components/ui/sonner";
 import { ConditionalLayout } from "@/components/layout/conditional-layout";
 
+import { getAppUrl } from "@/lib/utils";
+
 // ── Headings: Playfair Display ──────────────────────────
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -26,7 +28,7 @@ const montserrat = Montserrat({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"),
+  metadataBase: new URL(getAppUrl()),
   title: {
     default: "Brand Estate — Find Your Perfect Property",
     template: "%s | Brand Estate",

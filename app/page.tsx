@@ -8,7 +8,10 @@ import { CtaSection } from "@/components/property/cta-section";
 import { connectDB } from "@/lib/db/mongoose";
 import { Property, IProperty } from "@/lib/db/models/property.model";
 import type { MockProperty } from "@/src/mocks/propertyTypes";
+import { getAppUrl } from "@/lib/utils";
 import { getOrganizationSchema, getWebsiteSchema } from "@/lib/seo-json-ld";
+
+const appUrl = getAppUrl();
 
 export const metadata = {
   title: "Brand Estate — Premium Real Estate Portal",
@@ -16,7 +19,7 @@ export const metadata = {
   openGraph: {
     title: "Brand Estate — Premium Real Estate Portal",
     description: "Find your dream home, search luxury properties, rent high-end apartments, and connect with elite real estate agents.",
-    url: "https://brand-estate.com",
+    url: appUrl,
     siteName: "Brand Estate",
     images: [
       {

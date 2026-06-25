@@ -1,9 +1,6 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// seo-json-ld.ts
-// Schema.org JSON-LD Structured Data Generators — Brand Estate
-// ─────────────────────────────────────────────────────────────────────────────
+import { getAppUrl } from "./utils";
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://brand-estate.com";
+const APP_URL = getAppUrl();
 
 /**
  * Generates the master Organization schema for Brand Estate.

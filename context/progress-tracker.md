@@ -380,6 +380,10 @@ Phase 2 specs to be defined and implemented in order:
   - Redesigned the NID verification section in the user profile `app/dashboard/profile/profile-page-client.tsx` to render a persistent **Verification Status Bar** (Approved, Pending, Rejected, Not Verified). When submitted, renders cards displaying the NID number, document preview buttons, and status guidelines. Integrated the `<DocumentViewer />` component to allow users to review their uploaded documents directly on the profile.
 - **Auth Session NID Mapping Fix**:
   - Mapped all NID validation attributes (`nidStatus`, `nidCardNumber`, `nidDocumentUrl`, `nidSubmittedAt`, and `nidRejectionReason`) inside current user endpoint `app/api/auth/me/route.ts` and login route `app/api/auth/login/route.ts`, ensuring verified statuses are instantly reflected upon session initialization.
+- **Social Sharing Preview & Base URL Resolver**:
+  - Implemented environment-aware `getAppUrl` in `lib/utils.ts` to dynamically resolve the site's base URL using Vercel system environment variables (`VERCEL_URL`) or fallback domains, ensuring relative social sharing assets are prefixed with the correct absolute host in production instead of localhost.
+  - Linked the resolver to `metadataBase` in `app/layout.tsx`, `openGraph.url` in `app/page.tsx`, and `APP_URL` in `lib/seo-json-ld.ts` and `lib/auth/mailer.ts` to unify site URLs and Schema.org structured markup.
+
 
 
 

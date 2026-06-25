@@ -1,9 +1,10 @@
 import { Resend } from 'resend';
+import { getAppUrl } from '../utils';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 const FROM_EMAIL = 'Brand Estate <onboarding@resend.dev>';
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000';
+const APP_URL = getAppUrl();
 
 /**
  * Sends an email verification link to the newly registered user.
