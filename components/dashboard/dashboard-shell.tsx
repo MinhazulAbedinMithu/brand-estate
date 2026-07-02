@@ -62,6 +62,7 @@ const ROLE_NAV_ITEMS: Record<UserRole, NavItem[]> = {
     { label: "Overview", href: "/dashboard", icon: LayoutDashboard },
     { label: "Saved Properties", href: "/dashboard/saved", icon: Heart },
     { label: "My Inquiries", href: "/dashboard/inquiries", icon: MessageSquare },
+    { label: "My Applications", href: "/dashboard/applications", icon: FileText },
     { label: "My Blogs", href: "/dashboard/blogs", icon: FileText },
     { label: "Profile Settings", href: "/dashboard/profile", icon: UserIcon },
   ],
@@ -69,17 +70,21 @@ const ROLE_NAV_ITEMS: Record<UserRole, NavItem[]> = {
     { label: "Agent Overview", href: "/agent/dashboard", icon: LayoutDashboard },
     { label: "My Listings", href: "/agent/listings", icon: Building },
     { label: "Create Listing", href: "/agent/listings/new", icon: PlusCircle },
+    { label: "Tenant Applications", href: "/agent/applications", icon: FileText },
     { label: "Leads & Inquiries", href: "/agent/leads", icon: Inbox },
     { label: "My Blogs", href: "/agent/blogs", icon: FileText },
     { label: "Pricing Packages", href: "/agent/packages", icon: Sparkles },
+    { label: "Profile Settings", href: "/dashboard/profile", icon: UserIcon },
   ],
   owner: [
     { label: "Owner Overview", href: "/owner/dashboard", icon: LayoutDashboard },
     { label: "My Listings", href: "/owner/listings", icon: Building },
     { label: "Create Listing", href: "/owner/listings/new", icon: PlusCircle },
+    { label: "Tenant Applications", href: "/owner/applications", icon: FileText },
     { label: "Leads & Inquiries", href: "/owner/leads", icon: Inbox },
     { label: "My Blogs", href: "/owner/blogs", icon: FileText },
     { label: "Pricing Packages", href: "/owner/packages", icon: Sparkles },
+    { label: "Profile Settings", href: "/dashboard/profile", icon: UserIcon },
   ],
   admin: [
     { label: "Admin Overview", href: "/admin/dashboard", icon: LayoutDashboard },
@@ -258,7 +263,8 @@ export function DashboardShell({ children, allowedRoles }: DashboardShellProps) 
         {/* User Card Footer */}
         <div className="p-4 border-t border-border-default/60 bg-bg-alt/40">
           <div className="flex items-center gap-3 p-2 rounded-xl bg-bg-elevated border border-border-default/45">
-            <Avatar className="h-10 w-10 border border-border-default/60 shrink-0">
+            <Avatar className="h-10 w-10 border border-border-default/60 shrink-0 overflow-hidden">
+              <AvatarImage src={currentUser.avatar || undefined} alt={currentUser.name} className="object-cover" />
               <AvatarFallback className="bg-accent-primary-dim text-accent-primary font-bold text-xs">
                 {initials}
               </AvatarFallback>
@@ -316,7 +322,8 @@ export function DashboardShell({ children, allowedRoles }: DashboardShellProps) 
                   })}
                 </nav>
                 <div className="p-4 border-t border-border-default/60 bg-bg-alt/40 flex items-center gap-3">
-                  <Avatar className="h-9 w-9">
+                  <Avatar className="h-9 w-9 overflow-hidden">
+                    <AvatarImage src={currentUser.avatar || undefined} alt={currentUser.name} className="object-cover" />
                     <AvatarFallback className="bg-accent-primary-dim text-accent-primary text-xs font-bold">
                       {initials}
                     </AvatarFallback>
@@ -423,7 +430,8 @@ export function DashboardShell({ children, allowedRoles }: DashboardShellProps) 
             <DropdownMenu>
               <DropdownMenuTrigger render={
                 <Button variant="ghost" className="h-9 px-1.5 py-1 rounded-full gap-2 text-text-secondary hover:text-text-primary hover:bg-bg-elevated/40 cursor-pointer">
-                  <Avatar className="h-7 w-7 border border-border-default/60">
+                  <Avatar className="h-7 w-7 border border-border-default/60 overflow-hidden">
+                    <AvatarImage src={currentUser.avatar || undefined} alt={currentUser.name} className="object-cover" />
                     <AvatarFallback className="bg-accent-primary-dim text-accent-primary font-bold text-[10px]">
                       {initials}
                     </AvatarFallback>

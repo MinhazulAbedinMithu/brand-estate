@@ -57,6 +57,37 @@ export async function GET(request: NextRequest) {
           nidDocumentUrl: user.nidDocumentUrl,
           nidSubmittedAt: user.nidSubmittedAt?.toISOString(),
           nidRejectionReason: user.nidRejectionReason,
+
+          // KYC
+          kycStatus: user.kycStatus || 'unsubmitted',
+          kycDocType: user.kycDocType,
+          kycDocNumber: user.kycDocNumber,
+          kycFrontUrl: user.kycFrontUrl,
+          kycBackUrl: user.kycBackUrl,
+          kycSelfieUrl: user.kycSelfieUrl,
+          kycSubmittedAt: user.kycSubmittedAt?.toISOString(),
+          kycRejectionReason: user.kycRejectionReason,
+
+          // Phone
+          phoneVerified: user.phoneVerified,
+          phone: user.phone,
+
+          // Reports
+          backgroundReportStatus: user.backgroundReportStatus || 'unsubmitted',
+          backgroundReportUrl: user.backgroundReportUrl,
+          backgroundReportSubmittedAt: user.backgroundReportSubmittedAt?.toISOString(),
+          creditReportStatus: user.creditReportStatus || 'unsubmitted',
+          creditReportUrl: user.creditReportUrl,
+          creditScore: user.creditScore,
+          creditReportSubmittedAt: user.creditReportSubmittedAt?.toISOString(),
+
+          // Address
+          addressLine: user.addressLine,
+          addressCity: user.addressCity,
+          addressCountry: user.addressCountry,
+          
+          // Wallet
+          walletBalance: user.walletBalance ?? 1000,
         },
       },
       { status: 200 }

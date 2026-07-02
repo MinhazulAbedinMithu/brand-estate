@@ -28,6 +28,42 @@ export interface User {
   nidDocumentUrl?: string;
   nidSubmittedAt?: string;
   nidRejectionReason?: string;
+
+  // Rejection limit tracking counters
+  kycRejectionsCount?: number;
+  backgroundRejectionsCount?: number;
+  creditRejectionsCount?: number;
+  
+  // KYC 3-photo fields
+  kycStatus?: 'unsubmitted' | 'pending' | 'verified' | 'rejected';
+  kycDocType?: 'nid' | 'passport' | 'driving_license';
+  kycDocNumber?: string;
+  kycFrontUrl?: string;
+  kycBackUrl?: string;
+  kycSelfieUrl?: string;
+  kycSubmittedAt?: string;
+  kycRejectionReason?: string;
+
+  // Phone verification
+  phoneVerified?: boolean;
+  phoneVerificationCode?: string;
+
+  // Background and credit reports
+  backgroundReportStatus?: 'unsubmitted' | 'pending' | 'verified' | 'rejected';
+  backgroundReportUrl?: string;
+  backgroundReportSubmittedAt?: string;
+  creditReportStatus?: 'unsubmitted' | 'pending' | 'verified' | 'rejected';
+  creditReportUrl?: string;
+  creditScore?: number;
+  creditReportSubmittedAt?: string;
+
+  // Address
+  addressLine?: string;
+  addressCity?: string;
+  addressCountry?: string;
+
+  // Wallet
+  walletBalance?: number;
 }
 
 export interface PricingPackage {
@@ -62,6 +98,11 @@ export interface PropertySEO {
   keywords?: string[];
 }
 
+export interface OutdoorFacility {
+  facilityType: 'hospital' | 'school' | 'supermarket' | 'bank_atm' | 'bus_stop' | 'gym';
+  distance: string;
+}
+
 export interface Property {
   id: string;
   title: string;
@@ -83,7 +124,36 @@ export interface Property {
   createdAt: string;
   updatedAt?: string;
   seo?: PropertySEO;
+
+  // Application Fee, Deposit, Pets Policies
+  applicationFeeRequired?: boolean;
+  applicationFee?: number;
+  depositRequired?: boolean;
+  depositAmount?: number;
+  petsAllowed?: boolean;
+  petAllowanceCharge?: number;
+  outdoorFacilities?: OutdoorFacility[];
 }
+
+export interface PropertyApplication {
+  id: string;
+  propertyId: string;
+  propertyTitle: string;
+  propertyImage: string;
+  userId: string;
+  userName: string;
+  agentOwnerId: string;
+  applicationFeePaid: number;
+  status: 'pending' | 'approved' | 'rejected' | 'refunded';
+  submittedAt: string;
+  processedAt?: string;
+  feedback?: string;
+  stripeSessionId?: string;
+  stripePaymentIntentId?: string;
+  stripeRefundId?: string;
+  paymentStatus?: 'unpaid' | 'paid' | 'refunded';
+}
+
 
 // ─────────────────────────────────────────────
 // Agent

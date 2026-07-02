@@ -26,7 +26,7 @@ import {
   CartesianGrid,
   Legend
 } from "recharts";
-import { cn } from "@/lib/utils";
+import { cn, calculateProfileCompleteness } from "@/lib/utils";
 import type { AgentStats } from "@/lib/types";
 import type { MockProperty } from "@/src/mocks/propertyTypes";
 
@@ -123,8 +123,32 @@ export function AgentDashboardClient() {
     ];
   }, [analytics]);
 
+  const completeness = React.useMemo(() => {
+    return calculateProfileCompleteness(currentUser);
+  }, [currentUser]);
+
   return (
     <div className="space-y-8">
+      {/* ── Profile Completeness Progress Banner ── */}
+      {currentUser && (
+        <div className="p-4 rounded-2xl border text-xs font-medium bg-bg-surface border-border-default/60 shadow-sm space-y-3">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-2">
+              <span className="font-bold text-text-primary">Profile Completeness:</span>
+              <span className="font-extrabold text-accent-primary text-sm">{completeness}%</span>
+            </div>
+            <Link href="/dashboard/profile" className="text-[11px] font-bold text-accent-primary hover:underline">
+              Complete profile verifications →
+            </Link>
+          </div>
+          <div className="w-full bg-border-default/40 rounded-full h-2 overflow-hidden">
+            <div 
+              className="bg-accent-primary h-full transition-all duration-500 rounded-full" 
+              style={{ width: `${completeness}%` }}
+            />
+          </div>
+        </div>
+      )}
       {/* ── Verification Banner ── */}
       {currentUser && currentUser.status !== "active" && (
         <div className={cn(

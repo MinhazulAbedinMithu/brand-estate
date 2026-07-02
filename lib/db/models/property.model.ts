@@ -32,7 +32,7 @@ export interface IProperty extends Omit<BaseProperty, 'id' | 'ownerId'>, Documen
 const PropertySchema = new Schema<IProperty>(
   {
     title: { type: String, required: true, trim: true },
-    slug: { type: String, required: true, unique: true, lowercase: true, trim: true },
+    slug: { type: String, required: true, lowercase: true, trim: true },
     description: { type: String, required: true },
     transactionType: { 
       type: String, 
@@ -144,6 +144,20 @@ const PropertySchema = new Schema<IProperty>(
     // ── Pending Update Overlay ──────────────────────────────
     hasPendingUpdate: { type: Boolean, default: false },
     pendingUpdate: { type: Schema.Types.Mixed, default: null },
+
+    // ── Fees, Deposits & Policies ───────────────────────────
+    applicationFeeRequired: { type: Boolean, default: false },
+    applicationFee: { type: Number, default: 0 },
+    depositRequired: { type: Boolean, default: false },
+    depositAmount: { type: Number, default: 0 },
+    petsAllowed: { type: Boolean, default: false },
+    petAllowanceCharge: { type: Number, default: 0 },
+    outdoorFacilities: [
+      {
+        facilityType: { type: String, required: true },
+        distance: { type: String, required: true }
+      }
+    ],
   },
   {
     timestamps: true

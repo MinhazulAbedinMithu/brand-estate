@@ -196,6 +196,28 @@ function mapApiUser(data: {
   nidDocumentUrl?: string;
   nidSubmittedAt?: string;
   nidRejectionReason?: string;
+
+  kycStatus?: 'unsubmitted' | 'pending' | 'verified' | 'rejected';
+  kycDocType?: 'nid' | 'passport' | 'driving_license';
+  kycDocNumber?: string;
+  kycFrontUrl?: string;
+  kycBackUrl?: string;
+  kycSelfieUrl?: string;
+  kycSubmittedAt?: string;
+  kycRejectionReason?: string;
+  phoneVerified?: boolean;
+  phone?: string;
+  backgroundReportStatus?: 'unsubmitted' | 'pending' | 'verified' | 'rejected';
+  backgroundReportUrl?: string;
+  backgroundReportSubmittedAt?: string;
+  creditReportStatus?: 'unsubmitted' | 'pending' | 'verified' | 'rejected';
+  creditReportUrl?: string;
+  creditScore?: number;
+  creditReportSubmittedAt?: string;
+  addressLine?: string;
+  addressCity?: string;
+  addressCountry?: string;
+  walletBalance?: number;
 }): User {
   return {
     id: data.id,
@@ -211,6 +233,29 @@ function mapApiUser(data: {
     nidDocumentUrl: data.nidDocumentUrl,
     nidSubmittedAt: data.nidSubmittedAt,
     nidRejectionReason: data.nidRejectionReason,
+
+    kycStatus: data.kycStatus || 'unsubmitted',
+    kycDocType: data.kycDocType,
+    kycDocNumber: data.kycDocNumber,
+    kycFrontUrl: data.kycFrontUrl,
+    kycBackUrl: data.kycBackUrl,
+    kycSelfieUrl: data.kycSelfieUrl,
+    kycSubmittedAt: data.kycSubmittedAt,
+    kycRejectionReason: data.kycRejectionReason,
+    phoneVerified: data.phoneVerified || false,
+    phone: data.phone ?? '',
+    backgroundReportStatus: data.backgroundReportStatus || 'unsubmitted',
+    backgroundReportUrl: data.backgroundReportUrl,
+    backgroundReportSubmittedAt: data.backgroundReportSubmittedAt,
+    creditReportStatus: data.creditReportStatus || 'unsubmitted',
+    creditReportUrl: data.creditReportUrl,
+    creditScore: data.creditScore,
+    creditReportSubmittedAt: data.creditReportSubmittedAt,
+    addressLine: data.addressLine ?? '',
+    addressCity: data.addressCity ?? '',
+    addressCountry: data.addressCountry ?? '',
+    walletBalance: data.walletBalance ?? 1000,
+
     createdAt: new Date().toISOString(),
     savedProperties: [],
   };

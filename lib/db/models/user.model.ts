@@ -48,6 +48,43 @@ export interface IUser extends Document {
   nidDocumentUrl?: string;
   nidSubmittedAt?: Date;
   nidRejectionReason?: string;
+
+  // Rejection limit tracking counters
+  kycRejectionsCount?: number;
+  backgroundRejectionsCount?: number;
+  creditRejectionsCount?: number;
+
+  // KYC 3-photo fields
+  kycStatus?: 'unsubmitted' | 'pending' | 'verified' | 'rejected';
+  kycDocType?: 'nid' | 'passport' | 'driving_license';
+  kycDocNumber?: string;
+  kycFrontUrl?: string;
+  kycBackUrl?: string;
+  kycSelfieUrl?: string;
+  kycSubmittedAt?: Date;
+  kycRejectionReason?: string;
+
+  // Phone verification
+  phoneVerified?: boolean;
+  phoneVerificationCode?: string;
+
+  // Background and credit reports
+  backgroundReportStatus?: 'unsubmitted' | 'pending' | 'verified' | 'rejected';
+  backgroundReportUrl?: string;
+  backgroundReportSubmittedAt?: Date;
+  creditReportStatus?: 'unsubmitted' | 'pending' | 'verified' | 'rejected';
+  creditReportUrl?: string;
+  creditScore?: number;
+  creditReportSubmittedAt?: Date;
+
+  // Address
+  addressLine?: string;
+  addressCity?: string;
+  addressCountry?: string;
+
+  // Wallet
+  walletBalance?: number;
+
   verificationToken?: string;
   verificationTokenExpires?: Date;
   resetPasswordToken?: string;
@@ -133,6 +170,55 @@ const UserSchema = new Schema<IUser>(
     nidDocumentUrl: { type: String },
     nidSubmittedAt: { type: Date },
     nidRejectionReason: { type: String },
+
+    // KYC 3-photo fields
+    kycStatus: {
+      type: String,
+      enum: ['unsubmitted', 'pending', 'verified', 'rejected'],
+      default: 'unsubmitted',
+    },
+    kycDocType: { type: String, enum: ['nid', 'passport', 'driving_license'] },
+    kycDocNumber: { type: String },
+    kycFrontUrl: { type: String },
+    kycBackUrl: { type: String },
+    kycSelfieUrl: { type: String },
+    kycSubmittedAt: { type: Date },
+    kycRejectionReason: { type: String },
+
+    // Phone verification
+    phoneVerified: { type: Boolean, default: false },
+    phoneVerificationCode: { type: String },
+
+    // Background and credit reports
+    backgroundReportStatus: {
+      type: String,
+      enum: ['unsubmitted', 'pending', 'verified', 'rejected'],
+      default: 'unsubmitted',
+    },
+    backgroundReportUrl: { type: String },
+    backgroundReportSubmittedAt: { type: Date },
+    creditReportStatus: {
+      type: String,
+      enum: ['unsubmitted', 'pending', 'verified', 'rejected'],
+      default: 'unsubmitted',
+    },
+    creditReportUrl: { type: String },
+    creditScore: { type: Number },
+    creditReportSubmittedAt: { type: Date },
+
+    // Rejection counters
+    kycRejectionsCount: { type: Number, default: 0 },
+    backgroundRejectionsCount: { type: Number, default: 0 },
+    creditRejectionsCount: { type: Number, default: 0 },
+
+    // Address
+    addressLine: { type: String, default: '' },
+    addressCity: { type: String, default: '' },
+    addressCountry: { type: String, default: '' },
+
+    // Wallet
+    walletBalance: { type: Number, default: 1000 },
+
     avatar: {
       type: String,
       default: '',
@@ -169,7 +255,6 @@ const UserSchema = new Schema<IUser>(
       type: String,
       lowercase: true,
       trim: true,
-      sparse: true,
     },
     coverImage: {
       type: String,

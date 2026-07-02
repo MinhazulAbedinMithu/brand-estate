@@ -77,6 +77,13 @@ interface PatchPropertyBody {
     minimumLeaseTermYears?: number;
     electricalCapacity?: string;
   };
+  applicationFeeRequired?: boolean;
+  applicationFee?: number;
+  depositRequired?: boolean;
+  depositAmount?: number;
+  petsAllowed?: boolean;
+  petAllowanceCharge?: number;
+  outdoorFacilities?: any[];
 }
 
 
@@ -251,6 +258,13 @@ export async function PATCH(
       'virtualTourUrl',
       'amenities',
       'neighborhoodNotes',
+      'applicationFeeRequired',
+      'applicationFee',
+      'depositRequired',
+      'depositAmount',
+      'petsAllowed',
+      'petAllowanceCharge',
+      'outdoorFacilities',
     ];
 
     // Apply core updates — cast body to indexed type for dynamic field loop

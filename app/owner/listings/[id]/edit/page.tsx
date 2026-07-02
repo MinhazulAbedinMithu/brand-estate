@@ -19,7 +19,7 @@ async function getPropertyData(id: string) {
   const prop = await Property.findById(id).lean() as IProperty | null;
   if (!prop) return null;
 
-  return {
+  const rawPropertyData = {
     id: prop._id.toString(),
     title: prop.title,
     slug: prop.slug,
@@ -55,7 +55,10 @@ async function getPropertyData(id: string) {
     house: prop.house,
     roomShare: prop.roomShare,
     commercial: prop.commercial,
-  } as unknown as MockProperty;
+    outdoorFacilities: (prop as any).outdoorFacilities || [],
+  };
+
+  return JSON.parse(JSON.stringify(rawPropertyData)) as unknown as MockProperty;
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

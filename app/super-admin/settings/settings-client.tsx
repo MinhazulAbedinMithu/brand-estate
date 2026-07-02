@@ -14,6 +14,49 @@ export function SettingsClient() {
     supportUrl: "https://support.brandestate.com",
   });
 
+  const [verificationLinks, setVerificationLinks] = React.useState({
+    backgroundCheckUrl: "https://check.brandestate.com/test-bg-report",
+    creditScoreCheckUrl: "https://check.brandestate.com/test-credit-score",
+  });
+
+  React.useEffect(() => {
+    async function fetchSettings() {
+      try {
+        const res = await fetch("/api/settings");
+        const data = await res.json();
+        if (data.status === "success" && data.data) {
+          setVerificationLinks({
+            backgroundCheckUrl: data.data.backgroundCheckUrl || "https://check.brandestate.com/test-bg-report",
+            creditScoreCheckUrl: data.data.creditScoreCheckUrl || "https://check.brandestate.com/test-credit-score",
+          });
+        }
+      } catch (err) {
+        console.error("Failed to load settings links:", err);
+      }
+    }
+    fetchSettings();
+  }, []);
+
+  const handleSaveLinks = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const res = await fetch("/api/settings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(verificationLinks),
+      });
+      const data = await res.json();
+      if (data.status === "success") {
+        toast.success("Verification links updated successfully! 🚀");
+      } else {
+        toast.error("Failed to save links", { description: data.message });
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Error saving verification links");
+    }
+  };
+
   const [flags, setFlags] = React.useState({
     enableAgents: true,
     enableBlog: true,
@@ -193,6 +236,40 @@ export function SettingsClient() {
               <div className="flex justify-end pt-2">
                 <Button type="submit" className="h-10 rounded-xl bg-amber-500 hover:bg-amber-400 text-white font-bold px-6 shadow">
                   Save Settings General
+                </Button>
+              </div>
+            </form>
+          </div>
+
+          {/* Card 3: Verification Check URLs */}
+          <div className="rounded-2xl border border-border-default bg-bg-surface p-5 sm:p-6 shadow-sm space-y-5">
+            <h3 className="font-heading text-base font-bold text-text-primary border-b border-border-default/50 pb-3 flex items-center gap-2">
+              <Globe className="h-4.5 w-4.5 text-amber-500" /> Verification Check URLs
+            </h3>
+            <form onSubmit={handleSaveLinks} className="space-y-4 text-xs font-medium">
+              <div className="space-y-1.5 text-left">
+                <label className="text-[10px] font-bold text-text-secondary uppercase tracking-wider">Background check test URL</label>
+                <Input
+                  value={verificationLinks.backgroundCheckUrl}
+                  onChange={(e) => setVerificationLinks(p => ({ ...p, backgroundCheckUrl: e.target.value }))}
+                  className="h-10 border-border-default bg-bg-base text-text-primary text-sm"
+                  placeholder="https://..."
+                />
+              </div>
+
+              <div className="space-y-1.5 text-left">
+                <label className="text-[10px] font-bold text-text-secondary uppercase tracking-wider">Credit score test URL</label>
+                <Input
+                  value={verificationLinks.creditScoreCheckUrl}
+                  onChange={(e) => setVerificationLinks(p => ({ ...p, creditScoreCheckUrl: e.target.value }))}
+                  className="h-10 border-border-default bg-bg-base text-text-primary text-sm"
+                  placeholder="https://..."
+                />
+              </div>
+
+              <div className="flex justify-end pt-2">
+                <Button type="submit" className="h-10 rounded-xl bg-amber-500 hover:bg-amber-400 text-white font-bold px-6 shadow">
+                  Save Verification Links
                 </Button>
               </div>
             </form>

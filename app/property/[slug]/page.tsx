@@ -6,6 +6,8 @@ import { PropertyGallery } from "@/components/property/property-gallery";
 import { PropertySpecs } from "@/components/property/property-specs";
 import { PropertyPriceHistory } from "@/components/property/property-price-history";
 import { AgentContactCard } from "@/components/property/agent-contact-card";
+import { PropertyApplyCard } from "@/components/property/property-apply-card";
+import { OutdoorFacilitiesCard } from "@/components/property/outdoor-facilities-card";
 import { RelatedListings } from "@/components/property/related-listings";
 import {
   MapPin,
@@ -115,7 +117,7 @@ export default async function PropertyDetailPage({ params }: DetailPageProps) {
   }
 
   // Map database document to MockProperty structure for child components
-  const property = {
+  const rawProperty = {
     id: prop._id.toString(),
     title: prop.title,
     slug: prop.slug,
@@ -151,7 +153,18 @@ export default async function PropertyDetailPage({ params }: DetailPageProps) {
     house: prop.house,
     roomShare: prop.roomShare,
     commercial: prop.commercial,
-  } as unknown as MockProperty;
+    
+    // Policy configurations
+    applicationFeeRequired: prop.applicationFeeRequired,
+    applicationFee: prop.applicationFee,
+    depositRequired: prop.depositRequired,
+    depositAmount: prop.depositAmount,
+    petsAllowed: prop.petsAllowed,
+    petAllowanceCharge: prop.petAllowanceCharge,
+    outdoorFacilities: (prop as any).outdoorFacilities || [],
+  };
+
+  const property = JSON.parse(JSON.stringify(rawProperty)) as unknown as MockProperty;
 
   // Format currency price
   const isRent = property.transactionType === "rent" || property.transactionType === "roommate_share";
@@ -353,8 +366,14 @@ export default async function PropertyDetailPage({ params }: DetailPageProps) {
           {/* Right Column / Sticky Sidebar (1/3 width) */}
           <div className="lg:sticky lg:top-24 space-y-6">
 
+            {/* Tenancy Application checkout flow card */}
+            <PropertyApplyCard property={property} />
+
             {/* Agent Contact details card */}
             <AgentContactCard lister={property.listerProfile} propertyTitle={property.title} />
+
+            {/* Outdoor Facilities card */}
+            <OutdoorFacilitiesCard facilities={(property as any).outdoorFacilities} />
 
             {/* Quick facts card */}
             <div className="rounded-2xl border border-border-default bg-bg-surface p-5 sm:p-6 shadow-sm space-y-4">

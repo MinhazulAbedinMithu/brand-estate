@@ -11,7 +11,8 @@ import {
   Mail, 
   Calendar, 
   Eye, 
-  SlidersHorizontal
+  SlidersHorizontal,
+  Shield
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -42,27 +43,50 @@ export function UsersClient() {
   const [selectedIds, setSelectedIds] = React.useState<string[]>([]);
   const [inspectedUser, setInspectedUser] = React.useState<User | null>(null);
 
+  // Image preview state
+  const [previewImageUrl, setPreviewImageUrl] = React.useState<string | null>(null);
+
+  // Reject reason input states inside inspector drawer
+  const [rejectType, setRejectType] = React.useState<'kyc' | 'nid' | 'background' | 'credit' | null>(null);
+  const [rejectReasonText, setRejectReasonText] = React.useState("");
+
+  // Admin document management states
+  const [editingReportType, setEditingReportType] = React.useState<'background' | 'credit' | null>(null);
+  const [editReportUrl, setEditReportUrl] = React.useState("");
+  const [editCreditScore, setEditCreditScore] = React.useState<number | "">("");
+
+  // Generic Document Viewer Modal State
+  const [showGenericDocViewer, setShowGenericDocViewer] = React.useState(false);
+  const [genericDocUrl, setGenericDocUrl] = React.useState("");
+  const [genericDocTitle, setGenericDocTitle] = React.useState("");
+
   // Suspension reason dialog states
   const [showBanDialog, setShowBanDialog] = React.useState(false);
   const [banUserId, setBanUserId] = React.useState("");
   const [banUserName, setBanUserName] = React.useState("");
   const [banReason, setBanReason] = React.useState("");
 
-  const refreshUsersList = React.useCallback(() => {
-    let allUsers = getUsers();
-    if (currentUser?.role === "admin") {
-      // Admin can see and manage only agent and member (auth_user) users.
-      // They cannot see other admin users or super admin users.
-      allUsers = allUsers.filter(u => u.role !== "super_admin" && (u.role !== "admin" || u.id === currentUser.id));
+  const refreshUsersList = React.useCallback(async () => {
+    try {
+      const res = await fetch("/api/admin/users");
+      const json = await res.json();
+      if (json.status === "success") {
+        let allUsers: User[] = json.data || [];
+        if (currentUser?.role === "admin") {
+          // Admin can see and manage only agent and member (auth_user) users.
+          // They cannot see other admin users or super admin users.
+          allUsers = allUsers.filter(u => u.role !== "super_admin" && (u.role !== "admin" || u.id === currentUser.id));
+        }
+        setUsers(allUsers);
+      }
+    } catch (err) {
+      console.error("Failed to load admin users", err);
     }
-    setUsers(allUsers);
-  }, [getUsers, currentUser]);
+  }, [currentUser]);
 
-  // Load users from mock db on mount
+  // Load users from db on mount
   React.useEffect(() => {
-    Promise.resolve().then(() => {
-      refreshUsersList();
-    });
+    refreshUsersList();
   }, [refreshUsersList]);
 
   // Search / filter logic
@@ -134,6 +158,76 @@ export function UsersClient() {
     if (inspectedUser?.id === id) setInspectedUser(null);
     toast.success("User removed", { description: `"${name}" account deleted.` });
     refreshUsersList();
+  };
+
+  const handleVerificationDecision = async (userId: string, type: 'kyc' | 'nid' | 'background' | 'credit', status: 'verified' | 'rejected' | 'pending', reason?: string) => {
+    try {
+      const res = await fetch(`/api/admin/users/${userId}/verification-status`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type, status, reason })
+      });
+      const data = await res.json();
+      if (data.status === "success") {
+        toast.success(`Verification status updated successfully! 🚀`);
+        
+        // Refresh list
+        await refreshUsersList();
+        
+        // Update inspected user if still open
+        const usersRes = await fetch("/api/admin/users");
+        const usersJson = await usersRes.json();
+        if (usersJson.status === "success") {
+          const freshUser = usersJson.data.find((u: any) => u.id === userId);
+          if (freshUser) {
+            setInspectedUser(freshUser);
+          } else {
+            setInspectedUser(null);
+          }
+        }
+      } else {
+        toast.error("Failed to update status", { description: data.message });
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Network error submitting decision");
+    }
+  };
+
+  const handleSaveReportLink = async (userId: string, type: 'background' | 'credit') => {
+    try {
+      const payload = {
+        type,
+        url: editReportUrl,
+        ...(type === 'credit' && { score: editCreditScore === "" ? null : Number(editCreditScore) })
+      };
+      
+      const res = await fetch(`/api/admin/users/${userId}/report-links`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (data.status === "success") {
+        toast.success(`Report link updated successfully!`);
+        setEditingReportType(null);
+        
+        await refreshUsersList();
+        
+        // Update inspected user if still open
+        const usersRes = await fetch("/api/admin/users");
+        const usersJson = await usersRes.json();
+        if (usersJson.status === "success") {
+          const freshUser = usersJson.data.find((u: any) => u.id === userId);
+          if (freshUser) setInspectedUser(freshUser);
+        }
+      } else {
+        toast.error("Failed to update link", { description: data.message });
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Network error saving link");
+    }
   };
 
   const handleBulkSuspend = () => {
@@ -259,6 +353,7 @@ export function UsersClient() {
                 {filteredUsers.map((u) => {
                   const initials = u.name.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2);
                   const isChecked = selectedIds.includes(u.id);
+                  const hasPendingVerification = u.kycStatus === 'pending' || u.backgroundReportStatus === 'pending' || u.creditReportStatus === 'pending' || u.nidStatus === 'pending';
 
                   return (
                     <tr key={u.id} className="hover:bg-bg-alt/20 transition-colors">
@@ -274,14 +369,20 @@ export function UsersClient() {
                       {/* Name / Avatar / Email */}
                       <td className="py-4 px-5 cursor-pointer" onClick={() => setInspectedUser(u)}>
                         <div className="flex items-center gap-3">
-                          <Avatar className="h-8.5 w-8.5 border border-border-default">
+                          <Avatar className="h-8.5 w-8.5 border border-border-default relative">
                             <AvatarImage src={u.avatar} alt={u.name} />
                             <AvatarFallback className="bg-bg-elevated text-[10px] text-text-primary font-bold">
                               {initials}
                             </AvatarFallback>
+                            {hasPendingVerification && (
+                              <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5" title="Pending Verifications">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-500 border border-bg-base"></span>
+                              </span>
+                            )}
                           </Avatar>
                           <div>
-                            <span className="font-bold text-text-primary block hover:text-accent-primary transition-colors">
+                            <span className="font-bold text-text-primary flex items-center gap-2 hover:text-accent-primary transition-colors">
                               {u.name}
                             </span>
                             <span className="text-[10px] text-text-muted block mt-0.5">{u.email}</span>
@@ -430,56 +531,258 @@ export function UsersClient() {
                 </div>
               )}
 
-              {/* NID Documentation Details (Buyer/Member) */}
-              {inspectedUser.role === "auth_user" && inspectedUser.nidStatus && inspectedUser.nidStatus !== "unsubmitted" && (
-                <div className="space-y-3 p-4 rounded-xl border border-border-default bg-bg-alt/30">
-                  <h5 className="text-[10px] font-bold text-text-primary uppercase tracking-widest flex items-center gap-1.5">
-                    <FileText className="h-3.5 w-3.5 text-accent-primary" /> Submitted NID Verification
-                  </h5>
-                  <div className="space-y-2 text-xs font-medium">
-                    <div className="flex justify-between py-1.5 border-b border-border-default">
-                      <span className="text-text-muted">NID Card Number</span>
-                      <span className="font-mono font-bold text-text-primary">{inspectedUser.nidCardNumber || "—"}</span>
-                    </div>
-                    <div className="flex justify-between py-1.5 border-b border-border-default">
-                      <span className="text-text-muted">NID Status</span>
-                      <span className={cn("font-bold uppercase text-[9px] px-2 py-0.5 rounded border tracking-wider",
-                        inspectedUser.nidStatus === "verified" ? "text-emerald-600 dark:text-emerald-400 bg-emerald-500/5 border-emerald-500/20" :
-                        inspectedUser.nidStatus === "pending" ? "text-amber-600 dark:text-amber-400 bg-amber-500/5 border-amber-500/20" :
-                        "text-rose-600 dark:text-rose-400 bg-rose-500/5 border-rose-500/20"
+              {/* Identity & Verification Suite */}
+              <div className="space-y-4 p-4 rounded-xl border border-border-default bg-bg-alt/30">
+                <h5 className="text-[10px] font-bold text-text-primary uppercase tracking-widest flex items-center gap-1.5 border-b border-border-default/50 pb-2">
+                  <Shield className="h-3.5 w-3.5 text-accent-primary" /> Verification Suite
+                </h5>
+
+                <div className="space-y-3.5 text-xs font-medium text-left">
+                  {/* Email & Phone */}
+                  <div className="flex justify-between items-center py-1 border-b border-border-default/50">
+                    <span className="text-text-muted">Email Verified</span>
+                    <span className={cn("font-bold uppercase text-[9px] px-2 py-0.5 rounded border", inspectedUser.isVerified ? "text-emerald-500 bg-emerald-500/5 border-emerald-500/10" : "text-text-muted bg-bg-alt border-border-default")}>
+                      {inspectedUser.isVerified ? "Verified" : "Not Verified"}
+                    </span>
+                  </div>
+
+                  <div className="flex justify-between items-center py-1 border-b border-border-default/50">
+                    <span className="text-text-muted">Phone (OTP) Verified</span>
+                    <span className={cn("font-bold uppercase text-[9px] px-2 py-0.5 rounded border", inspectedUser.phoneVerified ? "text-emerald-500 bg-emerald-500/5 border-emerald-500/10" : "text-text-muted bg-bg-alt border-border-default")}>
+                      {inspectedUser.phoneVerified ? "Verified" : "Not Verified"}
+                    </span>
+                  </div>
+
+                  {/* KYC Section */}
+                  <div className="space-y-2 py-1 border-b border-border-default/50">
+                    <div className="flex justify-between items-center">
+                      <span className="text-text-muted">KYC Status</span>
+                      <span className={cn("font-bold uppercase text-[9px] px-2 py-0.5 rounded border",
+                        (inspectedUser.kycStatus || inspectedUser.nidStatus) === "verified" ? "text-emerald-500 bg-emerald-500/5 border-emerald-500/10" :
+                        (inspectedUser.kycStatus || inspectedUser.nidStatus) === "pending" ? "text-amber-500 bg-amber-500/5 border-amber-500/10" :
+                        (inspectedUser.kycStatus || inspectedUser.nidStatus) === "rejected" ? "text-rose-500 bg-rose-500/5 border-rose-500/10" :
+                        "text-text-muted bg-bg-alt border-border-default"
                       )}>
-                        {inspectedUser.nidStatus}
+                        {inspectedUser.kycStatus || inspectedUser.nidStatus || "unsubmitted"}
                       </span>
                     </div>
-                    {inspectedUser.nidDocumentUrl && (
-                      <div className="flex justify-between py-1.5 border-b border-border-default">
-                        <span className="text-text-muted">NID Card Document</span>
-                        <span 
-                          onClick={() => setShowNidDocViewer(true)}
-                          className="font-bold text-accent-primary flex items-center gap-1.5 cursor-pointer hover:underline animate-pulse"
-                        >
-                          <Eye className="h-3.5 w-3.5" />
-                          View Document
-                        </span>
+
+                    {/* KYC Document 3-Photo Previews */}
+                    {(inspectedUser.kycFrontUrl || inspectedUser.kycBackUrl || inspectedUser.kycSelfieUrl || inspectedUser.nidDocumentUrl) && (
+                      <div className="space-y-2 pt-1.5">
+                        <div className="grid grid-cols-2 gap-2 text-[10px]">
+                          <div>Doc Type: <span className="font-bold uppercase">{inspectedUser.kycDocType || "nid"}</span></div>
+                          <div className="text-right">Doc No: <span className="font-mono font-bold">{inspectedUser.kycDocNumber || inspectedUser.nidCardNumber || "—"}</span></div>
+                        </div>
+                        <div className="grid grid-cols-3 gap-2">
+                          <div className="space-y-1">
+                            <span className="text-[8px] text-text-muted uppercase text-center block">Front</span>
+                            {inspectedUser.kycFrontUrl || inspectedUser.nidDocumentUrl ? (
+                              <button
+                                onClick={() => setPreviewImageUrl(inspectedUser.kycFrontUrl || inspectedUser.nidDocumentUrl || null)}
+                                className="block w-full relative h-14 border border-border-default rounded-lg overflow-hidden hover:opacity-90 transition-opacity cursor-zoom-in"
+                              >
+                                <img src={inspectedUser.kycFrontUrl || inspectedUser.nidDocumentUrl} alt="KYC Front" className="object-cover w-full h-full" />
+                              </button>
+                            ) : (
+                              <div className="h-14 rounded-lg border border-border-default bg-bg-alt flex items-center justify-center text-[8px] text-text-muted">Missing</div>
+                            )}
+                          </div>
+
+                          <div className="space-y-1">
+                            <span className="text-[8px] text-text-muted uppercase text-center block">Back</span>
+                            {inspectedUser.kycBackUrl ? (
+                              <button
+                                onClick={() => setPreviewImageUrl(inspectedUser.kycBackUrl || null)}
+                                className="block w-full relative h-14 border border-border-default rounded-lg overflow-hidden hover:opacity-90 transition-opacity cursor-zoom-in"
+                              >
+                                <img src={inspectedUser.kycBackUrl} alt="KYC Back" className="object-cover w-full h-full" />
+                              </button>
+                            ) : (
+                              <div className="h-14 rounded-lg border border-border-default bg-bg-alt flex items-center justify-center text-[8px] text-text-muted">Missing</div>
+                            )}
+                          </div>
+
+                          <div className="space-y-1">
+                            <span className="text-[8px] text-text-muted uppercase text-center block">Selfie</span>
+                            {inspectedUser.kycSelfieUrl ? (
+                              <button
+                                onClick={() => setPreviewImageUrl(inspectedUser.kycSelfieUrl || null)}
+                                className="block w-full relative h-14 border border-border-default rounded-lg overflow-hidden hover:opacity-90 transition-opacity cursor-zoom-in"
+                              >
+                                <img src={inspectedUser.kycSelfieUrl} alt="KYC Selfie" className="object-cover w-full h-full" />
+                              </button>
+                            ) : (
+                              <div className="h-14 rounded-lg border border-border-default bg-bg-alt flex items-center justify-center text-[8px] text-text-muted">Missing</div>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Inline Actions */}
+                        <div className="pt-2 mt-2 border-t border-border-default/50 space-y-2">
+                          <div className="flex justify-between items-center text-[9px] text-text-muted text-left">
+                            <span>Rejection attempts: <strong className="text-text-primary">{inspectedUser.kycRejectionsCount || 0} / 3</strong></span>
+                          </div>
+                          
+                          {rejectType === 'kyc' ? (
+                            <div className="space-y-2 text-left">
+                              <label className="text-[9px] font-bold text-text-secondary uppercase">Rejection Reason *</label>
+                              <textarea
+                                placeholder="Reason..."
+                                value={rejectReasonText}
+                                onChange={(e) => setRejectReasonText(e.target.value)}
+                                rows={2}
+                                className="w-full text-[10px] border bg-bg-base text-text-primary border-border-default rounded-lg p-2 resize-none font-medium"
+                              />
+                              <div className="flex gap-1.5 justify-end">
+                                <Button size="sm" variant="ghost" onClick={() => setRejectType(null)} className="h-6 text-[10px] rounded-lg font-bold">Cancel</Button>
+                                <Button size="sm" onClick={() => handleVerificationDecision(inspectedUser.id, inspectedUser.kycStatus === 'pending' ? 'kyc' : 'nid', 'rejected', rejectReasonText)} disabled={!rejectReasonText.trim()} className="h-6 bg-rose-600 hover:bg-rose-500 text-white text-[10px] px-3 rounded-lg font-bold">Confirm</Button>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="flex gap-1.5 justify-end items-center">
+                              <Button size="sm" onClick={() => handleVerificationDecision(inspectedUser.id, inspectedUser.kycStatus === 'pending' ? 'kyc' : 'nid', 'verified')} className="h-6 bg-emerald-500/10 hover:bg-emerald-500 text-emerald-600 hover:text-white border border-emerald-500/20 hover:border-transparent text-[9px] px-2 rounded-md font-bold">Approve</Button>
+                              <Button size="sm" onClick={() => { setRejectType('kyc'); setRejectReasonText(""); }} className="h-6 bg-rose-500/10 hover:bg-rose-500 text-rose-600 hover:text-white border border-rose-500/20 hover:border-transparent text-[9px] px-2 rounded-md font-bold">Reject</Button>
+                              <Button size="sm" onClick={() => handleVerificationDecision(inspectedUser.id, inspectedUser.kycStatus === 'pending' ? 'kyc' : 'nid', 'pending')} className="h-6 bg-amber-500/10 hover:bg-amber-500 text-amber-600 hover:text-white border border-amber-500/20 hover:border-transparent text-[9px] px-2 rounded-md font-bold">Pending</Button>
+                            </div>
+                          )}
+                        </div>
                       </div>
                     )}
-                    {inspectedUser.nidSubmittedAt && (
-                      <div className="flex justify-between py-1.5 border-b border-border-default">
-                        <span className="text-text-muted">Submitted Date</span>
-                        <span className="font-bold text-text-secondary">
-                          {new Date(inspectedUser.nidSubmittedAt).toLocaleDateString()}
-                        </span>
+                  </div>
+
+                  {/* Background Report */}
+                  <div className="space-y-2 py-1 border-b border-border-default/50">
+                    <div className="flex justify-between items-center">
+                      <span className="text-text-muted">Background check</span>
+                      <span className={cn("font-bold uppercase text-[9px] px-2 py-0.5 rounded border",
+                        inspectedUser.backgroundReportStatus === "verified" ? "text-emerald-500 bg-emerald-500/5 border-emerald-500/10" :
+                        inspectedUser.backgroundReportStatus === "pending" ? "text-amber-500 bg-amber-500/5 border-amber-500/10" :
+                        inspectedUser.backgroundReportStatus === "rejected" ? "text-rose-500 bg-rose-500/5 border-rose-500/10" :
+                        "text-text-muted bg-bg-alt border-border-default"
+                      )}>
+                        {inspectedUser.backgroundReportStatus || "unsubmitted"}
+                      </span>
+                    </div>
+                    <div className="pt-2">
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-[10px] text-text-muted truncate max-w-[150px] italic">Uploaded Background Check</span>
+                        <div className="flex items-center gap-2">
+                          {inspectedUser.backgroundReportUrl ? (
+                            <button onClick={() => { setGenericDocTitle("Background Check Report"); setGenericDocUrl(inspectedUser.backgroundReportUrl || ""); setShowGenericDocViewer(true); }} className="text-[10px] text-accent-primary font-bold hover:underline shrink-0 cursor-pointer">
+                              Preview PDF
+                            </button>
+                          ) : (
+                            <span className="text-[10px] text-text-muted italic">Unsubmitted</span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                    {inspectedUser.backgroundReportUrl && (
+                      <div className="space-y-2">
+                        
+                        {/* Inline Actions */}
+                        <div className="pt-2 border-t border-border-default/50 space-y-2">
+                          <div className="flex justify-between items-center text-[9px] text-text-muted text-left">
+                            <span>Rejection attempts: <strong className="text-text-primary">{inspectedUser.backgroundRejectionsCount || 0} / 3</strong></span>
+                          </div>
+                          
+                          {rejectType === 'background' ? (
+                            <div className="space-y-2 text-left">
+                              <label className="text-[9px] font-bold text-text-secondary uppercase">Rejection Reason *</label>
+                              <textarea
+                                placeholder="Reason..."
+                                value={rejectReasonText}
+                                onChange={(e) => setRejectReasonText(e.target.value)}
+                                rows={2}
+                                className="w-full text-[10px] border bg-bg-base text-text-primary border-border-default rounded-lg p-2 resize-none font-medium"
+                              />
+                              <div className="flex gap-1.5 justify-end">
+                                <Button size="sm" variant="ghost" onClick={() => setRejectType(null)} className="h-6 text-[10px] rounded-lg font-bold">Cancel</Button>
+                                <Button size="sm" onClick={() => handleVerificationDecision(inspectedUser.id, 'background', 'rejected', rejectReasonText)} disabled={!rejectReasonText.trim()} className="h-6 bg-rose-600 hover:bg-rose-500 text-white text-[10px] px-3 rounded-lg font-bold">Confirm</Button>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="flex gap-1.5 justify-end items-center">
+                              <Button size="sm" onClick={() => handleVerificationDecision(inspectedUser.id, 'background', 'verified')} className="h-6 bg-emerald-500/10 hover:bg-emerald-500 text-emerald-600 hover:text-white border border-emerald-500/20 hover:border-transparent text-[9px] px-2 rounded-md font-bold">Approve</Button>
+                              <Button size="sm" onClick={() => { setRejectType('background'); setRejectReasonText(""); }} className="h-6 bg-rose-500/10 hover:bg-rose-500 text-rose-600 hover:text-white border border-rose-500/20 hover:border-transparent text-[9px] px-2 rounded-md font-bold">Reject</Button>
+                              <Button size="sm" onClick={() => handleVerificationDecision(inspectedUser.id, 'background', 'pending')} className="h-6 bg-amber-500/10 hover:bg-amber-500 text-amber-600 hover:text-white border border-amber-500/20 hover:border-transparent text-[9px] px-2 rounded-md font-bold">Pending</Button>
+                            </div>
+                          )}
+                        </div>
                       </div>
                     )}
-                    {inspectedUser.nidStatus === "rejected" && inspectedUser.nidRejectionReason && (
-                      <div className="pt-1.5 text-rose-500 text-xs">
-                        <span className="font-bold block uppercase text-[9px] tracking-wider mb-1">Rejection Reason</span>
-                        <p className="italic font-semibold">&ldquo;{inspectedUser.nidRejectionReason}&rdquo;</p>
+                  </div>
+
+                  {/* Credit Score Report */}
+                  <div className="space-y-2 py-1">
+                    <div className="flex justify-between items-center">
+                      <span className="text-text-muted">Credit check</span>
+                      <span className={cn("font-bold uppercase text-[9px] px-2 py-0.5 rounded border",
+                        inspectedUser.creditReportStatus === "verified" ? "text-emerald-500 bg-emerald-500/5 border-emerald-500/10" :
+                        inspectedUser.creditReportStatus === "pending" ? "text-amber-500 bg-amber-500/5 border-amber-500/10" :
+                        inspectedUser.creditReportStatus === "rejected" ? "text-rose-500 bg-rose-500/5 border-rose-500/10" :
+                        "text-text-muted bg-bg-alt border-border-default"
+                      )}>
+                        {inspectedUser.creditReportStatus || "unsubmitted"}
+                      </span>
+                    </div>
+                    <div className="pt-2">
+                      <div className="flex justify-between items-center mb-2">
+                        <div className="flex flex-col">
+                          <span className="text-[10px] text-text-muted truncate max-w-[150px] italic">Uploaded Credit Report</span>
+                          {inspectedUser.creditReportUrl && (
+                            <span className="text-[9px] text-emerald-500 font-bold">Credit Score: {inspectedUser.creditScore || "—"}</span>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {inspectedUser.creditReportUrl ? (
+                            <button onClick={() => { setGenericDocTitle("Credit Score Report"); setGenericDocUrl(inspectedUser.creditReportUrl || ""); setShowGenericDocViewer(true); }} className="text-[10px] text-accent-primary font-bold hover:underline shrink-0 cursor-pointer">
+                              Preview PDF
+                            </button>
+                          ) : (
+                            <span className="text-[10px] text-text-muted italic">Unsubmitted</span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                    {inspectedUser.creditReportUrl && (
+                      <div className="space-y-2">
+                        
+                        {/* Inline Actions */}
+                        <div className="pt-2 border-t border-border-default/50 space-y-2">
+                          <div className="flex justify-between items-center text-[9px] text-text-muted text-left">
+                            <span>Rejection attempts: <strong className="text-text-primary">{inspectedUser.creditRejectionsCount || 0} / 3</strong></span>
+                          </div>
+                          
+                          {rejectType === 'credit' ? (
+                            <div className="space-y-2 text-left">
+                              <label className="text-[9px] font-bold text-text-secondary uppercase">Rejection Reason *</label>
+                              <textarea
+                                placeholder="Reason..."
+                                value={rejectReasonText}
+                                onChange={(e) => setRejectReasonText(e.target.value)}
+                                rows={2}
+                                className="w-full text-[10px] border bg-bg-base text-text-primary border-border-default rounded-lg p-2 resize-none font-medium"
+                              />
+                              <div className="flex gap-1.5 justify-end">
+                                <Button size="sm" variant="ghost" onClick={() => setRejectType(null)} className="h-6 text-[10px] rounded-lg font-bold">Cancel</Button>
+                                <Button size="sm" onClick={() => handleVerificationDecision(inspectedUser.id, 'credit', 'rejected', rejectReasonText)} disabled={!rejectReasonText.trim()} className="h-6 bg-rose-600 hover:bg-rose-500 text-white text-[10px] px-3 rounded-lg font-bold">Confirm</Button>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="flex gap-1.5 justify-end items-center">
+                              <Button size="sm" onClick={() => handleVerificationDecision(inspectedUser.id, 'credit', 'verified')} className="h-6 bg-emerald-500/10 hover:bg-emerald-500 text-emerald-600 hover:text-white border border-emerald-500/20 hover:border-transparent text-[9px] px-2 rounded-md font-bold">Approve</Button>
+                              <Button size="sm" onClick={() => { setRejectType('credit'); setRejectReasonText(""); }} className="h-6 bg-rose-500/10 hover:bg-rose-500 text-rose-600 hover:text-white border border-rose-500/20 hover:border-transparent text-[9px] px-2 rounded-md font-bold">Reject</Button>
+                              <Button size="sm" onClick={() => handleVerificationDecision(inspectedUser.id, 'credit', 'pending')} className="h-6 bg-amber-500/10 hover:bg-amber-500 text-amber-600 hover:text-white border border-amber-500/20 hover:border-transparent text-[9px] px-2 rounded-md font-bold">Pending</Button>
+                            </div>
+                          )}
+                        </div>
                       </div>
                     )}
                   </div>
                 </div>
-              )}
+              </div>
 
               {/* Suspension Reason log if suspended */}
               {inspectedUser.status === "suspended" && inspectedUser.suspendedReason && (
@@ -674,6 +977,42 @@ export function UsersClient() {
           agencyName="Buyer NID Card"
         />
       )}
+
+      {/* ── Generic Document Viewer Modal ── */}
+      {genericDocUrl && (
+        <DocumentViewer
+          isOpen={showGenericDocViewer}
+          onClose={() => {
+            setShowGenericDocViewer(false);
+            setGenericDocUrl("");
+          }}
+          documentUrl={genericDocUrl}
+          agentName={inspectedUser?.name || "User"}
+          agencyName={genericDocTitle}
+        />
+      )}
+      {/* ── Image Preview Dialog ── */}
+      <Dialog open={!!previewImageUrl} onOpenChange={(open) => !open && setPreviewImageUrl(null)}>
+        <DialogContent className="max-w-3xl bg-black/95 border-none p-0 text-white rounded-2xl overflow-hidden flex flex-col items-center justify-center">
+          <div className="relative w-full h-[70vh] flex items-center justify-center p-4">
+            {previewImageUrl && (
+              <img
+                src={previewImageUrl}
+                alt="Document Preview"
+                className="max-w-full max-h-full object-contain rounded-lg"
+              />
+            )}
+          </div>
+          <div className="bg-bg-surface w-full py-3 px-4 border-t border-border-default/20 flex justify-end">
+            <Button
+              onClick={() => setPreviewImageUrl(null)}
+              className="h-9 px-4 rounded-xl bg-accent-primary hover:bg-accent-primary-hov text-white text-xs font-bold"
+            >
+              Close Preview
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
       
     </div>
   );

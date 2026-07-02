@@ -74,6 +74,13 @@ export async function PATCH(
       'title', 'description', 'formattedAddress', 'city', 'state', 'zipCode',
       'squareFeet', 'bedrooms', 'bathrooms', 'yearBuilt', 'images',
       'videoTourUrl', 'virtualTourUrl', 'amenities', 'neighborhoodNotes',
+      'applicationFeeRequired',
+      'applicationFee',
+      'depositRequired',
+      'depositAmount',
+      'petsAllowed',
+      'petAllowanceCharge',
+      'outdoorFacilities',
     ];
 
     for (const field of coreFields) {

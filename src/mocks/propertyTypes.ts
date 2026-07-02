@@ -128,7 +128,10 @@ export interface CommercialAttributes {
   electricalCapacity: string; // e.g. "400A / 3-Phase 480V"
 }
 
-// ─── Base Property ────────────────────────────────────────────────────────────
+export interface OutdoorFacility {
+  facilityType: 'hospital' | 'school' | 'supermarket' | 'bank_atm' | 'bus_stop' | 'gym';
+  distance: string;
+}
 
 export interface BaseProperty {
   // Identity
@@ -183,6 +186,15 @@ export interface BaseProperty {
   // Pending Update Overlay — admin review system
   hasPendingUpdate?: boolean;
   pendingUpdate?: Record<string, unknown> & { submittedAt?: string | Date };
+
+  // Application Fee, Deposit, Pets Policies
+  applicationFeeRequired?: boolean;
+  applicationFee?: number;
+  depositRequired?: boolean;
+  depositAmount?: number;
+  petsAllowed?: boolean;
+  petAllowanceCharge?: number;
+  outdoorFacilities?: OutdoorFacility[];
 }
 
 // ─── Discriminated Union Members ──────────────────────────────────────────────

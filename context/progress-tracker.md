@@ -203,6 +203,7 @@ Implement, test, and integrate backend API routes (Next.js API Routes / Mongoose
   - [x] Implemented inline event-driven syncing model (no useEffect set-state side-effects) to satisfy strict React hooks/set-state linter checks.
   - [x] Updated Review summaries in Step 6 to display targeted search keywords lists and OpenGraph thumbnail details.
   - [x] Confirmed backend API mapping integration and verified full project compilation, type checking, and production builds with zero errors.
+  - [x] Profile Verification Suite & Property Policy Configurations: Implemented three-photo KYC identity submission, Phone OTP validation flow, Background Check PDF reporting, Credit Score verification, and dynamic user/agent/owner profile completeness scores. Implemented property application fee checkout, deposit policies, and pet allowances.
 
 ---
 - [x] **Perfect JSON-LD SEO Integrations COMPLETE** ✅
@@ -233,7 +234,7 @@ Phase 2 specs to be defined and implemented in order:
 | 87    | Blog Mutations & Reactions API    | ✅ Done |
 | 88    | Inquiries Inbox & Messaging API   | ⏳ Pending |
 | 89    | Saved Listings & Pricing Packages | ✅ Done |
-| 90    | Platform Settings & Verification   | ⏳ Pending |
+| 90    | Platform Settings & Verification   | ✅ Done |
 | 91    | Admin & Agent Analytics API       | ✅ Done |
 | 92    | Super Admin Security Audit Logs   | ⏳ Pending |
 
@@ -383,6 +384,32 @@ Phase 2 specs to be defined and implemented in order:
 - **Social Sharing Preview & Base URL Resolver**:
   - Implemented environment-aware `getAppUrl` in `lib/utils.ts` to dynamically resolve the site's base URL using Vercel system environment variables (`VERCEL_URL`) or fallback domains, ensuring relative social sharing assets are prefixed with the correct absolute host in production instead of localhost.
   - Linked the resolver to `metadataBase` in `app/layout.tsx`, `openGraph.url` in `app/page.tsx`, and `APP_URL` in `lib/seo-json-ld.ts` and `lib/auth/mailer.ts` to unify site URLs and Schema.org structured markup.
+
+- **Server Component Serialization Fix**:
+  - Serialized the retrieved property details inside the agent edit page loader, owner edit page loader, and properties details server page to plain JSON using `JSON.parse(JSON.stringify(rawPropertyData))`. This completely strips out internal MongoDB `ObjectId` buffers and prototype methods, resolving the dynamic Next.js Client Component props serialization warning.
+- **Listing Policies & Facilities Persistence**:
+  - Enabled saving of fee and deposit policies (`applicationFeeRequired`, `applicationFee`, `depositRequired`, `depositAmount`, `petsAllowed`, `petAllowanceCharge`) and `outdoorFacilities` arrays across listing creation (`POST /api/properties`), listing modifications (`PATCH /api/properties/[idOrSlug]`), and admin merge approval (`PATCH /api/properties/[idOrSlug]/approve-update`) API routes.
+- **Custom Verification Links Management**:
+  - Created `SystemSetting` database model schema (`lib/db/models/system-setting.model.ts`) and API routes (`GET` and `POST` at `/api/settings`) to persist custom external URLs.
+  - Added a **Verification Check URLs** management card inside the admin console dashboard (`app/admin/dashboard/admin-dashboard-client.tsx`) and super-admin settings page (`app/super-admin/settings/settings-client.tsx`) to allow administrators to edit and save URL check links directly from their main console panels.
+  - Configured the verification center (`app/dashboard/profile/profile-page-client.tsx`) to retrieve the configured URLs from the database, allowing users to test their credentials using the updated links.
+- **Admin Verification Console & Audit Center**:
+  - Mapped all KYC document details, phone OTP status, background check reports, and credit screening score values in the administrative query API (`app/api/admin/users/route.ts`).
+  - Created a unified admin decision API route at `app/api/admin/users/[id]/verification-status/route.ts` to allow admins to approve or reject separate verification stages (kyc, background check, credit check, or NID status) with custom reasons.
+  - Redesigned the NID queue on the admin panel dashboard (`app/admin/dashboard/admin-dashboard-client.tsx`) into a unified **Verification & Screening Queue** showing accounts across all three platform roles (`auth_user`, `owner`, `agent`).
+  - Built an interactive **User Verification Audit Center** modal overlay letting admins review phone OTP status, doc metadata, background search PDF links, and credit score parameters, with granular buttons to approve/reject specific modules inline.
+- **User Account Inspector Integration**:
+  - Connected the main users index panel (`app/admin/users/users-client.tsx`) to pull live accounts directly from the MongoDB API rather than mock context.
+  - Implemented the full **Verification Suite** inside the slide-over **User Account Inspector** drawer for all system profiles.
+  - Added visual inspector blocks displaying:
+    * KYC document details + 3 photos preview (Front part, Back part, Selfie holding document).
+    * Phone OTP verification status (Verified vs Not Verified).
+    * Email verification status (Verified vs Not Verified).
+    * Background check clearance document URL and report status.
+    * Credit score check ratings value (e.g. 740) and screening report URL.
+- **Inline Image Preview Dialogs**:
+  - Replaced all external tab link redirects (`target="_blank"`) on NID/KYC image previews inside both the **Verification & Screening Console** ([app/admin/dashboard/admin-dashboard-client.tsx](file:///Users/minhaz/Documents/projects/brand/brand-estate/app/admin/dashboard/admin-dashboard-client.tsx)) and the **User Account Inspector** drawer ([app/admin/users/users-client.tsx](file:///Users/minhaz/Documents/projects/brand/brand-estate/app/admin/users/users-client.tsx)).
+  - Built an elegant centered overlay image viewer dialog to view full size KYC document uploads inline instantly.
 
 
 

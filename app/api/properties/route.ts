@@ -256,6 +256,13 @@ export async function POST(request: NextRequest) {
       house,
       roomShare,
       commercial,
+      applicationFeeRequired,
+      applicationFee,
+      depositRequired,
+      depositAmount,
+      petsAllowed,
+      petAllowanceCharge,
+      outdoorFacilities,
     } = body;
 
     // Validate core fields
@@ -353,6 +360,13 @@ export async function POST(request: NextRequest) {
         keywords,
       },
       amenities: amenities || [],
+      applicationFeeRequired: !!applicationFeeRequired,
+      applicationFee: parseInt(applicationFee || '0', 10) || 0,
+      depositRequired: !!depositRequired,
+      depositAmount: parseInt(depositAmount || '0', 10) || 0,
+      petsAllowed: !!petsAllowed,
+      petAllowanceCharge: parseInt(petAllowanceCharge || '0', 10) || 0,
+      outdoorFacilities: outdoorFacilities || [],
     };
 
     // Add category discriminator attributes if matching category

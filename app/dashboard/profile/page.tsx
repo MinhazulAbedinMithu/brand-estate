@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 export default function ProfileSettingsPage() {
   return (
-    <DashboardShell allowedRoles={["auth_user"]}>
+    <DashboardShell allowedRoles={["auth_user", "agent", "owner"]}>
       <ProfilePageClient />
     </DashboardShell>
   );

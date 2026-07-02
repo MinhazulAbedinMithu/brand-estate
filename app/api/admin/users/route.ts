@@ -49,6 +49,28 @@ export async function GET(request: NextRequest) {
       nidDocumentUrl: u.nidDocumentUrl,
       nidSubmittedAt: u.nidSubmittedAt?.toISOString(),
       nidRejectionReason: u.nidRejectionReason,
+      // KYC 3-photo fields
+      kycStatus: u.kycStatus || 'unsubmitted',
+      kycDocType: u.kycDocType,
+      kycDocNumber: u.kycDocNumber,
+      kycFrontUrl: u.kycFrontUrl,
+      kycBackUrl: u.kycBackUrl,
+      kycSelfieUrl: u.kycSelfieUrl,
+      kycSubmittedAt: u.kycSubmittedAt?.toISOString(),
+      kycRejectionReason: u.kycRejectionReason,
+      // Phone OTP verification
+      phoneVerified: !!u.phoneVerified,
+      // Background and credit reports
+      backgroundReportStatus: u.backgroundReportStatus || 'unsubmitted',
+      backgroundReportUrl: u.backgroundReportUrl,
+      backgroundReportSubmittedAt: u.backgroundReportSubmittedAt?.toISOString(),
+      creditReportStatus: u.creditReportStatus || 'unsubmitted',
+      creditReportUrl: u.creditReportUrl,
+      creditScore: u.creditScore,
+      creditReportSubmittedAt: u.creditReportSubmittedAt?.toISOString(),
+      kycRejectionsCount: u.kycRejectionsCount || 0,
+      backgroundRejectionsCount: u.backgroundRejectionsCount || 0,
+      creditRejectionsCount: u.creditRejectionsCount || 0,
       createdAt: u.createdAt.toISOString(),
       updatedAt: u.updatedAt.toISOString(),
     }));

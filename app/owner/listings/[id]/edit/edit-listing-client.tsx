@@ -65,6 +65,22 @@ export function EditListingClient({ property }: EditListingClientProps) {
     videoTourUrl: property.videoTourUrl || "",
     virtualTourUrl: property.virtualTourUrl || "",
     neighborhoodNotes: property.neighborhoodNotes || "",
+
+    // Policy configurations
+    applicationFeeRequired: !!property.applicationFeeRequired,
+    applicationFee: (property.applicationFee || "").toString(),
+    depositRequired: !!property.depositRequired,
+    depositAmount: (property.depositAmount || "").toString(),
+    petsAllowed: !!property.petsAllowed,
+    petAllowanceCharge: (property.petAllowanceCharge || "").toString(),
+
+    // Outdoor Facilities configuration
+    facility_hospital: (property as any).outdoorFacilities?.find((f: any) => f.facilityType === 'hospital')?.distance || "",
+    facility_school: (property as any).outdoorFacilities?.find((f: any) => f.facilityType === 'school')?.distance || "",
+    facility_supermarket: (property as any).outdoorFacilities?.find((f: any) => f.facilityType === 'supermarket')?.distance || "",
+    facility_bank_atm: (property as any).outdoorFacilities?.find((f: any) => f.facilityType === 'bank_atm')?.distance || "",
+    facility_bus_stop: (property as any).outdoorFacilities?.find((f: any) => f.facilityType === 'bus_stop')?.distance || "",
+    facility_gym: (property as any).outdoorFacilities?.find((f: any) => f.facilityType === 'gym')?.distance || "",
     seoTitle: property.seo?.seoTitle || property.title || "",
     seoDescription: property.seo?.metaDescription || property.description || "",
     seoKeywords: property.seo?.keywords ? property.seo.keywords.join(", ") : "",
@@ -184,6 +200,22 @@ export function EditListingClient({ property }: EditListingClientProps) {
         keywords: form.seoKeywords ? form.seoKeywords.split(",").map(k => k.trim()).filter(Boolean) : []
       },
       amenities: form.amenities,
+
+      // Policy configurations
+      applicationFeeRequired: !!form.applicationFeeRequired,
+      applicationFee: parseInt(form.applicationFee, 10) || 0,
+      depositRequired: !!form.depositRequired,
+      depositAmount: parseInt(form.depositAmount, 10) || 0,
+      petsAllowed: !!form.petsAllowed,
+      petAllowanceCharge: parseInt(form.petAllowanceCharge, 10) || 0,
+      outdoorFacilities: [
+        { facilityType: "hospital", distance: form.facility_hospital },
+        { facilityType: "school", distance: form.facility_school },
+        { facilityType: "supermarket", distance: form.facility_supermarket },
+        { facilityType: "bank_atm", distance: form.facility_bank_atm },
+        { facilityType: "bus_stop", distance: form.facility_bus_stop },
+        { facilityType: "gym", distance: form.facility_gym }
+      ].filter(f => !!f.distance) as any,
       
       // Category specific
       apartment: form.category === "apartment" ? {
@@ -519,6 +551,185 @@ export function EditListingClient({ property }: EditListingClientProps) {
                 rows={3}
                 className="w-full text-sm border bg-bg-base text-text-primary border-border-default rounded-xl p-3 focus:outline-none focus:ring-1 focus:ring-accent-primary transition-all resize-none font-medium"
               />
+            </div>
+
+            {/* ── Property Policies & Fees (Application Fee, Deposit, Pets) ── */}
+            <div className="border-t border-border-default/50 pt-6 space-y-4">
+              <h3 className="text-xs font-bold text-text-primary uppercase tracking-wider block">Property Policies & Fee Configurations</h3>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 p-4 rounded-xl border border-border-default/60 bg-bg-alt/20">
+                {/* 1. Application Fee */}
+                <div className="space-y-3 text-left">
+                  <div className="flex items-center justify-between">
+                    <label className="text-[11px] font-bold text-text-muted uppercase tracking-wider">Application Fee Required?</label>
+                    <button
+                      type="button"
+                      onClick={() => setForm(p => ({ ...p, applicationFeeRequired: !p.applicationFeeRequired }))}
+                      className={cn(
+                        "w-11 h-6 rounded-full transition-colors relative focus:outline-none shrink-0",
+                        form.applicationFeeRequired ? "bg-accent-primary" : "bg-border-default"
+                      )}
+                    >
+                      <span className={cn(
+                        "absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform",
+                        form.applicationFeeRequired && "translate-x-5"
+                      )} />
+                    </button>
+                  </div>
+                  {form.applicationFeeRequired && (
+                    <div className="space-y-1.5 animate-fade-in text-left">
+                      <label className="text-[10px] font-bold text-text-secondary uppercase">Application Fee Amount ($)</label>
+                      <Input
+                        type="number"
+                        placeholder="e.g. 50"
+                        value={form.applicationFee}
+                        onChange={(e) => setForm(p => ({ ...p, applicationFee: e.target.value }))}
+                        className="h-10 border-border-default bg-bg-base text-text-primary text-sm rounded-xl"
+                      />
+                    </div>
+                  )}
+                </div>
+
+                {/* 2. Deposit Required */}
+                <div className="space-y-3 text-left">
+                  <div className="flex items-center justify-between">
+                    <label className="text-[11px] font-bold text-text-muted uppercase tracking-wider">Deposit Required?</label>
+                    <button
+                      type="button"
+                      onClick={() => setForm(p => ({ ...p, depositRequired: !p.depositRequired }))}
+                      className={cn(
+                        "w-11 h-6 rounded-full transition-colors relative focus:outline-none shrink-0",
+                        form.depositRequired ? "bg-accent-primary" : "bg-border-default"
+                      )}
+                    >
+                      <span className={cn(
+                        "absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform",
+                        form.depositRequired && "translate-x-5"
+                      )} />
+                    </button>
+                  </div>
+                  {form.depositRequired && (
+                    <div className="space-y-1.5 animate-fade-in text-left">
+                      <label className="text-[10px] font-bold text-text-secondary uppercase">Deposit Amount ($)</label>
+                      <Input
+                        type="number"
+                        placeholder="e.g. 1500"
+                        value={form.depositAmount}
+                        onChange={(e) => setForm(p => ({ ...p, depositAmount: e.target.value }))}
+                        className="h-10 border-border-default bg-bg-base text-text-primary text-sm rounded-xl"
+                      />
+                    </div>
+                  )}
+                </div>
+
+                {/* 3. Pets Allowed */}
+                <div className="space-y-3 sm:col-span-2 border-t border-border-default/40 pt-4 text-left">
+                  <div className="flex items-center justify-between">
+                    <label className="text-[11px] font-bold text-text-muted uppercase tracking-wider">Pets Allowed?</label>
+                    <button
+                      type="button"
+                      onClick={() => setForm(p => ({ ...p, petsAllowed: !p.petsAllowed }))}
+                      className={cn(
+                        "w-11 h-6 rounded-full transition-colors relative focus:outline-none shrink-0",
+                        form.petsAllowed ? "bg-accent-primary" : "bg-border-default"
+                      )}
+                    >
+                      <span className={cn(
+                        "absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform",
+                        form.petsAllowed && "translate-x-5"
+                      )} />
+                    </button>
+                  </div>
+                  {form.petsAllowed && (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 animate-fade-in text-left">
+                      <div className="space-y-1.5">
+                        <label className="text-[10px] font-bold text-text-secondary uppercase">Pet Allowance Monthly Charge ($)</label>
+                        <Input
+                          type="number"
+                          placeholder="e.g. 50"
+                          value={form.petAllowanceCharge}
+                          onChange={(e) => setForm(p => ({ ...p, petAllowanceCharge: e.target.value }))}
+                          className="h-10 border-border-default bg-bg-base text-text-primary text-sm rounded-xl"
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* ── Outdoor Facilities (Nearby Amenities) ── */}
+            <div className="border-t border-border-default/50 pt-6 space-y-4">
+              <h3 className="text-xs font-bold text-text-primary uppercase tracking-wider block text-left">Outdoor Facilities (Nearby Distances)</h3>
+              <p className="text-[11px] text-text-muted mt-0.5 text-left">Specify estimated distances to nearby public infrastructures (e.g. 2 kms, 800m, 1 km). Leave blank if not applicable.</p>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 p-4 rounded-xl border border-border-default/60 bg-bg-alt/20 text-left">
+                {/* 1. Hospital */}
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold text-text-secondary uppercase">Hospital Distance</label>
+                  <Input
+                    placeholder="e.g. 2 kms"
+                    value={form.facility_hospital}
+                    onChange={(e) => setForm(p => ({ ...p, facility_hospital: e.target.value }))}
+                    className="h-10 border-border-default bg-bg-base text-text-primary text-sm rounded-xl"
+                  />
+                </div>
+
+                {/* 2. School */}
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold text-text-secondary uppercase">School Distance</label>
+                  <Input
+                    placeholder="e.g. 8 kms"
+                    value={form.facility_school}
+                    onChange={(e) => setForm(p => ({ ...p, facility_school: e.target.value }))}
+                    className="h-10 border-border-default bg-bg-base text-text-primary text-sm rounded-xl"
+                  />
+                </div>
+
+                {/* 3. Supermarket */}
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold text-text-secondary uppercase">Supermarket Distance</label>
+                  <Input
+                    placeholder="e.g. 6 kms"
+                    value={form.facility_supermarket}
+                    onChange={(e) => setForm(p => ({ ...p, facility_supermarket: e.target.value }))}
+                    className="h-10 border-border-default bg-bg-base text-text-primary text-sm rounded-xl"
+                  />
+                </div>
+
+                {/* 4. Bank ATM */}
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold text-text-secondary uppercase">Bank ATM Distance</label>
+                  <Input
+                    placeholder="e.g. 1 km"
+                    value={form.facility_bank_atm}
+                    onChange={(e) => setForm(p => ({ ...p, facility_bank_atm: e.target.value }))}
+                    className="h-10 border-border-default bg-bg-base text-text-primary text-sm rounded-xl"
+                  />
+                </div>
+
+                {/* 5. Bus Stop */}
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold text-text-secondary uppercase">Bus Stop Distance</label>
+                  <Input
+                    placeholder="e.g. 2 kms"
+                    value={form.facility_bus_stop}
+                    onChange={(e) => setForm(p => ({ ...p, facility_bus_stop: e.target.value }))}
+                    className="h-10 border-border-default bg-bg-base text-text-primary text-sm rounded-xl"
+                  />
+                </div>
+
+                {/* 6. Gym */}
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold text-text-secondary uppercase">Gym Distance</label>
+                  <Input
+                    placeholder="e.g. 3 kms"
+                    value={form.facility_gym}
+                    onChange={(e) => setForm(p => ({ ...p, facility_gym: e.target.value }))}
+                    className="h-10 border-border-default bg-bg-base text-text-primary text-sm rounded-xl"
+                  />
+                </div>
+              </div>
             </div>
 
             {/* ── Category-Specific Attributes ── */}
