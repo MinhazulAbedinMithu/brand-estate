@@ -1,10 +1,17 @@
 import { Resend } from 'resend';
 import { getAppUrl } from '../utils';
+import { getSystemSetting } from '../db/settings';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
-const FROM_EMAIL = 'Brand Estate <onboarding@resend.dev>';
 const APP_URL = getAppUrl();
+
+async function getResendClient() {
+  const apiKey = await getSystemSetting("resendApiKey", "RESEND_API_KEY");
+  return new Resend(apiKey);
+}
+
+async function getFromEmail() {
+  return await getSystemSetting("resendFromEmail") || 'Brand Estate <onboarding@resend.dev>';
+}
 
 /**
  * Sends an email verification link to the newly registered user.
@@ -17,8 +24,11 @@ export async function sendVerificationEmail(
   // Links to the UI verify page, not the raw API route
   const verifyUrl = `${APP_URL}/verify-email?token=${token}`;
 
+  const resend = await getResendClient();
+  const fromEmail = await getFromEmail();
+
   const { error } = await resend.emails.send({
-    from: FROM_EMAIL,
+    from: fromEmail,
     to,
     subject: 'Verify your Brand Estate account',
     html: `
@@ -80,8 +90,11 @@ export async function sendPasswordResetEmail(
 ): Promise<void> {
   const resetUrl = `${APP_URL}/reset-password?token=${token}`;
 
+  const resend = await getResendClient();
+  const fromEmail = await getFromEmail();
+
   const { error } = await resend.emails.send({
-    from: FROM_EMAIL,
+    from: fromEmail,
     to,
     subject: 'Reset your Brand Estate password',
     html: `

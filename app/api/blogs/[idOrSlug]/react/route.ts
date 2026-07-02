@@ -49,7 +49,7 @@ export async function POST(
     const updatedPost = await BlogPost.findOneAndUpdate(
       query,
       { $inc: { [`reactions.${reactionType}`]: 1 } },
-      { new: true }
+      { returnDocument: 'after' }
     );
 
     if (!updatedPost) {

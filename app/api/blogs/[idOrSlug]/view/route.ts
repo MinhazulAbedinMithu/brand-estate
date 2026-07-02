@@ -25,7 +25,7 @@ export async function POST(
     const updatedPost = await BlogPost.findOneAndUpdate(
       query,
       { $inc: { views: 1 } },
-      { new: true }
+      { returnDocument: 'after' }
     );
 
     if (!updatedPost) {

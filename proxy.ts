@@ -38,6 +38,21 @@ const PROTECTED_ROUTES: Array<{
 const COOKIE_NAME = 'be_auth_token';
 const JWT_SECRET = process.env.JWT_SECRET || '';
 
+function getDashboardRoute(role: string): string {
+  switch (role) {
+    case 'agent':
+      return '/agent/dashboard';
+    case 'owner':
+      return '/owner/dashboard';
+    case 'admin':
+      return '/admin/dashboard';
+    case 'super_admin':
+      return '/super-admin/dashboard';
+    default:
+      return '/dashboard';
+  }
+}
+
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
@@ -64,7 +79,14 @@ export async function proxy(request: NextRequest) {
   // Check role authorization
   if (!rule.allowedRoles.includes(payload.role)) {
     // Authenticated but wrong role → redirect to their own dashboard
-    return NextResponse.redirect(new URL('/dashboard', request.url));
+    const dest = getDashboardRoute(payload.role);
+    return NextResponse.redirect(new URL(dest, request.url));
+  }
+
+  // If accessing the general user dashboard home directly, redirect non-regular-users to their dashboard
+  if ((pathname === '/dashboard' || pathname === '/dashboard/') && payload.role !== 'auth_user') {
+    const dest = getDashboardRoute(payload.role);
+    return NextResponse.redirect(new URL(dest, request.url));
   }
 
   // All checks passed — forward the request
@@ -89,3 +111,4 @@ export const config = {
     '/super-admin/:path*',
   ],
 };
+

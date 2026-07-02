@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 export default function AdminListingsPage() {
   return (
-    <DashboardShell allowedRoles={["admin"]}>
+    <DashboardShell allowedRoles={["admin", "super_admin"]}>
       <ListingsManagementClient />
     </DashboardShell>
   );

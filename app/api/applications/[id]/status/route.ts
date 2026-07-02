@@ -3,9 +3,7 @@ import { connectDB } from '@/lib/db/mongoose';
 import { User } from '@/lib/db/models/user.model';
 import { PropertyApplication } from '@/lib/db/models/application.model';
 import { getSessionUser } from '@/lib/auth/get-user';
-import Stripe from 'stripe';
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "");
+import { getStripeClient } from "@/lib/db/settings";
 
 interface RouteContext {
   params: Promise<{ id: string }>;
@@ -13,6 +11,7 @@ interface RouteContext {
 
 export async function POST(request: NextRequest, { params }: RouteContext) {
   try {
+    const stripe = await getStripeClient();
     const { id } = await params;
     const session = await getSessionUser(request);
     if (!session) {

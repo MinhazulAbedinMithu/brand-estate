@@ -42,7 +42,7 @@ export function PropertyApplyCard({ property, className }: PropertyApplyCardProp
   const bgOk = currentUser?.backgroundReportStatus === 'verified';
   const creditOk = currentUser?.creditReportStatus === 'verified';
   
-  const canApply = emailOk && phoneOk && kycOk && bgOk && creditOk;
+  const canApply = emailOk && kycOk;
 
   const handleApply = async () => {
     if (!currentUser) {

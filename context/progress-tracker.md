@@ -410,16 +410,5 @@ Phase 2 specs to be defined and implemented in order:
 - **Inline Image Preview Dialogs**:
   - Replaced all external tab link redirects (`target="_blank"`) on NID/KYC image previews inside both the **Verification & Screening Console** ([app/admin/dashboard/admin-dashboard-client.tsx](file:///Users/minhaz/Documents/projects/brand/brand-estate/app/admin/dashboard/admin-dashboard-client.tsx)) and the **User Account Inspector** drawer ([app/admin/users/users-client.tsx](file:///Users/minhaz/Documents/projects/brand/brand-estate/app/admin/users/users-client.tsx)).
   - Built an elegant centered overlay image viewer dialog to view full size KYC document uploads inline instantly.
-
-
-
-
-
-
-
-
-
-
-
-
-
+- **Tenancy Application Verification Update**:
+  - Updated the submission logic in [property-apply-card.tsx](file:///Users/minhaz/Documents/projects/brand/brand-estate/components/property/property-apply-card.tsx) to allow submitting tenancy applications once the user has verified at least their Email Address and Identity KYC.

@@ -1,11 +1,12 @@
 "use client";
 
 import * as React from "react";
-import { Settings, ToggleLeft, ToggleRight, Globe, AlertTriangle, Building, FileText, CheckCircle2, Plus, Trash2, Zap } from "lucide-react";
+import { Settings, Globe, AlertTriangle, FileText, Plus, Trash2, Zap, Key, Eye, EyeOff } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { MarkdownEditor } from "@/components/blog/markdown-editor";
 
 export function SettingsClient() {
   const [generalSettings, setGeneralSettings] = React.useState({
@@ -19,6 +20,35 @@ export function SettingsClient() {
     creditScoreCheckUrl: "https://check.brandestate.com/test-credit-score",
   });
 
+  const [legalContents, setLegalContents] = React.useState({
+    termsOfService: "",
+    privacyPolicy: "",
+    cookiePolicy: "",
+    disclaimer: "",
+  });
+  const [activeLegalTab, setActiveLegalTab] = React.useState<"termsOfService" | "privacyPolicy" | "cookiePolicy" | "disclaimer">("termsOfService");
+  const [isSavingLegal, setIsSavingLegal] = React.useState(false);
+
+  const [credentials, setCredentials] = React.useState({
+    resendApiKey: "",
+    resendFromEmail: "",
+    stripePublishableKey: "",
+    stripeSecretKey: "",
+    stripeWebhookSecret: "",
+    twilioAccountSid: "",
+    twilioAuthToken: "",
+    twilioPhoneNumber: "",
+  });
+
+  const [showKeys, setShowKeys] = React.useState({
+    resendApiKey: false,
+    stripeSecretKey: false,
+    stripeWebhookSecret: false,
+    twilioAuthToken: false,
+  });
+
+  const [isSavingCredentials, setIsSavingCredentials] = React.useState(false);
+
   React.useEffect(() => {
     async function fetchSettings() {
       try {
@@ -26,8 +56,24 @@ export function SettingsClient() {
         const data = await res.json();
         if (data.status === "success" && data.data) {
           setVerificationLinks({
-            backgroundCheckUrl: data.data.backgroundCheckUrl || "https://check.brandestate.com/test-bg-report",
-            creditScoreCheckUrl: data.data.creditScoreCheckUrl || "https://check.brandestate.com/test-credit-score",
+            backgroundCheckUrl: data.data.backgroundCheckUrl || "",
+            creditScoreCheckUrl: data.data.creditScoreCheckUrl || "",
+          });
+          setLegalContents({
+            termsOfService: data.data.termsOfService || "",
+            privacyPolicy: data.data.privacyPolicy || "",
+            cookiePolicy: data.data.cookiePolicy || "",
+            disclaimer: data.data.disclaimer || "",
+          });
+          setCredentials({
+            resendApiKey: data.data.resendApiKey || "",
+            resendFromEmail: data.data.resendFromEmail || "",
+            stripePublishableKey: data.data.stripePublishableKey || "",
+            stripeSecretKey: data.data.stripeSecretKey || "",
+            stripeWebhookSecret: data.data.stripeWebhookSecret || "",
+            twilioAccountSid: data.data.twilioAccountSid || "",
+            twilioAuthToken: data.data.twilioAuthToken || "",
+            twilioPhoneNumber: data.data.twilioPhoneNumber || "",
           });
         }
       } catch (err) {
@@ -54,6 +100,57 @@ export function SettingsClient() {
     } catch (err) {
       console.error(err);
       toast.error("Error saving verification links");
+    }
+  };
+
+  const handleSaveLegal = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSavingLegal(true);
+    try {
+      const res = await fetch("/api/settings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          termsOfService: legalContents.termsOfService,
+          privacyPolicy: legalContents.privacyPolicy,
+          cookiePolicy: legalContents.cookiePolicy,
+          disclaimer: legalContents.disclaimer,
+        }),
+      });
+      const data = await res.json();
+      if (data.status === "success") {
+        toast.success("Legal policies saved successfully! ⚖️");
+      } else {
+        toast.error("Failed to save legal policies", { description: data.message });
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Error saving legal policies");
+    } finally {
+      setIsSavingLegal(false);
+    }
+  };
+
+  const handleSaveCredentials = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSavingCredentials(true);
+    try {
+      const res = await fetch("/api/settings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(credentials),
+      });
+      const data = await res.json();
+      if (data.status === "success") {
+        toast.success("API credentials saved successfully! 🚀");
+      } else {
+        toast.error("Failed to save credentials", { description: data.message });
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Error saving API credentials");
+    } finally {
+      setIsSavingCredentials(false);
     }
   };
 
@@ -275,7 +372,224 @@ export function SettingsClient() {
             </form>
           </div>
 
+          {/* Card 4: API Credentials Manager */}
+          <div className="rounded-2xl border border-border-default bg-bg-surface p-5 sm:p-6 shadow-sm space-y-5">
+            <h3 className="font-heading text-base font-bold text-text-primary border-b border-border-default/50 pb-3 flex items-center gap-2">
+              <Key className="h-4.5 w-4.5 text-amber-500" /> API Credentials Manager
+            </h3>
+            
+            <form onSubmit={handleSaveCredentials} className="space-y-6 text-xs font-medium">
+              {/* Resend Section */}
+              <div className="space-y-4">
+                <h4 className="text-[10px] font-bold text-text-secondary uppercase tracking-widest border-l-2 border-amber-500 pl-2">
+                  Resend Email Config
+                </h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1.5 text-left">
+                    <label className="text-[10px] font-bold text-text-secondary uppercase tracking-wider">Resend API Key</label>
+                    <div className="relative">
+                      <Input
+                        type={showKeys.resendApiKey ? "text" : "password"}
+                        value={credentials.resendApiKey}
+                        onChange={(e) => setCredentials(p => ({ ...p, resendApiKey: e.target.value }))}
+                        className="h-10 border-border-default bg-bg-base text-text-primary text-sm pr-10 font-mono"
+                        placeholder="re_..."
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowKeys(p => ({ ...p, resendApiKey: !p.resendApiKey }))}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-text-primary cursor-pointer"
+                      >
+                        {showKeys.resendApiKey ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </button>
+                    </div>
+                  </div>
+                  <div className="space-y-1.5 text-left">
+                    <label className="text-[10px] font-bold text-text-secondary uppercase tracking-wider">Sender From Email</label>
+                    <Input
+                      value={credentials.resendFromEmail}
+                      onChange={(e) => setCredentials(p => ({ ...p, resendFromEmail: e.target.value }))}
+                      className="h-10 border-border-default bg-bg-base text-text-primary text-sm font-mono"
+                      placeholder="Brand Estate <onboarding@resend.dev>"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Stripe Section */}
+              <div className="space-y-4">
+                <h4 className="text-[10px] font-bold text-text-secondary uppercase tracking-widest border-l-2 border-amber-500 pl-2">
+                  Stripe Payments Config
+                </h4>
+                <div className="space-y-4">
+                  <div className="space-y-1.5 text-left">
+                    <label className="text-[10px] font-bold text-text-secondary uppercase tracking-wider">Stripe Publishable Key</label>
+                    <Input
+                      value={credentials.stripePublishableKey}
+                      onChange={(e) => setCredentials(p => ({ ...p, stripePublishableKey: e.target.value }))}
+                      className="h-10 border-border-default bg-bg-base text-text-primary text-sm font-mono"
+                      placeholder="pk_test_..."
+                    />
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-1.5 text-left">
+                      <label className="text-[10px] font-bold text-text-secondary uppercase tracking-wider">Stripe Secret Key</label>
+                      <div className="relative">
+                        <Input
+                          type={showKeys.stripeSecretKey ? "text" : "password"}
+                          value={credentials.stripeSecretKey}
+                          onChange={(e) => setCredentials(p => ({ ...p, stripeSecretKey: e.target.value }))}
+                          className="h-10 border-border-default bg-bg-base text-text-primary text-sm pr-10 font-mono"
+                          placeholder="sk_test_..."
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowKeys(p => ({ ...p, stripeSecretKey: !p.stripeSecretKey }))}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-text-primary cursor-pointer"
+                        >
+                          {showKeys.stripeSecretKey ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                        </button>
+                      </div>
+                    </div>
+                    <div className="space-y-1.5 text-left">
+                      <label className="text-[10px] font-bold text-text-secondary uppercase tracking-wider">Stripe Webhook Secret</label>
+                      <div className="relative">
+                        <Input
+                          type={showKeys.stripeWebhookSecret ? "text" : "password"}
+                          value={credentials.stripeWebhookSecret}
+                          onChange={(e) => setCredentials(p => ({ ...p, stripeWebhookSecret: e.target.value }))}
+                          className="h-10 border-border-default bg-bg-base text-text-primary text-sm pr-10 font-mono"
+                          placeholder="whsec_..."
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowKeys(p => ({ ...p, stripeWebhookSecret: !p.stripeWebhookSecret }))}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-text-primary cursor-pointer"
+                        >
+                          {showKeys.stripeWebhookSecret ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Twilio Section */}
+              <div className="space-y-4">
+                <h4 className="text-[10px] font-bold text-text-secondary uppercase tracking-widest border-l-2 border-amber-500 pl-2">
+                  Twilio Phone OTP Config
+                </h4>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div className="space-y-1.5 text-left">
+                    <label className="text-[10px] font-bold text-text-secondary uppercase tracking-wider">Twilio Account SID</label>
+                    <Input
+                      value={credentials.twilioAccountSid}
+                      onChange={(e) => setCredentials(p => ({ ...p, twilioAccountSid: e.target.value }))}
+                      className="h-10 border-border-default bg-bg-base text-text-primary text-sm font-mono"
+                      placeholder="AC..."
+                    />
+                  </div>
+                  <div className="space-y-1.5 text-left">
+                    <label className="text-[10px] font-bold text-text-secondary uppercase tracking-wider">Twilio Auth Token</label>
+                    <div className="relative">
+                      <Input
+                        type={showKeys.twilioAuthToken ? "text" : "password"}
+                        value={credentials.twilioAuthToken}
+                        onChange={(e) => setCredentials(p => ({ ...p, twilioAuthToken: e.target.value }))}
+                        className="h-10 border-border-default bg-bg-base text-text-primary text-sm pr-10 font-mono"
+                        placeholder="Auth Token"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowKeys(p => ({ ...p, twilioAuthToken: !p.twilioAuthToken }))}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-text-primary cursor-pointer"
+                      >
+                        {showKeys.twilioAuthToken ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </button>
+                    </div>
+                  </div>
+                  <div className="space-y-1.5 text-left">
+                    <label className="text-[10px] font-bold text-text-secondary uppercase tracking-wider">Sender Phone Number</label>
+                    <Input
+                      value={credentials.twilioPhoneNumber}
+                      onChange={(e) => setCredentials(p => ({ ...p, twilioPhoneNumber: e.target.value }))}
+                      className="h-10 border-border-default bg-bg-base text-text-primary text-sm font-mono"
+                      placeholder="+1234567890"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex justify-end pt-2">
+                <Button
+                  type="submit"
+                  disabled={isSavingCredentials}
+                  className="h-10 rounded-xl bg-amber-500 hover:bg-amber-400 text-white font-bold px-6 shadow disabled:opacity-50 flex items-center gap-1.5 cursor-pointer"
+                >
+                  <Key className="h-4 w-4" />
+                  {isSavingCredentials ? "Saving Credentials..." : "Save API Credentials"}
+                </Button>
+              </div>
+            </form>
+          </div>
+
+          {/* Card 5: Legal Policies & Disclaimers Content Manager */}
+
+          <div className="rounded-2xl border border-border-default bg-bg-surface p-5 sm:p-6 shadow-sm space-y-5">
+            <div className="border-b border-border-default/50 pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <h3 className="font-heading text-base font-bold text-text-primary flex items-center gap-2">
+
+                <FileText className="h-4.5 w-4.5 text-amber-500" /> Legal Policies Manager
+              </h3>
+              
+              {/* Document Selector Pills */}
+              <div className="flex flex-wrap gap-1 p-0.5 rounded-lg border border-border-default bg-bg-elevated/40 text-[10px] sm:text-xs font-semibold">
+                {([
+                  { id: "termsOfService", label: "Terms of Service" },
+                  { id: "privacyPolicy", label: "Privacy Policy" },
+                  { id: "cookiePolicy", label: "Cookie Policy" },
+                  { id: "disclaimer", label: "Disclaimer" },
+                ] as const).map((tab) => (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    onClick={() => setActiveLegalTab(tab.id)}
+                    className={cn(
+                      "px-2.5 py-1 rounded-md transition-all cursor-pointer",
+                      activeLegalTab === tab.id
+                        ? "bg-bg-surface text-accent-primary shadow-xs font-bold"
+                        : "text-text-secondary hover:text-text-primary"
+                    )}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <form onSubmit={handleSaveLegal} className="space-y-4">
+              <MarkdownEditor
+                value={legalContents[activeLegalTab]}
+                onChange={(val) => setLegalContents(prev => ({ ...prev, [activeLegalTab]: val }))}
+                placeholder={`Draft your ${activeLegalTab.replace(/([A-Z])/g, " $1").toLowerCase()} content in Markdown...`}
+                label={`Markdown Editor — ${activeLegalTab.replace(/([A-Z])/g, " $1")}`}
+              />
+
+              <div className="flex justify-end pt-2">
+                <Button
+                  type="submit"
+                  disabled={isSavingLegal}
+                  className="h-10 rounded-xl bg-amber-500 hover:bg-amber-400 text-white font-bold px-6 shadow disabled:opacity-50 flex items-center gap-1.5 cursor-pointer"
+                >
+                  <FileText className="h-4 w-4" />
+                  {isSavingLegal ? "Saving Content..." : `Save ${activeLegalTab.replace(/([A-Z])/g, " $1")}`}
+                </Button>
+              </div>
+            </form>
+          </div>
+
         </div>
+
 
         {/* RIGHT COLUMN: Country Regions manager */}
         <div className="space-y-8">

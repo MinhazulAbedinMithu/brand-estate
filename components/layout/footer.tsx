@@ -318,7 +318,8 @@ export function Footer() {
             {[
               { label: "Privacy Policy", href: "/privacy" },
               { label: "Terms of Service", href: "/terms" },
-              { label: "Cookie Settings", href: "/cookies" },
+              { label: "Cookie Policy", href: "/cookies" },
+              { label: "Disclaimer", href: "/disclaimer" },
               { label: "Sitemap", href: "/sitemap" },
             ].map((link) => (
               <Link

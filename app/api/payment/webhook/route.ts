@@ -3,13 +3,13 @@ import { connectDB } from "@/lib/db/mongoose";
 import { User } from "@/lib/db/models/user.model";
 import { Property } from "@/lib/db/models/property.model";
 import { PropertyApplication } from "@/lib/db/models/application.model";
+import { getStripeClient, getSystemSetting } from "@/lib/db/settings";
 import Stripe from "stripe";
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "");
-
 
 export async function POST(request: NextRequest) {
   try {
+    const stripe = await getStripeClient();
+    const webhookSecret = await getSystemSetting("stripeWebhookSecret", "STRIPE_WEBHOOK_SECRET");
     const rawBody = await request.text();
     const sig = request.headers.get("stripe-signature") || "";
 
@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
       event = stripe.webhooks.constructEvent(
         rawBody,
         sig,
-        process.env.STRIPE_WEBHOOK_SECRET || ""
+        webhookSecret
       );
     } catch (err: any) {
       console.error(`Webhook signature verification failed: ${err.message}`);

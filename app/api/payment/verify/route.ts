@@ -3,12 +3,11 @@ import { connectDB } from "@/lib/db/mongoose";
 import { User } from "@/lib/db/models/user.model";
 import { Property } from "@/lib/db/models/property.model";
 import { PropertyApplication } from "@/lib/db/models/application.model";
-import Stripe from "stripe";
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "");
+import { getStripeClient } from "@/lib/db/settings";
 
 export async function GET(request: NextRequest) {
   try {
+    const stripe = await getStripeClient();
     const { searchParams } = new URL(request.url);
     const sessionId = searchParams.get("session_id");
 
