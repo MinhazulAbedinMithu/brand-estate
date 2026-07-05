@@ -35,16 +35,20 @@ export function SettingsClient() {
     stripePublishableKey: "",
     stripeSecretKey: "",
     stripeWebhookSecret: "",
-    twilioAccountSid: "",
-    twilioAuthToken: "",
-    twilioPhoneNumber: "",
+    firebaseApiKey: "",
+    firebaseAuthDomain: "",
+    firebaseProjectId: "",
+    firebaseStorageBucket: "",
+    firebaseMessagingSenderId: "",
+    firebaseAppId: "",
+    firebaseMeasurementId: "",
   });
 
   const [showKeys, setShowKeys] = React.useState({
     resendApiKey: false,
     stripeSecretKey: false,
     stripeWebhookSecret: false,
-    twilioAuthToken: false,
+    firebaseApiKey: false,
   });
 
   const [isSavingCredentials, setIsSavingCredentials] = React.useState(false);
@@ -71,9 +75,13 @@ export function SettingsClient() {
             stripePublishableKey: data.data.stripePublishableKey || "",
             stripeSecretKey: data.data.stripeSecretKey || "",
             stripeWebhookSecret: data.data.stripeWebhookSecret || "",
-            twilioAccountSid: data.data.twilioAccountSid || "",
-            twilioAuthToken: data.data.twilioAuthToken || "",
-            twilioPhoneNumber: data.data.twilioPhoneNumber || "",
+            firebaseApiKey: data.data.firebaseApiKey || "",
+            firebaseAuthDomain: data.data.firebaseAuthDomain || "",
+            firebaseProjectId: data.data.firebaseProjectId || "",
+            firebaseStorageBucket: data.data.firebaseStorageBucket || "",
+            firebaseMessagingSenderId: data.data.firebaseMessagingSenderId || "",
+            firebaseAppId: data.data.firebaseAppId || "",
+            firebaseMeasurementId: data.data.firebaseMeasurementId || "",
           });
         }
       } catch (err) {
@@ -474,48 +482,94 @@ export function SettingsClient() {
                 </div>
               </div>
 
-              {/* Twilio Section */}
+
+
+              {/* Firebase Section */}
               <div className="space-y-4">
                 <h4 className="text-[10px] font-bold text-text-secondary uppercase tracking-widest border-l-2 border-amber-500 pl-2">
-                  Twilio Phone OTP Config
+                  Firebase Web App Config
                 </h4>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  <div className="space-y-1.5 text-left">
-                    <label className="text-[10px] font-bold text-text-secondary uppercase tracking-wider">Twilio Account SID</label>
-                    <Input
-                      value={credentials.twilioAccountSid}
-                      onChange={(e) => setCredentials(p => ({ ...p, twilioAccountSid: e.target.value }))}
-                      className="h-10 border-border-default bg-bg-base text-text-primary text-sm font-mono"
-                      placeholder="AC..."
-                    />
-                  </div>
-                  <div className="space-y-1.5 text-left">
-                    <label className="text-[10px] font-bold text-text-secondary uppercase tracking-wider">Twilio Auth Token</label>
-                    <div className="relative">
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-1.5 text-left">
+                      <label className="text-[10px] font-bold text-text-secondary uppercase tracking-wider">Firebase API Key</label>
+                      <div className="relative">
+                        <Input
+                          type={showKeys.firebaseApiKey ? "text" : "password"}
+                          value={credentials.firebaseApiKey}
+                          onChange={(e) => setCredentials(p => ({ ...p, firebaseApiKey: e.target.value }))}
+                          className="h-10 border-border-default bg-bg-base text-text-primary text-sm pr-10 font-mono"
+                          placeholder="AIzaSy..."
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowKeys(p => ({ ...p, firebaseApiKey: !p.firebaseApiKey }))}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-text-primary cursor-pointer"
+                        >
+                          {showKeys.firebaseApiKey ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                        </button>
+                      </div>
+                    </div>
+                    <div className="space-y-1.5 text-left">
+                      <label className="text-[10px] font-bold text-text-secondary uppercase tracking-wider">Auth Domain</label>
                       <Input
-                        type={showKeys.twilioAuthToken ? "text" : "password"}
-                        value={credentials.twilioAuthToken}
-                        onChange={(e) => setCredentials(p => ({ ...p, twilioAuthToken: e.target.value }))}
-                        className="h-10 border-border-default bg-bg-base text-text-primary text-sm pr-10 font-mono"
-                        placeholder="Auth Token"
+                        value={credentials.firebaseAuthDomain}
+                        onChange={(e) => setCredentials(p => ({ ...p, firebaseAuthDomain: e.target.value }))}
+                        className="h-10 border-border-default bg-bg-base text-text-primary text-sm font-mono"
+                        placeholder="...firebaseapp.com"
                       />
-                      <button
-                        type="button"
-                        onClick={() => setShowKeys(p => ({ ...p, twilioAuthToken: !p.twilioAuthToken }))}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-text-primary cursor-pointer"
-                      >
-                        {showKeys.twilioAuthToken ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                      </button>
                     </div>
                   </div>
-                  <div className="space-y-1.5 text-left">
-                    <label className="text-[10px] font-bold text-text-secondary uppercase tracking-wider">Sender Phone Number</label>
-                    <Input
-                      value={credentials.twilioPhoneNumber}
-                      onChange={(e) => setCredentials(p => ({ ...p, twilioPhoneNumber: e.target.value }))}
-                      className="h-10 border-border-default bg-bg-base text-text-primary text-sm font-mono"
-                      placeholder="+1234567890"
-                    />
+
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div className="space-y-1.5 text-left">
+                      <label className="text-[10px] font-bold text-text-secondary uppercase tracking-wider">Project ID</label>
+                      <Input
+                        value={credentials.firebaseProjectId}
+                        onChange={(e) => setCredentials(p => ({ ...p, firebaseProjectId: e.target.value }))}
+                        className="h-10 border-border-default bg-bg-base text-text-primary text-sm font-mono"
+                        placeholder="Project ID"
+                      />
+                    </div>
+                    <div className="space-y-1.5 text-left">
+                      <label className="text-[10px] font-bold text-text-secondary uppercase tracking-wider">Storage Bucket</label>
+                      <Input
+                        value={credentials.firebaseStorageBucket}
+                        onChange={(e) => setCredentials(p => ({ ...p, firebaseStorageBucket: e.target.value }))}
+                        className="h-10 border-border-default bg-bg-base text-text-primary text-sm font-mono"
+                        placeholder="...firebasestorage.app"
+                      />
+                    </div>
+                    <div className="space-y-1.5 text-left">
+                      <label className="text-[10px] font-bold text-text-secondary uppercase tracking-wider">Messaging Sender ID</label>
+                      <Input
+                        value={credentials.firebaseMessagingSenderId}
+                        onChange={(e) => setCredentials(p => ({ ...p, firebaseMessagingSenderId: e.target.value }))}
+                        className="h-10 border-border-default bg-bg-base text-text-primary text-sm font-mono"
+                        placeholder="Messaging Sender ID"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-1.5 text-left">
+                      <label className="text-[10px] font-bold text-text-secondary uppercase tracking-wider">App ID</label>
+                      <Input
+                        value={credentials.firebaseAppId}
+                        onChange={(e) => setCredentials(p => ({ ...p, firebaseAppId: e.target.value }))}
+                        className="h-10 border-border-default bg-bg-base text-text-primary text-sm font-mono"
+                        placeholder="1:..."
+                      />
+                    </div>
+                    <div className="space-y-1.5 text-left">
+                      <label className="text-[10px] font-bold text-text-secondary uppercase tracking-wider">Measurement ID</label>
+                      <Input
+                        value={credentials.firebaseMeasurementId}
+                        onChange={(e) => setCredentials(p => ({ ...p, firebaseMeasurementId: e.target.value }))}
+                        className="h-10 border-border-default bg-bg-base text-text-primary text-sm font-mono"
+                        placeholder="G-..."
+                      />
+                    </div>
                   </div>
                 </div>
               </div>

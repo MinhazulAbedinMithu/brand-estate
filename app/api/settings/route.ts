@@ -25,9 +25,14 @@ const getFallbackSettings = () => ({
   stripePublishableKey: process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || "",
   stripeSecretKey: process.env.STRIPE_SECRET_KEY || "",
   stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET || "",
-  twilioAccountSid: process.env.TWILIO_ACCOUNT_SID || "",
-  twilioAuthToken: process.env.TWILIO_AUTH_TOKEN || "",
-  twilioPhoneNumber: process.env.TWILIO_PHONE_NUMBER || "",
+
+  firebaseApiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "AIzaSyBPb7s5e6FqId6Chu1D8P12PNGGQhV6VK0",
+  firebaseAuthDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || "realestate-8727b.firebaseapp.com",
+  firebaseProjectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "realestate-8727b",
+  firebaseStorageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || "realestate-8727b.firebasestorage.app",
+  firebaseMessagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || "685467231674",
+  firebaseAppId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || "1:685467231674:web:1e8d741a4ebe57aa2ce983",
+  firebaseMeasurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID || "G-F4NWBS2CC2",
 });
 
 export async function GET() {
@@ -76,9 +81,14 @@ export async function POST(request: NextRequest) {
       stripePublishableKey,
       stripeSecretKey,
       stripeWebhookSecret,
-      twilioAccountSid,
-      twilioAuthToken,
-      twilioPhoneNumber,
+
+      firebaseApiKey,
+      firebaseAuthDomain,
+      firebaseProjectId,
+      firebaseStorageBucket,
+      firebaseMessagingSenderId,
+      firebaseAppId,
+      firebaseMeasurementId,
     } = await request.json();
 
     await connectDB();
@@ -95,9 +105,14 @@ export async function POST(request: NextRequest) {
       { key: "stripePublishableKey", value: stripePublishableKey },
       { key: "stripeSecretKey", value: stripeSecretKey },
       { key: "stripeWebhookSecret", value: stripeWebhookSecret },
-      { key: "twilioAccountSid", value: twilioAccountSid },
-      { key: "twilioAuthToken", value: twilioAuthToken },
-      { key: "twilioPhoneNumber", value: twilioPhoneNumber },
+
+      { key: "firebaseApiKey", value: firebaseApiKey },
+      { key: "firebaseAuthDomain", value: firebaseAuthDomain },
+      { key: "firebaseProjectId", value: firebaseProjectId },
+      { key: "firebaseStorageBucket", value: firebaseStorageBucket },
+      { key: "firebaseMessagingSenderId", value: firebaseMessagingSenderId },
+      { key: "firebaseAppId", value: firebaseAppId },
+      { key: "firebaseMeasurementId", value: firebaseMeasurementId },
     ];
 
     for (const update of updates) {

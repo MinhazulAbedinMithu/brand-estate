@@ -35,13 +35,13 @@ export function ProfilePageClient() {
   const [uploadingBack, setUploadingBack] = React.useState(false);
   const [uploadingSelfie, setUploadingSelfie] = React.useState(false);
 
-  // Phone states
   const [phone, setPhone] = React.useState(currentUser?.phone || "");
   const [phoneVerified, setPhoneVerified] = React.useState(currentUser?.phoneVerified || false);
   const [otpCode, setOtpCode] = React.useState("");
   const [otpSent, setOtpSent] = React.useState(false);
   const [generatedOtp, setGeneratedOtp] = React.useState("");
   const [verifyingOtp, setVerifyingOtp] = React.useState(false);
+  const [confirmationResult, setConfirmationResult] = React.useState<any>(null);
 
   // Background and credit reports
   const [backgroundReportUrl, setBackgroundReportUrl] = React.useState(currentUser?.backgroundReportUrl || "");
@@ -286,25 +286,70 @@ export function ProfilePageClient() {
       return;
     }
 
-    toast.loading("Sending verification code...");
+    const formattedPhone = phone.trim().startsWith("+") ? phone.trim() : `+${phone.trim()}`;
+
+    toast.loading("Sending verification code via Firebase...");
     try {
-      const res = await fetch('/api/user/phone', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone })
-      });
-      const data = await res.json();
-      toast.dismiss();
-      if (data.status === 'success') {
-        setOtpSent(true);
-        setGeneratedOtp(data.code);
-        toast.success("Code sent!", { description: `For testing, enter: ${data.code}` });
-      } else {
-        toast.error("Failed to send code", { description: data.message });
+      const settingsRes = await fetch("/api/settings");
+      const settingsData = await settingsRes.json();
+      if (settingsData.status !== "success" || !settingsData.data) {
+        throw new Error("Failed to load platform settings.");
       }
-    } catch (err) {
+
+      const config = {
+        apiKey: settingsData.data.firebaseApiKey,
+        authDomain: settingsData.data.firebaseAuthDomain,
+        projectId: settingsData.data.firebaseProjectId,
+        storageBucket: settingsData.data.firebaseStorageBucket,
+        messagingSenderId: settingsData.data.firebaseMessagingSenderId,
+        appId: settingsData.data.firebaseAppId,
+        measurementId: settingsData.data.firebaseMeasurementId,
+      };
+
+      const { initializeApp, getApps, getApp } = await import("firebase/app");
+      const { getAuth, RecaptchaVerifier, signInWithPhoneNumber } = await import("firebase/auth");
+
+      const app = getApps().length === 0 ? initializeApp(config) : getApp();
+      const auth = getAuth(app);
+
+      let verifier = (window as any).recaptchaVerifier;
+      if (!verifier) {
+        verifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+          size: 'invisible'
+        });
+        (window as any).recaptchaVerifier = verifier;
+      }
+
+      const confirmResult = await signInWithPhoneNumber(auth, formattedPhone, verifier);
+      setConfirmationResult(confirmResult);
+      setOtpSent(true);
       toast.dismiss();
-      toast.error("Error sending code.");
+      toast.success("Verification code sent via SMS! 📱");
+    } catch (err: any) {
+      toast.dismiss();
+      console.warn("Firebase send OTP error, falling back to test mode:", err);
+      
+      toast.loading("Sending test code...");
+      try {
+        const res = await fetch('/api/user/phone', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ phone })
+        });
+        const data = await res.json();
+        toast.dismiss();
+        if (data.status === 'success') {
+          setOtpSent(true);
+          setGeneratedOtp(data.code);
+          setConfirmationResult(null);
+          toast.success("Test code sent!", { description: `For testing, enter: ${data.code}` });
+        } else {
+          toast.error("Failed to send test code", { description: data.message });
+        }
+      } catch (mockErr) {
+        toast.dismiss();
+        toast.error("Error sending verification code.");
+      }
     }
   };
 
@@ -316,22 +361,44 @@ export function ProfilePageClient() {
 
     setVerifyingOtp(true);
     try {
-      const res = await fetch('/api/user/phone/confirm', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code: otpCode })
-      });
-      const data = await res.json();
-      if (data.status === 'success') {
-        setPhoneVerified(true);
-        setOtpSent(false);
-        toast.success("Phone verified successfully!");
-        setTimeout(() => window.location.reload(), 1000);
+      if (confirmationResult) {
+        const result = await confirmationResult.confirm(otpCode);
+        const idToken = await result.user.getIdToken();
+        const formattedPhone = phone.trim().startsWith("+") ? phone.trim() : `+${phone.trim()}`;
+
+        const res = await fetch('/api/user/phone/confirm', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token: idToken, phone: formattedPhone })
+        });
+        const data = await res.json();
+        if (data.status === 'success') {
+          setPhoneVerified(true);
+          setOtpSent(false);
+          toast.success("Phone verified successfully!");
+          setTimeout(() => window.location.reload(), 1000);
+        } else {
+          toast.error("Verification failed", { description: data.message });
+        }
       } else {
-        toast.error("Verification failed", { description: data.message });
+        const res = await fetch('/api/user/phone/confirm', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ code: otpCode })
+        });
+        const data = await res.json();
+        if (data.status === 'success') {
+          setPhoneVerified(true);
+          setOtpSent(false);
+          toast.success("Phone verified successfully!");
+          setTimeout(() => window.location.reload(), 1000);
+        } else {
+          toast.error("Verification failed", { description: data.message });
+        }
       }
-    } catch (err) {
-      toast.error("Error verifying code.");
+    } catch (err: any) {
+      console.error("Verification error:", err);
+      toast.error("Invalid verification code", { description: err.message || "Please check the code and try again." });
     } finally {
       setVerifyingOtp(false);
     }
@@ -839,6 +906,8 @@ export function ProfilePageClient() {
                             </Button>
                           )}
                         </div>
+
+                        <div id="recaptcha-container" className="hidden"></div>
 
                         {otpSent && (
                           <div className="space-y-3 p-4 bg-bg-alt/40 border border-border-default/70 rounded-xl animate-fade-in">

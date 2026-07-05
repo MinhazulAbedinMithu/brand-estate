@@ -145,7 +145,7 @@ function Field({
 // ─────────────────────────────────────────────────────────
 export default function LoginPage() {
   const router = useRouter();
-  const { login } = useAuth();
+  const { login, googleLogin } = useAuth();
 
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
@@ -204,12 +204,24 @@ export default function LoginPage() {
   const handleGoogle = async () => {
     setIsSubmitting(true);
     setIsUnverified(false);
-    const result = await login("user@brandestate.com", "Password123");
+    toast.loading("Signing in with Google...");
+    const result = await googleLogin();
+    toast.dismiss();
     setIsSubmitting(false);
-    if (result.success) {
-      toast.success(`Signed in with Google!`);
-      router.push(getDashboardRoute(result.user!.role));
+    if (!result.success) {
+      if (result.isSuspended) {
+        setSuspendedName(result.user?.name || "User");
+        setSuspendedReason(result.suspendedReason || "No suspension reason specified.");
+        setShowSuspendedModal(true);
+        return;
+      }
+      toast.error("Google sign-in failed", { description: result.error });
+      return;
     }
+    toast.success(`Welcome back, ${result.user?.name?.split(" ")[0]}! 🎉`, {
+      description: "You've been signed in successfully with Google.",
+    });
+    router.push(getDashboardRoute(result.user!.role));
   };
 
   const fillDemo = (demoEmail: string) => {

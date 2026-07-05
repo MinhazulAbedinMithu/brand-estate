@@ -156,6 +156,15 @@ interface AuthContextValue {
     password: string,
     role: UserRole
   ) => Promise<{ success: boolean; error?: string; user?: User }>;
+  googleLogin: (
+    role?: UserRole
+  ) => Promise<{
+    success: boolean;
+    error?: string;
+    user?: User;
+    isSuspended?: boolean;
+    suspendedReason?: string;
+  }>;
   logout: () => Promise<void>;
   
   // Custom Local Storage DB Helpers
@@ -828,6 +837,79 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     []
   );
 
+  const googleLogin = React.useCallback(
+    async (
+      role?: UserRole
+    ): Promise<{
+      success: boolean;
+      error?: string;
+      user?: User;
+      isSuspended?: boolean;
+      suspendedReason?: string;
+    }> => {
+      setIsLoading(true);
+      try {
+        const settingsRes = await fetch("/api/settings");
+        const settingsData = await settingsRes.json();
+        if (settingsData.status !== "success" || !settingsData.data) {
+          throw new Error("Failed to load platform settings.");
+        }
+
+        const config = {
+          apiKey: settingsData.data.firebaseApiKey,
+          authDomain: settingsData.data.firebaseAuthDomain,
+          projectId: settingsData.data.firebaseProjectId,
+          storageBucket: settingsData.data.firebaseStorageBucket,
+          messagingSenderId: settingsData.data.firebaseMessagingSenderId,
+          appId: settingsData.data.firebaseAppId,
+          measurementId: settingsData.data.firebaseMeasurementId,
+        };
+
+        const { initializeApp, getApps, getApp } = await import("firebase/app");
+        const { getAuth, GoogleAuthProvider, signInWithPopup } = await import("firebase/auth");
+
+        const app = getApps().length === 0 ? initializeApp(config) : getApp();
+        const auth = getAuth(app);
+
+        const provider = new GoogleAuthProvider();
+        const popupResult = await signInWithPopup(auth, provider);
+        const idToken = await popupResult.user.getIdToken();
+
+        const res = await fetch("/api/auth/google", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ idToken, role }),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          setIsLoading(false);
+          if (data.error === "AccountSuspended") {
+            return {
+              success: false,
+              error: data.message || "Your account is suspended.",
+              isSuspended: true,
+              suspendedReason: data.suspendedReason || "No reason specified."
+            };
+          }
+          return { success: false, error: data.message || "Google sign-in failed." };
+        }
+
+        const loggedUser = mapApiUser(data.data);
+        persistUser(loggedUser);
+        setIsLoading(false);
+        return { success: true, user: loggedUser };
+      } catch (err: unknown) {
+        console.error("Google sign-in error:", err);
+        setIsLoading(false);
+        const errMsg = err instanceof Error ? err.message : "An unexpected error occurred during Google Sign-in.";
+        return { success: false, error: errMsg };
+      }
+    },
+    []
+  );
+
   const logout = React.useCallback(async () => {
     try {
       await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
@@ -846,6 +928,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       isLoading,
       login,
       register,
+      googleLogin,
       logout,
       
       // DB Helpers
@@ -861,7 +944,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       updatePackage,
       createPackage,
     }),
-    [currentUser, isLoading, login, register, logout, getUsers, updateUserStatus, deleteUser, submitLegalDocs, submitNidDocs, updateUserNidStatus, getPackages, updatePackage, createPackage]
+    [currentUser, isLoading, login, register, googleLogin, logout, getUsers, updateUserStatus, deleteUser, submitLegalDocs, submitNidDocs, updateUserNidStatus, getPackages, updatePackage, createPackage]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

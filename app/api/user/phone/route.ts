@@ -2,7 +2,6 @@ import { type NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/db/mongoose';
 import { User } from '@/lib/db/models/user.model';
 import { getSessionUser } from '@/lib/auth/get-user';
-import { getSystemSetting } from '@/lib/db/settings';
 
 export async function POST(request: NextRequest) {
   try {
@@ -50,16 +49,7 @@ export async function POST(request: NextRequest) {
 
     await user.save();
 
-    // Query Twilio configuration for debugging/integration verification
-    const accountSid = await getSystemSetting("twilioAccountSid", "TWILIO_ACCOUNT_SID");
-    const authToken = await getSystemSetting("twilioAuthToken", "TWILIO_AUTH_TOKEN");
-    const twilioPhone = await getSystemSetting("twilioPhoneNumber", "TWILIO_PHONE_NUMBER");
-
-    if (accountSid && authToken && twilioPhone) {
-      console.log(`[SMS Portal] Twilio integration active. Sending mock OTP ${verificationCode} via ${twilioPhone}`);
-    } else {
-      console.log(`[SMS Portal] Twilio credentials missing. Falling back to debug console OTP: ${verificationCode}`);
-    }
+    console.log(`[SMS Portal] Mobile verification code generated: ${verificationCode}`);
 
     return NextResponse.json(
       { 

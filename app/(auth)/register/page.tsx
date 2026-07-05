@@ -2,7 +2,9 @@
 
 import * as React from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { useAuth, getDashboardRoute } from "@/lib/auth-context";
 import {
   Mail,
   Lock,
@@ -182,6 +184,8 @@ function EmailSentCard({ email }: { email: string }) {
 // Page
 // ─────────────────────────────────────────────────────────
 export default function RegisterPage() {
+  const router = useRouter();
+  const { googleLogin } = useAuth();
   const [selectedRole, setSelectedRole] = React.useState<UserRole>("auth_user");
   const [name, setName] = React.useState("");
   const [email, setEmail] = React.useState("");
@@ -253,9 +257,27 @@ export default function RegisterPage() {
     }
   };
 
-  // ── Google register (mock — no OAuth API yet) ──────────
-  const handleGoogle = () => {
-    toast.info("Google sign-up coming soon!", { description: "Use email registration for now." });
+  // ── Google register ──────────────────────────────────────
+  const handleGoogle = async () => {
+    setIsSubmitting(true);
+    toast.loading("Signing up with Google...");
+    const result = await googleLogin(selectedRole);
+    toast.dismiss();
+    setIsSubmitting(false);
+
+    if (!result.success) {
+      if (result.isSuspended) {
+        toast.error("Account suspended", { description: result.suspendedReason });
+        return;
+      }
+      toast.error("Google sign-up failed", { description: result.error });
+      return;
+    }
+
+    toast.success(`Welcome to Brand Estate, ${result.user?.name?.split(" ")[0]}! 🎉`, {
+      description: "Your account has been registered successfully with Google.",
+    });
+    router.push(getDashboardRoute(result.user!.role));
   };
 
   if (registered) {
