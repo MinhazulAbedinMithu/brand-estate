@@ -1,7 +1,7 @@
 # 00 — Mock Listing Data
 
 ## What This Builds
-A high-fidelity, comprehensive mock dataset and TypeScript type system that serves as the "Source of Truth" for property listings on the Brand Estate SaaS platform. It provides realistic property listings across four distinct property categories with rich details (Mapbox coordinates, lister profiles, amenities, utilities, and environmental risk factors) for use in the frontend UI discovery experience.
+A high-fidelity, comprehensive mock dataset and TypeScript type system that serves as the "Source of Truth" for property listings on the RealHoms SaaS platform. It provides realistic property listings across four distinct property categories with rich details (Mapbox coordinates, lister profiles, amenities, utilities, and environmental risk factors) for use in the frontend UI discovery experience.
 
 ## Data Structures & Interfaces
 

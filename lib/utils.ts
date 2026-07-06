@@ -26,7 +26,7 @@ export function getAppUrl(): string {
     return "http://localhost:3000";
   }
   // 5. Final hardcoded production fallback
-  return "https://brandestate.vercel.app";
+  return "https://realhoms.vercel.app";
 }
 
 import type { User } from './types';

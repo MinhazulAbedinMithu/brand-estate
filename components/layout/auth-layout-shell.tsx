@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { Building, Star, Home, TrendingUp, Shield, ArrowLeft } from "lucide-react";
+import { Star, Home, TrendingUp, Shield, ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { APP_NAME } from "@/lib/constants";
 
@@ -12,21 +12,21 @@ import { APP_NAME } from "@/lib/constants";
 const TESTIMONIALS = [
   {
     quote:
-      "Brand Estate made finding our dream home feel effortless. The platform's intuitive design and expert agents made everything seamless.",
+      "RealHoms made finding our dream home feel effortless. The platform's intuitive design and expert agents made everything seamless.",
     author: "Jessica & Mark Torres",
     role: "First-time Homebuyers",
     avatar: "JT",
   },
   {
     quote:
-      "As a real estate agent, Brand Estate's platform has tripled my listings' visibility. The tools are world-class.",
+      "As a real estate agent, RealHoms's platform has tripled my listings' visibility. The tools are world-class.",
     author: "Michael Reeves",
     role: "Senior Real Estate Agent",
     avatar: "MR",
   },
   {
     quote:
-      "We sold our property 40% faster than the market average thanks to Brand Estate's professional network.",
+      "We sold our property 40% faster than the market average thanks to RealHoms's professional network.",
     author: "Priya Anand",
     role: "Property Seller, Dubai",
     avatar: "PA",
@@ -108,8 +108,8 @@ export function AuthLayoutShell({
         <div className="relative z-10 flex flex-col h-full p-10 xl:p-12">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2.5 group w-fit">
-            <div className="h-9 w-9 rounded-xl bg-accent-primary flex items-center justify-center shadow-lg shadow-accent-primary/40 group-hover:shadow-accent-primary/60 group-hover:scale-105 transition-all duration-300">
-              <Building className="h-5 w-5 text-white" />
+            <div className="h-9 w-9 rounded-xl bg-white flex items-center justify-center shadow-lg shadow-accent-primary/40 group-hover:shadow-accent-primary/60 group-hover:scale-105 transition-all duration-300">
+              <img src="/favicon-32x32.png" alt="Logo" className="h-6 w-6" />
             </div>
             <span className="font-heading text-xl font-bold text-white tracking-tight">
               {panelTitle}
@@ -138,7 +138,7 @@ export function AuthLayoutShell({
             </h2>
 
             <p className="text-[15px] text-white/55 leading-relaxed max-w-[320px] mb-8">
-              Join over 50,000 buyers, renters, and agents who trust Brand Estate for premium property discovery.
+              Join over 50,000 buyers, renters, and agents who trust RealHoms for premium property discovery.
             </p>
 
             {/* Feature pills */}
@@ -243,8 +243,8 @@ export function AuthLayoutShell({
         {/* Mobile top bar */}
         <div className="lg:hidden flex items-center justify-between px-5 py-4 border-b border-border-default/40 dark:border-dark-border-default/40">
           <Link href="/" className="flex items-center gap-2 group">
-            <div className="h-8 w-8 rounded-xl bg-accent-primary flex items-center justify-center shadow-md shadow-accent-primary/25">
-              <Building className="h-4 w-4 text-white" />
+            <div className="h-8 w-8 rounded-xl bg-white flex items-center justify-center shadow-md shadow-accent-primary/25 border border-border-default/40">
+              <img src="/favicon-32x32.png" alt="Logo" className="h-5 w-5" />
             </div>
             <span className="font-heading text-[17px] font-bold text-text-primary dark:text-white">
               {APP_NAME}

@@ -72,7 +72,7 @@ export function SearchModal({
       <DialogContent className="max-w-md md:max-w-lg rounded-3xl bg-bg-surface/95 dark:bg-bg-surface border border-border-default/80 shadow-2xl p-6 backdrop-blur-lg transition-all duration-300">
         <DialogHeader className="mb-4 space-y-1">
           <DialogTitle className="text-2xl font-bold tracking-tight text-text-primary font-heading">
-            Search <span className="text-accent-primary">Brand Estate</span>
+            Search <span className="text-accent-primary">RealHoms</span>
           </DialogTitle>
           <DialogDescription className="text-text-muted text-xs sm:text-sm tracking-wide">
             Find premium properties or change your location search scope.

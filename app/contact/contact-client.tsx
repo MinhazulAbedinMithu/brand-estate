@@ -71,7 +71,7 @@ export function ContactClient() {
             <div className="space-y-4 pt-2">
               {[
                 { icon: Phone, label: "Phone support", desc: "+1 (800) 555-ESTATE", href: "tel:+18005553782" },
-                { icon: Mail, label: "Email inquiries", desc: "support@brandestate.com", href: "mailto:support@brandestate.com" },
+                { icon: Mail, label: "Email inquiries", desc: "support@realhoms.com", href: "mailto:support@realhoms.com" },
                 { icon: MapPin, label: "Main Headquarters", desc: "500 Fifth Avenue, 24th Floor, New York, NY 10110", href: "https://www.google.com/maps/search/?api=1&query=500+Fifth+Avenue+New+York" },
               ].map((item, idx) => {
                 const Icon = item.icon;

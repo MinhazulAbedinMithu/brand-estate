@@ -4,7 +4,7 @@ import { DashboardClient } from "./dashboard-client";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Member Dashboard | Brand Estate",
+  title: "Member Dashboard | RealHoms",
   description: "Manage your saved listings, check inquiries, and customize your agent alert parameters.",
 };
 

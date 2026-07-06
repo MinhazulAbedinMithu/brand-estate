@@ -59,13 +59,13 @@ export const housesMock: HouseProperty[] = [
       avatar:
         "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=300&q=80",
       phone: "+1 (310) 555-0192",
-      email: "sarah.jenkins@brandestate.com",
-      agencyName: "Brand Estate Beverly Hills",
+      email: "sarah.jenkins@realhoms.com",
+      agencyName: "RealHoms Beverly Hills",
       licenseNumber: "CA-DRE-02184732",
       agentSlug: "daniel-kowalski",
     },
     seo: {
-      seoTitle: "Oceanfront Villa for Sale in Malibu | 6BD/7.5BA | $28.5M — Brand Estate",
+      seoTitle: "Oceanfront Villa for Sale in Malibu | 6BD/7.5BA | $28.5M — RealHoms",
       metaDescription:
         "Kengo Kuma-designed oceanfront villa in Malibu — 11,400 sq ft, 6 bedrooms, infinity pool, 180ft private beach. Listed at $28.5 million.",
       ogImageUrl:
@@ -134,13 +134,13 @@ export const housesMock: HouseProperty[] = [
       avatar:
         "https://images.unsplash.com/photo-1494790108755-2616b4e2a4b3?auto=format&fit=crop&w=300&q=80",
       phone: "+1 (416) 555-0387",
-      email: "priya.sharma@brandestate.ca",
-      agencyName: "Brand Estate Toronto",
+      email: "priya.sharma@realhoms.ca",
+      agencyName: "RealHoms Toronto",
       licenseNumber: "RECO-ON-4892017",
       agentSlug: "ashley-brooks",
     },
     seo: {
-      seoTitle: "Craftsman Home for Sale in High Park, Toronto | 4BD/3.5BA | CAD 2.15M — Brand Estate",
+      seoTitle: "Craftsman Home for Sale in High Park, Toronto | 4BD/3.5BA | CAD 2.15M — RealHoms",
       metaDescription:
         "Restored 1928 Craftsman at 214 Glenforest Rd, High Park. 3,840 sq ft, 4 beds, original oak floors, landscaped garden, basement suite. CAD 2.15 million.",
       ogImageUrl:
@@ -202,13 +202,13 @@ export const housesMock: HouseProperty[] = [
       avatar:
         "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=300&q=80",
       phone: "+1 (631) 555-0192",
-      email: "sarah.jenkins@brandestate.com",
-      agencyName: "Brand Estate Beverly Hills",
+      email: "sarah.jenkins@realhoms.com",
+      agencyName: "RealHoms Beverly Hills",
       licenseNumber: "CA-DRE-02184732",
       agentSlug: "sophia-chen",
     },
     seo: {
-      seoTitle: "7-Bed Modern Farmhouse for Rent in East Hampton | $75K/mo — Brand Estate",
+      seoTitle: "7-Bed Modern Farmhouse for Rent in East Hampton | $75K/mo — RealHoms",
       metaDescription:
         "Luxury Modern Farmhouse on Lily Pond Lane, East Hampton — 7,200 sq ft, 7 bedrooms, 60ft pool, outdoor kitchen. From $75,000/month (4-week minimum).",
       ogImageUrl:

@@ -4,7 +4,7 @@ import { AgentDashboardClient } from "./agent-dashboard-client";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Agent Console | Brand Estate",
+  title: "Agent Console | RealHoms",
   description: "Monitor user inquiries, view page counts, and edit property specs.",
 };
 

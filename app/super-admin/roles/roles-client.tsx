@@ -20,10 +20,10 @@ interface RoleAccount {
 
 // Mock accounts list for Super Admin Role panel
 const initialAccounts: RoleAccount[] = [
-  { id: "acc-01", name: "Alex Johnson", email: "user@brandestate.com", role: "auth_user", status: "Active" },
-  { id: "acc-02", name: "Sarah Mitchell", email: "agent@brandestate.com", role: "agent", status: "Active" },
-  { id: "acc-03", name: "David Chen", email: "admin@brandestate.com", role: "admin", status: "Active" },
-  { id: "acc-04", name: "Elena Rodriguez", email: "superadmin@brandestate.com", role: "super_admin", status: "Active" },
+  { id: "acc-01", name: "Alex Johnson", email: "user@realhoms.com", role: "auth_user", status: "Active" },
+  { id: "acc-02", name: "Sarah Mitchell", email: "agent@realhoms.com", role: "agent", status: "Active" },
+  { id: "acc-03", name: "David Chen", email: "admin@realhoms.com", role: "admin", status: "Active" },
+  { id: "acc-04", name: "Elena Rodriguez", email: "superadmin@realhoms.com", role: "super_admin", status: "Active" },
   { id: "acc-05", name: "Michael Chang", email: "michael.c@gmail.com", role: "auth_user", status: "Active" },
 ];
 

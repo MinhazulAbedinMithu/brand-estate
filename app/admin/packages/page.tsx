@@ -4,7 +4,7 @@ import { AdminPackagesClient } from "./packages-client";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Packages Management | Brand Estate",
+  title: "Packages Management | RealHoms",
   description: "View and edit pricing packages configurations for real estate agents.",
 };
 

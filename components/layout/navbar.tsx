@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Search, Menu, ArrowRight, Building, ChevronDown, LogOut, Settings, Heart, LayoutDashboard } from "lucide-react";
+import { Search, Menu, ArrowRight, ChevronDown, LogOut, Settings, Heart, LayoutDashboard } from "lucide-react";
 import { toast } from "sonner";
 
 import { cn } from "@/lib/utils";
@@ -161,7 +161,7 @@ export function Navbar() {
               href="/"
               className="font-heading text-xl sm:text-2xl font-bold tracking-tight text-text-primary hover:opacity-90 transition-opacity flex items-center gap-2"
             >
-              <Building className="h-5 w-5 text-accent-primary shrink-0" />
+              <img src="/favicon-32x32.png" alt="Logo" className="h-5 w-5 shrink-0" />
               <span>{APP_NAME}</span>
             </Link>
           </div>
@@ -391,7 +391,7 @@ export function Navbar() {
                   <div>
                     <SheetHeader className="p-0 border-b border-border-default/50 pb-4 mb-6">
                       <SheetTitle className="font-heading text-lg font-bold text-text-primary flex items-center gap-2">
-                        <Building className="h-5 w-5 text-accent-primary" />
+                        <img src="/favicon-32x32.png" alt="Logo" className="h-5 w-5" />
                         <span>{APP_NAME}</span>
                       </SheetTitle>
                     </SheetHeader>

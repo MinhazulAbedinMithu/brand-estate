@@ -2,7 +2,7 @@
 
 ## Approach
 
-Brand Estate is built using a spec-driven, incremental workflow. Context files define what to build, how to build it, and what the current state of progress is. Always implement against these specs — do not infer or invent behavior from scratch.
+RealHoms is built using a spec-driven, incremental workflow. Context files define what to build, how to build it, and what the current state of progress is. Always implement against these specs — do not infer or invent behavior from scratch.
 
 Every implementation unit starts from a feature spec in `context/feature-specs/`. No code is written without a corresponding spec being defined first.
 

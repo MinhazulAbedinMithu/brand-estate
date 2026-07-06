@@ -4,7 +4,7 @@ import { ListingsClient } from "./listings-client";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "My Listings | Brand Estate",
+  title: "My Listings | RealHoms",
   description: "Track status updates and pricing values for all listings created by you.",
 };
 

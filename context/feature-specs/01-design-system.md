@@ -4,7 +4,7 @@ Read `AGENTS.md` and all context files before implementing.
 
 ## What This Builds
 
-The global design system foundation for Brand Estate. This includes:
+The global design system foundation for RealHoms. This includes:
 
 1. All CSS custom property tokens in `app/globals.css`.
 2. Font injection (Playfair Display + Montserrat) in `app/layout.tsx`.

@@ -38,7 +38,7 @@ export async function generateMetadata({ params }: DetailPageProps): Promise<Met
       description: ogDescription,
       type: post.seo?.ogType || "article",
       url: `/blogs/${slug.toLowerCase()}`,
-      siteName: "Brand Estate",
+      siteName: "RealHoms",
       images: [
         {
           url: ogImage,

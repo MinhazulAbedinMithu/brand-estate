@@ -3,7 +3,7 @@ import { PaymentSuccessClient } from "./success-client";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Application Received | Brand Estate",
+  title: "Application Received | RealHoms",
   description: "Your tenancy application fee payment has been successfully authorized.",
 };
 

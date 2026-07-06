@@ -1,8 +1,8 @@
-# Brand Estate — Project Overview
+# RealHoms — Project Overview
 
 ## Product
 
-Brand Estate is a full-featured real estate SaaS platform that connects property buyers, renters, sellers, and real estate agents. It allows guests to browse listings, authenticated users to save and inquire, agents to manage their properties and leads, and administrators to oversee the entire platform.
+RealHoms is a full-featured real estate SaaS platform that connects property buyers, renters, sellers, and real estate agents. It allows guests to browse listings, authenticated users to save and inquire, agents to manage their properties and leads, and administrators to oversee the entire platform.
 
 ## Goals
 

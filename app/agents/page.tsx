@@ -6,28 +6,28 @@ import { User, IUser } from "@/lib/db/models/user.model";
 import type { MockAgent } from "@/src/mocks/agentsMock";
 
 export const metadata: Metadata = {
-  title: "Find Real Estate Agents | Brand Estate",
+  title: "Find Real Estate Agents | RealHoms",
   description:
     "Browse our network of verified, top-rated real estate agents across New York, London, Dubai, Sydney, and more. Find the right expert for your property journey.",
   openGraph: {
-    title: "Find Real Estate Agents | Brand Estate",
+    title: "Find Real Estate Agents | RealHoms",
     description:
       "Browse our network of verified, top-rated real estate agents across New York, London, Dubai, Sydney, and more. Find the right expert for your property journey.",
     url: "/agents",
-    siteName: "Brand Estate",
+    siteName: "RealHoms",
     images: [
       {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "Find Real Estate Agents | Brand Estate",
+        alt: "Find Real Estate Agents | RealHoms",
       },
     ],
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Find Real Estate Agents | Brand Estate",
+    title: "Find Real Estate Agents | RealHoms",
     description:
       "Browse our network of verified, top-rated real estate agents across New York, London, Dubai, Sydney, and more. Find the right expert for your property journey.",
     images: ["/og-image.png"],

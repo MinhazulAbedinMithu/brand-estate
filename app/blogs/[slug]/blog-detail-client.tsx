@@ -31,7 +31,7 @@ export function BlogDetailClient({ slug }: BlogDetailClientProps) {
 
   React.useEffect(() => {
     try {
-      const stored = localStorage.getItem(`brand-estate-reacted-${slug}`);
+      const stored = localStorage.getItem(`realhoms-reacted-${slug}`);
       if (stored) {
         const parsed = JSON.parse(stored);
         Promise.resolve().then(() => {
@@ -44,12 +44,12 @@ export function BlogDetailClient({ slug }: BlogDetailClientProps) {
   React.useEffect(() => {
     if (!post?.id) return;
     
-    const hasViewed = sessionStorage.getItem(`brand-estate-viewed-${post.id}`);
+    const hasViewed = sessionStorage.getItem(`realhoms-viewed-${post.id}`);
     if (hasViewed) return;
 
     trackBlogView(post.id)
       .then(() => {
-        sessionStorage.setItem(`brand-estate-viewed-${post.id}`, "true");
+        sessionStorage.setItem(`realhoms-viewed-${post.id}`, "true");
       })
       .catch((e) => console.error("Failed to track blog view:", e));
   }, [post?.id, trackBlogView]);
@@ -59,7 +59,7 @@ export function BlogDetailClient({ slug }: BlogDetailClientProps) {
     const updated = { ...clickedEmojis, [emoji]: true };
     setClickedEmojis(updated);
     try {
-      localStorage.setItem(`brand-estate-reacted-${slug}`, JSON.stringify(updated));
+      localStorage.setItem(`realhoms-reacted-${slug}`, JSON.stringify(updated));
     } catch { }
   };
 

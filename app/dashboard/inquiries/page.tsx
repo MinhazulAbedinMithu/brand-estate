@@ -4,7 +4,7 @@ import { InquiriesPageClient } from "./inquiries-page-client";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "My Inquiries | Brand Estate",
+  title: "My Inquiries | RealHoms",
   description: "Track property inquiries and reviews from verified agents.",
 };
 

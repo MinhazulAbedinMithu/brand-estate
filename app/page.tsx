@@ -14,19 +14,19 @@ import { getOrganizationSchema, getWebsiteSchema } from "@/lib/seo-json-ld";
 const appUrl = getAppUrl();
 
 export const metadata = {
-  title: "Brand Estate — Premium Real Estate Portal",
+  title: "RealHoms — Premium Real Estate Portal",
   description: "Find your dream home, search luxury properties, rent high-end apartments, and connect with elite real estate agents.",
   openGraph: {
-    title: "Brand Estate — Premium Real Estate Portal",
+    title: "RealHoms — Premium Real Estate Portal",
     description: "Find your dream home, search luxury properties, rent high-end apartments, and connect with elite real estate agents.",
     url: appUrl,
-    siteName: "Brand Estate",
+    siteName: "RealHoms",
     images: [
       {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "Brand Estate — Premium Real Estate Portal",
+        alt: "RealHoms — Premium Real Estate Portal",
       },
     ],
     locale: "en_US",
@@ -34,7 +34,7 @@ export const metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Brand Estate — Premium Real Estate Portal",
+    title: "RealHoms — Premium Real Estate Portal",
     description: "Find your dream home, search luxury properties, rent high-end apartments, and connect with elite real estate agents.",
     images: ["/og-image.png"],
   },

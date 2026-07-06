@@ -19,7 +19,7 @@ A sticky navigation bar wrapping the top of all public pages with an elegant gla
 2. `<div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">`: Centered main width constraint wrapper.
 3. Left Section — Logo:
    - `<a href="/" className="font-heading text-2xl font-bold tracking-tight text-text-primary hover:opacity-90 transition-opacity">`: Text-based brand representation using Playfair Display.
-   - Text Content: `Brand Estate`.
+   - Text Content: `RealHoms`.
 4. Middle Section — Desktop Navigation Menu:
    - `<nav aria-label="Main Navigation" className="hidden md:flex items-center space-x-1">`.
    - `<ul>` containing `<li>` tags matching `PUBLIC_NAV_LINKS` from `lib/constants.ts` (Properties, Agents, About, Contact).
@@ -50,7 +50,7 @@ A professional, content-rich footer reflecting the site's authority and providin
 3. Main Directory Grid:
    - `<div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-12">`.
    - **Col 1 (Logo & Brand Identity)**:
-     - Logo text `Brand Estate` (Playfair Display) + high-quality descriptive paragraph about the SaaS real estate solution.
+     - Logo text `RealHoms` (Playfair Display) + high-quality descriptive paragraph about the SaaS real estate solution.
      - Social Icons Group: Row of subtle, hover-interactive social links (Facebook, Twitter/X, Instagram, LinkedIn, YouTube) using outline buttons (`rounded-full`).
    - **Col 2 (Discover)**:
      - Header `<h3>` using Montserrat bold.
@@ -66,7 +66,7 @@ A professional, content-rich footer reflecting the site's authority and providin
      - Physical HQ office address + general support email/phone details for credibility.
 4. Bottom Meta & Legal Bar:
    - `<div className="border-t border-border-default/10 py-6 md:flex md:items-center md:justify-between text-xs text-text-muted">`.
-   - Left side: Copyright statement (`© 2026 Brand Estate. All rights reserved.`).
+   - Left side: Copyright statement (`© 2026 RealHoms. All rights reserved.`).
    - Right side: Legal links flex group (Privacy Policy, Terms of Service, Cookies, Sitemap).
 
 ---

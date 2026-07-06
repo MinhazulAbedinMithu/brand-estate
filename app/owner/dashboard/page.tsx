@@ -4,7 +4,7 @@ import { OwnerDashboardClient } from "./owner-dashboard-client";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Owner Console | Brand Estate",
+  title: "Owner Console | RealHoms",
   description: "Monitor user inquiries, view page counts, and edit property specs.",
 };
 

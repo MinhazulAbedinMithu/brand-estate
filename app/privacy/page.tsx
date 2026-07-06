@@ -6,27 +6,27 @@ import { DEFAULT_PRIVACY_POLICY } from "@/lib/db/legal-defaults";
 import { LegalLayout } from "@/components/layout/legal-layout";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy | Brand Estate",
-  description: "Learn how Brand Estate collects, processes, stores, and safeguards your identity documentation (NID/KYC) and personal details.",
+  title: "Privacy Policy | RealHoms",
+  description: "Learn how RealHoms collects, processes, stores, and safeguards your identity documentation (NID/KYC) and personal details.",
   openGraph: {
-    title: "Privacy Policy | Brand Estate",
-    description: "Learn how Brand Estate collects, processes, stores, and safeguards your identity documentation (NID/KYC) and personal details.",
+    title: "Privacy Policy | RealHoms",
+    description: "Learn how RealHoms collects, processes, stores, and safeguards your identity documentation (NID/KYC) and personal details.",
     url: "/privacy",
-    siteName: "Brand Estate",
+    siteName: "RealHoms",
     images: [
       {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "Privacy Policy | Brand Estate",
+        alt: "Privacy Policy | RealHoms",
       },
     ],
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Privacy Policy | Brand Estate",
-    description: "Learn how Brand Estate collects, processes, stores, and safeguards your identity documentation (NID/KYC) and personal details.",
+    title: "Privacy Policy | RealHoms",
+    description: "Learn how RealHoms collects, processes, stores, and safeguards your identity documentation (NID/KYC) and personal details.",
     images: ["/og-image.png"],
   },
 };
@@ -56,7 +56,7 @@ export default async function PrivacyPolicyPage() {
   return (
     <LegalLayout
       title="Privacy Policy"
-      description="This policy outlines how Brand Estate processes and secures your sensitive files, credentials validation profiles, and listings analytics data."
+      description="This policy outlines how RealHoms processes and secures your sensitive files, credentials validation profiles, and listings analytics data."
       content={content}
       updatedAt={updatedAt}
     />

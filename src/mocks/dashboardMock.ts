@@ -128,7 +128,7 @@ export const mockAuditLogs: MockAuditLog[] = [
     actorName: "Elena Rodriguez",
     actorRole: "super_admin",
     action: "Assigned Role (Agent)",
-    target: "Alex Johnson (alex@brandestate.com)",
+    target: "Alex Johnson (alex@realhoms.com)",
     timestamp: "2026-06-14T15:23:00Z",
     ipAddress: "192.168.1.45"
   },

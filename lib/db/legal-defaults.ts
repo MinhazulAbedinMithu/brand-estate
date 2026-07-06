@@ -1,10 +1,10 @@
-export const DEFAULT_BACKGROUND_CHECK_URL = "https://check.brandestate.com/test-bg-report";
-export const DEFAULT_CREDIT_SCORE_CHECK_URL = "https://check.brandestate.com/test-credit-score";
+export const DEFAULT_BACKGROUND_CHECK_URL = "https://check.realhoms.com/test-bg-report";
+export const DEFAULT_CREDIT_SCORE_CHECK_URL = "https://check.realhoms.com/test-credit-score";
 
 export const DEFAULT_TERMS_OF_SERVICE = `## 1. Acceptance of Terms
-Welcome to **Brand Estate**. By accessing, registering, or using our platform, mobile applications, or search directory databases (collectively, the "Services"), you agree to be bound by these Terms of Service (these "Terms"). If you do not agree to these Terms, you must immediately cease all access and use of our Services.
+Welcome to **RealHoms**. By accessing, registering, or using our platform, mobile applications, or search directory databases (collectively, the "Services"), you agree to be bound by these Terms of Service (these "Terms"). If you do not agree to these Terms, you must immediately cease all access and use of our Services.
 
-These Terms constitute a legally binding agreement between you and Brand Estate. We reserve the right, at our sole discretion, to modify or replace these Terms at any time.
+These Terms constitute a legally binding agreement between you and RealHoms. We reserve the right, at our sole discretion, to modify or replace these Terms at any time.
 
 ---
 
@@ -14,12 +14,12 @@ To access certain features of the platform, such as inquiring about listings, li
 ### 2.1 Eligibility and Verification
 * **Identity Verification (KYC)**: To maintain platform security, protect buyers, and prevent fraudulent inquiries, certain user roles (including Buyers, Agents, and Owners) must complete mandatory National Identity (NID) or government-issued photo identification verification.
 * **Accuracy of Information**: You agree to provide accurate, current, and complete information during registration.
-* **Account Security**: You are entirely responsible for safeguarding your login credentials. Brand Estate will not be liable for losses caused by unauthorized account access.
+* **Account Security**: You are entirely responsible for safeguarding your login credentials. RealHoms will not be liable for losses caused by unauthorized account access.
 
 ---
 
 ## 3. Real Estate Listings
-Brand Estate provides a directory marketplace allowing registered Agents and Owners (Listers) to upload and publish property advertisements.
+RealHoms provides a directory marketplace allowing registered Agents and Owners (Listers) to upload and publish property advertisements.
 
 ### 3.1 Listing Policies
 * **Truth in Advertising**: All listing specifications (such as pricing, amenities, zoning codes, and property dimensions) must be accurate, verified, and not misleading.
@@ -39,17 +39,17 @@ Brand Estate provides a directory marketplace allowing registered Agents and Own
 
 * We do not represent or warrant the accuracy, safety, or legality of listings posted by third parties.
 * Any transaction, lease agreement, or negotiation is exclusively between the listing party and the prospective buyer/renter.
-* Under no circumstances shall Brand Estate be liable for any direct, indirect, incidental, or consequential damages resulting from your use of the platform.
+* Under no circumstances shall RealHoms be liable for any direct, indirect, incidental, or consequential damages resulting from your use of the platform.
 
 ---
 
 ## 6. Governing Law
-These Terms shall be governed by and construed in accordance with the laws of the jurisdiction in which Brand Estate operates, without regard to conflict of law principles.
+These Terms shall be governed by and construed in accordance with the laws of the jurisdiction in which RealHoms operates, without regard to conflict of law principles.
 
-If you have any questions regarding these Terms of Service, please contact us at **support@brandestate.com**.`;
+If you have any questions regarding these Terms of Service, please contact us at **support@realhoms.com**.`;
 
 export const DEFAULT_PRIVACY_POLICY = `## 1. Introduction
-At **Brand Estate**, we respect your privacy and are committed to protecting your personal data. This Privacy Policy explains how we collect, use, store, and share your information when you visit our website, register an account, or submit credentials for verification.
+At **RealHoms**, we respect your privacy and are committed to protecting your personal data. This Privacy Policy explains how we collect, use, store, and share your information when you visit our website, register an account, or submit credentials for verification.
 
 By using the Services, you consent to the data practices described in this policy.
 
@@ -69,7 +69,7 @@ We collect information that you directly provide to us, as well as metadata gath
 ---
 
 ## 3. How We Use Your Information
-We process your personal details to deliver, maintain, and optimize the Brand Estate platform. Specifically, we use it to:
+We process your personal details to deliver, maintain, and optimize the RealHoms platform. Specifically, we use it to:
 * Verify user identities (KYC, background, and credit checks) to secure the tenancy ecosystem.
 * Enable property inquiries between buyers/renters and agents/owners.
 * Conduct administrative platform moderation, audit logs tracking, and features flag management.
@@ -99,14 +99,14 @@ Depending on your region (e.g., GDPR in the UK/EU, CCPA in the US), you may have
 * Request the correction or deletion of your personal records.
 * Object to or restrict the processing of your data.
 
-To exercise these rights, please contact our Privacy Team at **privacy@brandestate.com**.`;
+To exercise these rights, please contact our Privacy Team at **privacy@realhoms.com**.`;
 
 export const DEFAULT_COOKIE_POLICY = `## 1. What Are Cookies?
 Cookies are small text files stored on your computer or mobile device when you visit a website. They are widely used to make websites work more efficiently, as well as to provide reporting data to website owners.
 
 ---
 
-## 2. How Brand Estate Uses Cookies
+## 2. How RealHoms Uses Cookies
 We use cookies to enhance your browsing experience, remember your preferences, and maintain login session details.
 
 ### 2.1 Essential Cookies
@@ -125,14 +125,14 @@ These cookies are necessary for the core functionality of our website.
 ## 3. Managing Cookies
 You can control and manage cookies in your browser settings. Most browsers allow you to refuse or accept cookies, or delete existing ones.
 
-* **Please note**: If you choose to block or disable all cookies, some parts of the Brand Estate platform (such as your member dashboard panel or listing manager) may not function correctly, and you will be forced to log in on every page transition.
+* **Please note**: If you choose to block or disable all cookies, some parts of the RealHoms platform (such as your member dashboard panel or listing manager) may not function correctly, and you will be forced to log in on every page transition.
 
-For detailed inquiries regarding cookie tracking settings, contact us at **support@brandestate.com**.`;
+For detailed inquiries regarding cookie tracking settings, contact us at **support@realhoms.com**.`;
 
 export const DEFAULT_DISCLAIMER = `## 1. General Listing Disclaimer
-**Brand Estate** is a technology platform and directory provider. It is **NOT** a real estate broker, lender, appraiser, or property management agency.
+**RealHoms** is a technology platform and directory provider. It is **NOT** a real estate broker, lender, appraiser, or property management agency.
 
-* **Information Accuracy**: Property advertisements, photos, specifications, rental rates, deposits, pet policies, and zoning details are submitted directly by third-party agents, owners, or developers. Brand Estate does not guarantee the accuracy, completeness, or timeliness of this information.
+* **Information Accuracy**: Property advertisements, photos, specifications, rental rates, deposits, pet policies, and zoning details are submitted directly by third-party agents, owners, or developers. RealHoms does not guarantee the accuracy, completeness, or timeliness of this information.
 * **Independent Evaluation**: Users are strongly encouraged to inspect properties in person and verify listing details independently before signing lease contracts or wiring financial deposits.
 
 ---
@@ -146,7 +146,7 @@ The platform provides an Investment and Yield Calculator for estimates and educa
 
 ## 3. Third-Party Services Disclaimer
 The Services include links to external verification databases, background checking providers, and mapping platforms.
-* Brand Estate does not manage, endorse, or accept liability for the performance or policies of third-party platforms.
+* RealHoms does not manage, endorse, or accept liability for the performance or policies of third-party platforms.
 * Accessing background checks or credit score portals is subject to those providers' terms.
 
 ---
@@ -154,7 +154,7 @@ The Services include links to external verification databases, background checki
 ## 4. Contact HQ
 For formal legal notices or queries regarding these disclaimers, please write to:
 
-**Brand Estate HQ Legal Division**
+**RealHoms HQ Legal Division**
 100 Blue Accent Way, Suite 500,
 New York, NY 10001
-Email: **legal@brandestate.com**`;
+Email: **legal@realhoms.com**`;

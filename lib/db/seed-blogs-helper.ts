@@ -9,7 +9,7 @@ export async function seedBlogs() {
   const seedAuthors = [
     {
       name: 'Sarah Jenkins',
-      email: 'sarah.jenkins@brandestate.com',
+      email: 'sarah.jenkins@realhoms.com',
       role: 'admin' as const,
       avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=300&q=80',
       phone: '1-800-555-0199',
@@ -17,7 +17,7 @@ export async function seedBlogs() {
     },
     {
       name: 'Aisha Al Mansoori',
-      email: 'aisha.mansoori@brandestate.com',
+      email: 'aisha.mansoori@realhoms.com',
       role: 'agent' as const,
       avatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=300&q=80',
       phone: '971-50-555-0122',
@@ -25,7 +25,7 @@ export async function seedBlogs() {
     },
     {
       name: 'Kenji Nakamura',
-      email: 'kenji.nakamura@brandestate.com',
+      email: 'kenji.nakamura@realhoms.com',
       role: 'agent' as const,
       avatar: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=300&q=80',
       phone: '81-3-5555-0144',
@@ -50,7 +50,7 @@ export async function seedBlogs() {
         phone: author.phone,
         legalDocs: {
           licenseNumber: 'LIC-' + Math.floor(100000 + Math.random() * 900000),
-          agencyName: 'Brand Estate Corporate',
+          agencyName: 'RealHoms Corporate',
           documentUrl: author.avatar,
           submittedAt: new Date(),
         },

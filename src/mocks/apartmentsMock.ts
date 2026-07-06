@@ -58,13 +58,13 @@ export const apartmentsMock: ApartmentProperty[] = [
       avatar:
         "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=300&q=80",
       phone: "+1 (212) 555-0192",
-      email: "sarah.jenkins@brandestate.com",
-      agencyName: "Brand Estate Manhattan",
+      email: "sarah.jenkins@realhoms.com",
+      agencyName: "RealHoms Manhattan",
       licenseNumber: "NY-RE-0082341",
       agentSlug: "sophia-chen",
     },
     seo: {
-      seoTitle: "Penthouse for Sale in Park Avenue NYC | 4BD/4.5BA | $9.85M — Brand Estate",
+      seoTitle: "Penthouse for Sale in Park Avenue NYC | 4BD/4.5BA | $9.85M — RealHoms",
       metaDescription:
         "Full-floor penthouse at 742 Park Avenue, Manhattan. 6,800 sq ft, 4 bedrooms, wrap-around terrace, 360° skyline views. Listed at $9.85M.",
       ogImageUrl:
@@ -126,13 +126,13 @@ export const apartmentsMock: ApartmentProperty[] = [
       avatar:
         "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=300&q=80",
       phone: "+81-3-5555-0214",
-      email: "kenji.nakamura@brandestate.jp",
-      agencyName: "Brand Estate Tokyo",
+      email: "kenji.nakamura@realhoms.jp",
+      agencyName: "RealHoms Tokyo",
       licenseNumber: "JP-RE-T2024-0541",
       agentSlug: "james-okafor",
     },
     seo: {
-      seoTitle: "Studio for Rent in Shibuya Nanpeidai, Tokyo | $3,200/mo — Brand Estate",
+      seoTitle: "Studio for Rent in Shibuya Nanpeidai, Tokyo | $3,200/mo — RealHoms",
       metaDescription:
         "Modern 520 sq ft studio in Nanpeidai, Shibuya. Heated floors, balcony, Daikanyama-adjacent. Available from $3,200/month.",
       ogImageUrl:
@@ -197,13 +197,13 @@ export const apartmentsMock: ApartmentProperty[] = [
       avatar:
         "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=300&q=80",
       phone: "+971-4-555-0392",
-      email: "aisha.mansoori@brandestate.ae",
-      agencyName: "Brand Estate Dubai",
+      email: "aisha.mansoori@realhoms.ae",
+      agencyName: "RealHoms Dubai",
       licenseNumber: "RERA-AE-2024-18742",
       agentSlug: "amara-patel",
     },
     seo: {
-      seoTitle: "3-Bed Waterfront Apartment for Sale in Dubai Marina | AED 4.25M — Brand Estate",
+      seoTitle: "3-Bed Waterfront Apartment for Sale in Dubai Marina | AED 4.25M — RealHoms",
       metaDescription:
         "Silverene Tower Dubai Marina — 2,840 sq ft, 3 bedrooms, marina & gulf views, infinity pool, private beach shuttle. AED 4.25 million.",
       ogImageUrl:

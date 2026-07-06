@@ -4,7 +4,6 @@ import * as React from "react";
 import Link from "next/link";
 import {
   Send,
-  Building,
   Mail,
   Phone,
   MapPin,
@@ -180,7 +179,7 @@ export function Footer() {
               href="/"
               className="font-heading text-2xl font-bold tracking-tight text-text-primary flex items-center gap-2"
             >
-              <Building className="h-6 w-6 text-accent-primary" />
+              <img src="/favicon-32x32.png" alt="Logo" className="h-6 w-6" />
               <span>{APP_NAME}</span>
             </Link>
             <p className="text-sm text-text-secondary leading-relaxed">
@@ -301,7 +300,7 @@ export function Footer() {
               </li>
               <li className="flex items-center gap-2.5">
                 <Mail className="h-4.5 w-4.5 text-accent-primary shrink-0" />
-                <span>support@brandestate.com</span>
+                <span>support@realhoms.com</span>
               </li>
             </ul>
           </div>
@@ -311,7 +310,7 @@ export function Footer() {
         {/* 3. Bottom Meta & Legal Bar */}
         <div className="mt-12 pt-8 border-t border-border-default/15 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-text-muted">
           <div>
-            <p>© {new Date().getFullYear()} Brand Estate. All rights reserved.</p>
+            <p>© {new Date().getFullYear()} RealHoms. All rights reserved.</p>
           </div>
 
           <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">

@@ -55,12 +55,12 @@ export const commercialMock: CommercialProperty[] = [
       avatar:
         "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=300&q=80",
       phone: "+49-30-5555-0812",
-      email: "elena.rostova@brandestate.de",
-      agencyName: "Brand Estate Berlin",
+      email: "elena.rostova@realhoms.de",
+      agencyName: "RealHoms Berlin",
       licenseNumber: "DE-IVD-2024-B0041",
     },
     seo: {
-      seoTitle: "Retail & Office Space for Rent on Friedrichstraße, Berlin | €32,500/mo — Brand Estate",
+      seoTitle: "Retail & Office Space for Rent on Friedrichstraße, Berlin | €32,500/mo — RealHoms",
       metaDescription:
         "1,100 m² mixed-use showroom on Friedrichstraße, Berlin Mitte. 6m ceilings, loading docks, 5 parking bays, Category-A fit-out. From €32,500/month.",
       ogImageUrl:
@@ -124,12 +124,12 @@ export const commercialMock: CommercialProperty[] = [
       avatar:
         "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=300&q=80",
       phone: "+1 (312) 555-0441",
-      email: "marcus.webb@brandestate.com",
-      agencyName: "Brand Estate Chicago",
+      email: "marcus.webb@realhoms.com",
+      agencyName: "RealHoms Chicago",
       licenseNumber: "IL-DRE-0041928",
     },
     seo: {
-      seoTitle: "Full-Floor Office Suite for Sale in Chicago Loop | 9,200 sq ft | $6.4M — Brand Estate",
+      seoTitle: "Full-Floor Office Suite for Sale in Chicago Loop | 9,200 sq ft | $6.4M — RealHoms",
       metaDescription:
         "Full 14th-floor office plate at 333 S. State St, Chicago. 9,200 sq ft, 3 conference rooms, Tier-3 data build-out, skybridge transit access. $6.4 million.",
       ogImageUrl:
@@ -189,12 +189,12 @@ export const commercialMock: CommercialProperty[] = [
       avatar:
         "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=300&q=80",
       phone: "+1 (323) 555-0641",
-      email: "carlos.mendes@brandestate.com",
-      agencyName: "Brand Estate Los Angeles",
+      email: "carlos.mendes@realhoms.com",
+      agencyName: "RealHoms Los Angeles",
       licenseNumber: "CA-DRE-01982847",
     },
     seo: {
-      seoTitle: "Industrial Warehouse for Rent in LA Arts District | 24,000 sq ft | $48K/mo — Brand Estate",
+      seoTitle: "Industrial Warehouse for Rent in LA Arts District | 24,000 sq ft | $48K/mo — RealHoms",
       metaDescription:
         "24,000 sq ft industrial warehouse in the LA Arts District. 30ft ceilings, 2 loading docks, 800A/3-Phase power, 8,000 sq ft yard. Available from $48,000/month.",
       ogImageUrl:

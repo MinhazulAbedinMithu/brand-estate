@@ -18,7 +18,7 @@
 ### [x] Featured Properties — Done
 - [x] Here add featured properties component. which you done on homepage, create an component and follow mock properties structure.
 
-### [x] Why Choose Brand Estate? — Done
+### [x] Why Choose RealHoms? — Done
 - [x] this section make grid layout cards. for grid items use glassmorphic card with glassmorphic background. create an component for this section.
 - [x] this section cards should be Grid. 
 - [x] big and short card setup. assume 4 card in one row. card 1,2 short, card 3 big. card 4 short. then next row card 1 short, card 2 big, card 3 short, card 4 short. apply your idea for this.

@@ -63,7 +63,7 @@ export async function GET(request: NextRequest) {
         certifications: agentMock.certifications,
         legalDocs: {
           licenseNumber: agentMock.licenseNumber,
-          agencyName: agentMock.title || 'Brand Estate Agency',
+          agencyName: agentMock.title || 'RealHoms Agency',
           documentUrl: agentMock.avatar,
           submittedAt: new Date(),
         },

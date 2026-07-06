@@ -16,7 +16,7 @@ const ThemeProviderContext = React.createContext<ThemeProviderState | undefined>
 export function ThemeProvider({
   children,
   defaultTheme = "system",
-  storageKey = "brand-estate-theme",
+  storageKey = "realhoms-theme",
   ...props
 }: {
   children: React.ReactNode;

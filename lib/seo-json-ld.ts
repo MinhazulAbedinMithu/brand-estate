@@ -3,14 +3,14 @@ import { getAppUrl } from "./utils";
 const APP_URL = getAppUrl();
 
 /**
- * Generates the master Organization schema for Brand Estate.
+ * Generates the master Organization schema for RealHoms.
  */
 export function getOrganizationSchema() {
   return {
     "@context": "https://schema.org",
     "@type": "Organization",
     "@id": `${APP_URL}/#organization`,
-    "name": "Brand Estate",
+    "name": "RealHoms",
     "url": APP_URL,
     "logo": {
       "@type": "ImageObject",
@@ -19,12 +19,12 @@ export function getOrganizationSchema() {
       "height": "28"
     },
     "image": `${APP_URL}/og-image.png`,
-    "description": "Brand Estate is a premium real estate SaaS directory platform bridging high-end properties with verified local agents.",
+    "description": "RealHoms is a premium real estate SaaS directory platform bridging high-end properties with verified local agents.",
     "sameAs": [
-      "https://facebook.com/brandestate",
-      "https://twitter.com/brandestate",
-      "https://linkedin.com/company/brandestate",
-      "https://instagram.com/brandestate"
+      "https://facebook.com/realhoms",
+      "https://twitter.com/realhoms",
+      "https://linkedin.com/company/realhoms",
+      "https://instagram.com/realhoms"
     ]
   };
 }
@@ -38,7 +38,7 @@ export function getWebsiteSchema() {
     "@type": "WebSite",
     "@id": `${APP_URL}/#website`,
     "url": APP_URL,
-    "name": "Brand Estate",
+    "name": "RealHoms",
     "description": "Premium Real Estate SaaS Portal",
     "publisher": {
       "@id": `${APP_URL}/#organization`
@@ -87,7 +87,7 @@ export function getPropertySchema(property: any) {
   if (property.listerProfile) {
     agentSchema = {
       "@type": "RealEstateAgent",
-      "name": property.listerProfile.name || "Brand Estate Professional",
+      "name": property.listerProfile.name || "RealHoms Professional",
       "image": property.listerProfile.avatar || `${APP_URL}/og-image.png`,
       "telephone": property.listerProfile.phone || "",
       "email": property.listerProfile.email || "",
@@ -132,7 +132,7 @@ export function getPropertySchema(property: any) {
     "@context": "https://schema.org",
     "@type": schemaType,
     "name": property.title || "Premium Real Estate Property",
-    "description": property.seo?.metaDescription || property.description || "A luxury real estate property listing on Brand Estate.",
+    "description": property.seo?.metaDescription || property.description || "A luxury real estate property listing on RealHoms.",
     "image": images,
     "address": {
       "@type": "PostalAddress",
@@ -155,7 +155,7 @@ export function getPropertySchema(property: any) {
       "availability": availability,
       "offeredBy": agentSchema || {
         "@type": "Organization",
-        "name": "Brand Estate"
+        "name": "RealHoms"
       }
     }
   };
@@ -187,7 +187,7 @@ export function getBlogPostSchema(post: any) {
     dateMod = new Date().toISOString();
   }
 
-  const authorName = post.author?.name || "Brand Estate Contributor";
+  const authorName = post.author?.name || "RealHoms Contributor";
   const authorSlug = authorName.toLowerCase().replace(/\s+/g, "-");
 
   const keywords = Array.isArray(post.seo?.keywords) && post.seo.keywords.length > 0
@@ -211,7 +211,7 @@ export function getBlogPostSchema(post: any) {
     },
     "publisher": {
       "@type": "Organization",
-      "name": "Brand Estate",
+      "name": "RealHoms",
       "logo": {
         "@type": "ImageObject",
         "url": `${APP_URL}/logo.png`
@@ -232,7 +232,7 @@ export function getAgentSchema(agent: any) {
 
   const name = agent.name || "Real Estate Professional";
   const image = agent.avatar || agent.coverImage || `${APP_URL}/og-image.png`;
-  const desc = agent.bio || `Meet ${name}, professional real estate agent at Brand Estate.`;
+  const desc = agent.bio || `Meet ${name}, professional real estate agent at RealHoms.`;
   const phone = agent.phone || "";
   const email = agent.email || "";
 
@@ -270,7 +270,7 @@ export function getAboutPageSchema() {
     "@type": "AboutPage",
     "@id": `${APP_URL}/about/#webpage`,
     "url": `${APP_URL}/about`,
-    "name": "About Us | Brand Estate",
+    "name": "About Us | RealHoms",
     "description": "Discover our real estate legacy, global operations milestones, and meet our executive team.",
     "about": {
       "@id": `${APP_URL}/#organization`
@@ -287,7 +287,7 @@ export function getContactPageSchema() {
     "@type": "ContactPage",
     "@id": `${APP_URL}/contact/#webpage`,
     "url": `${APP_URL}/contact`,
-    "name": "Contact Us | Brand Estate",
+    "name": "Contact Us | RealHoms",
     "description": "Have questions regarding property directory listings or our SaaS broker console subscriptions? Drop us a line.",
     "mainEntity": {
       "@id": `${APP_URL}/#organization`

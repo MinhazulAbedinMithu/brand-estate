@@ -1,6 +1,6 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // blogPostsMock.ts
-// Mock Blog Data & SEO JSON-LD Helpers — Brand Estate
+// Mock Blog Data & SEO JSON-LD Helpers — RealHoms
 // ─────────────────────────────────────────────────────────────────────────────
 
 import type { BlogPost } from "@/lib/types";
@@ -25,11 +25,11 @@ export const mockBlogPosts: BlogPost[] = [
       bio: "Sarah has over a decade of experience covering residential real estate trends and providing practical advice for navigating competitive housing markets."
     },
     seo: {
-      title: "First-Time Homebuyer Checklist: 2026 Edition | Brand Estate",
+      title: "First-Time Homebuyer Checklist: 2026 Edition | RealHoms",
       metaDescription: "Follow our step-by-step checklist for first-time homebuyers. Learn about mortgage pre-approval, hidden closing costs, and negotiating home inspections.",
       keywords: ["first-time homebuyer checklist", "home buying tips 2026", "mortgage pre-approval guide", "real estate buying steps"],
       ogImage: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1200&q=80",
-      canonicalUrl: "https://brand-estate.com/blogs/ultimate-checklist-first-time-homebuyers-2026"
+      canonicalUrl: "https://realhoms.com/blogs/ultimate-checklist-first-time-homebuyers-2026"
     },
     content: `
 ## Introduction
@@ -119,11 +119,11 @@ Securing your first home requires patience, planning, and professional guidance.
       bio: "Aisha coordinates staging, photography, and high-end positioning for premium properties throughout Dubai and Europe."
     },
     seo: {
-      title: "5 Home Staging Tips to Boost Sale Price | Brand Estate",
+      title: "5 Home Staging Tips to Boost Sale Price | RealHoms",
       metaDescription: "Discover 5 high-impact home staging tips to maximize your property's resale valuation. Learn about curb appeal, decluttering, lighting, and neutral decor.",
       keywords: ["home staging tips", "maximize home valuation", "selling a house fast", "real estate staging checklist"],
       ogImage: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
-      canonicalUrl: "https://brand-estate.com/blogs/5-high-impact-staging-tips-maximize-valuation"
+      canonicalUrl: "https://realhoms.com/blogs/5-high-impact-staging-tips-maximize-valuation"
     },
     content: `
 ## Introduction
@@ -209,11 +209,11 @@ Staging does not require a complete interior overhaul. By strategically declutte
       bio: "Kenji specializes in macroeconomic real estate analysis, advising institutions and private investors on multi-family and commercial asset allocations."
     },
     seo: {
-      title: "Rental Yield & ROI Formulas for Investors | Brand Estate",
+      title: "Rental Yield & ROI Formulas for Investors | RealHoms",
       metaDescription: "Learn how to calculate gross yield, net rental yield, and cash-on-cash return. Use our expert formulas to evaluate property investment opportunities.",
       keywords: ["calculate rental yield", "real estate ROI formulas", "capitalization rate real estate", "cash on cash return"],
       ogImage: "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80",
-      canonicalUrl: "https://brand-estate.com/blog/calculate-rental-yield-roi-investment-properties"
+      canonicalUrl: "https://realhoms.com/blog/calculate-rental-yield-roi-investment-properties"
     },
     content: `
 ## Introduction
@@ -309,11 +309,11 @@ What represents a "good" return? It depends heavily on the market and your risk 
       bio: "Kenji specializes in macroeconomic real estate analysis, advising institutions and private investors on multi-family and commercial asset allocations."
     },
     seo: {
-      title: "Suburban Real Estate Demand & Hybrid Work Trends | Brand Estate",
+      title: "Suburban Real Estate Demand & Hybrid Work Trends | RealHoms",
       metaDescription: "Explore how the rise of hybrid work models is reshaping suburban real estate demand. Analysis of inventory levels, migrations, and property price surges.",
       keywords: ["suburban real estate trends", "hybrid work migration patterns", "suburbs housing market demand", "post pandemic housing trends"],
       ogImage: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
-      canonicalUrl: "https://brand-estate.com/blogs/shifting-suburban-demand-post-pandemic-real-estate"
+      canonicalUrl: "https://realhoms.com/blogs/shifting-suburban-demand-post-pandemic-real-estate"
     },
     content: `
 ## Introduction
@@ -384,11 +384,11 @@ For investors, focusing on these transit-oriented suburban nodes represents a hi
       bio: "Sarah has over a decade of experience covering residential real estate trends and providing practical advice for navigating competitive housing markets."
     },
     seo: {
-      title: "Best Smart Home Upgrades for Resale Value | Brand Estate",
+      title: "Best Smart Home Upgrades for Resale Value | RealHoms",
       metaDescription: "Discover which smart home automation systems increase home equity. Learn about smart thermostats, smart locks, leak detectors, and solar panels.",
       keywords: ["smart home upgrades resale value", "home automation ROI", "best smart home devices to sell house", "green home upgrades"],
       ogImage: "https://images.unsplash.com/photo-1558002038-1055907df827?auto=format&fit=crop&w=1200&q=80",
-      canonicalUrl: "https://brand-estate.com/blogs/smart-home-technologies-increase-resale-value"
+      canonicalUrl: "https://realhoms.com/blogs/smart-home-technologies-increase-resale-value"
     },
     content: `
 ## Introduction
@@ -472,11 +472,11 @@ When upgrading your property with smart home tech, prioritize **permanence, safe
       bio: "Sarah has over a decade of experience covering residential real estate trends and providing practical advice for navigating competitive housing markets."
     },
     seo: {
-      title: "Co-Living & Roommate Share Trends 2026 | Brand Estate",
+      title: "Co-Living & Roommate Share Trends 2026 | RealHoms",
       metaDescription: "Explore the rapid growth of co-living and roommate shares. Learn how young professionals are adapting to urban housing challenges.",
       keywords: ["co-living spaces", "roommate shares nyc", "urban housing trends 2026", "shared housing demand"],
       ogImage: "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=1200&q=80",
-      canonicalUrl: "https://brand-estate.com/blogs/co-living-roommate-shares-future-urban-housing-2026"
+      canonicalUrl: "https://realhoms.com/blogs/co-living-roommate-shares-future-urban-housing-2026"
     },
     content: `
 ## Introduction
@@ -529,7 +529,7 @@ export function generateBlogPostJsonLd(post: BlogPost) {
     "@type": "BlogPosting",
     "mainEntityOfPage": {
       "@type": "WebPage",
-      "@id": post.seo.canonicalUrl || `https://brand-estate.com/blogs/${post.slug}`
+      "@id": post.seo.canonicalUrl || `https://realhoms.com/blogs/${post.slug}`
     },
     "headline": post.title,
     "description": post.excerpt,
@@ -537,14 +537,14 @@ export function generateBlogPostJsonLd(post: BlogPost) {
     "author": {
       "@type": "Person",
       "name": post.author.name,
-      "url": `https://brand-estate.com/agents/${post.author.name.toLowerCase().replace(/\s+/g, "-")}`
+      "url": `https://realhoms.com/agents/${post.author.name.toLowerCase().replace(/\s+/g, "-")}`
     },
     "publisher": {
       "@type": "Organization",
-      "name": "Brand Estate",
+      "name": "RealHoms",
       "logo": {
         "@type": "ImageObject",
-        "url": "https://brand-estate.com/logo.png"
+        "url": "https://realhoms.com/logo.png"
       }
     },
     "datePublished": post.publishedAt,

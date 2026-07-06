@@ -7,9 +7,9 @@ import { DEFAULT_PACKAGES } from "@/lib/constants";
 // ─────────────────────────────────────────────────────────
 // Keys for Local Storage Database
 // ─────────────────────────────────────────────────────────
-const STORAGE_KEY = "brand-estate-session";
-const USERS_DB_KEY = "brand-estate-users-db";
-const PACKAGES_DB_KEY = "brand-estate-packages-db";
+const STORAGE_KEY = "realhoms-session";
+const USERS_DB_KEY = "realhoms-users-db";
+const PACKAGES_DB_KEY = "realhoms-packages-db";
 
 const MOCK_PASSWORD = "Password123";
 
@@ -20,7 +20,7 @@ const SEED_USERS: User[] = [
   {
     id: "usr-01",
     name: "Alex Johnson",
-    email: "user@brandestate.com",
+    email: "user@realhoms.com",
     role: "auth_user",
     status: "active",
     createdAt: "2026-05-10T10:00:00Z",
@@ -29,7 +29,7 @@ const SEED_USERS: User[] = [
   {
     id: "usr-02",
     name: "Sarah Mitchell",
-    email: "agent@brandestate.com",
+    email: "agent@realhoms.com",
     role: "agent",
     status: "active",
     createdAt: "2026-04-12T09:00:00Z",
@@ -44,7 +44,7 @@ const SEED_USERS: User[] = [
   {
     id: "usr-03",
     name: "David Chen",
-    email: "admin@brandestate.com",
+    email: "admin@realhoms.com",
     role: "admin",
     status: "active",
     createdAt: "2026-03-01T12:00:00Z",
@@ -53,7 +53,7 @@ const SEED_USERS: User[] = [
   {
     id: "usr-04",
     name: "Elena Rodriguez",
-    email: "superadmin@brandestate.com",
+    email: "superadmin@realhoms.com",
     role: "super_admin",
     status: "active",
     createdAt: "2026-01-01T08:00:00Z",
@@ -81,7 +81,7 @@ const SEED_USERS: User[] = [
   {
     id: "usr-07",
     name: "Pending Agent",
-    email: "pendingagent@brandestate.com",
+    email: "pendingagent@realhoms.com",
     role: "agent",
     status: "pending",
     createdAt: "2026-06-15T09:00:00Z",
@@ -96,7 +96,7 @@ const SEED_USERS: User[] = [
   {
     id: "usr-08",
     name: "Unsubmitted Agent",
-    email: "unsubmitted@brandestate.com",
+    email: "unsubmitted@realhoms.com",
     role: "agent",
     status: "unsubmitted",
     createdAt: "2026-06-16T11:00:00Z",
@@ -105,7 +105,7 @@ const SEED_USERS: User[] = [
   {
     id: "usr-09",
     name: "Robert Davis",
-    email: "owner@brandestate.com",
+    email: "owner@realhoms.com",
     role: "owner",
     status: "active",
     createdAt: "2026-05-15T11:00:00Z",
@@ -671,7 +671,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       // ── Demo / mock login (seed accounts or overrideRole) ──
       // The real API only has users registered via /api/auth/register.
-      // Seed accounts (user@brandestate.com, agent@..., admin@...) only exist
+      // Seed accounts (user@realhoms.com, agent@..., admin@...) only exist
       // in localStorage, so we fall back to the mock path for them.
       const emailLower = email.toLowerCase().trim();
       const isSeedEmail = SEED_USERS.some((u) => u.email.toLowerCase() === emailLower);

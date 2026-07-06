@@ -276,7 +276,7 @@ export function BlogForm({
             SEO Search Engine Optimization
           </h4>
           <p className="text-[11px] text-text-muted mt-1 leading-normal font-medium">
-            Brand Estate automates metadata mapping by default. Use the toggle switchboard below to override specific SEO and social parameters.
+            RealHoms automates metadata mapping by default. Use the toggle switchboard below to override specific SEO and social parameters.
           </p>
         </div>
 
@@ -386,7 +386,7 @@ export function BlogForm({
           </div>
           <div className="space-y-1">
             <div className="text-xs text-slate-400 font-normal truncate leading-tight">
-              brandestate.com/blogs/{(initialPost?.slug || title.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "")) || "article-slug"}
+              realhoms.com/blogs/{(initialPost?.slug || title.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "")) || "article-slug"}
             </div>
             <div className="text-[17px] text-[#8ab4f8] hover:underline font-normal font-sans leading-snug cursor-pointer truncate">
               {seoTitle.trim() || title.trim() || "Untitled Blog Post"}

@@ -20,10 +20,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   await connectDB();
   const agent = await User.findOne({ role: "agent", slug }).lean();
-  if (!agent) return { title: "Agent Not Found | Brand Estate" };
+  if (!agent) return { title: "Agent Not Found | RealHoms" };
   
-  const title = `${agent.name} — ${agent.title || "Real Estate Agent"} | Brand Estate`;
-  const description = agent.bio?.slice(0, 160) || `Meet ${agent.name}, professional real estate agent at Brand Estate.`;
+  const title = `${agent.name} — ${agent.title || "Real Estate Agent"} | RealHoms`;
+  const description = agent.bio?.slice(0, 160) || `Meet ${agent.name}, professional real estate agent at RealHoms.`;
   const image = agent.avatar || agent.coverImage || "/og-image.png";
 
   return {
@@ -33,7 +33,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title,
       description,
       url: `/agents/${slug}`,
-      siteName: "Brand Estate",
+      siteName: "RealHoms",
       type: "profile",
       images: [
         {

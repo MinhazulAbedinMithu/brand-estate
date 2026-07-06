@@ -51,13 +51,13 @@ export const roomSharesMock: RoomShareProperty[] = [
       avatar:
         "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80",
       phone: "+44-20-7946-0281",
-      email: "david.chen@brandestate.co.uk",
-      agencyName: "Brand Estate London",
+      email: "david.chen@realhoms.co.uk",
+      agencyName: "RealHoms London",
       licenseNumber: "NAEA-UK-104527",
       agentSlug: "james-okafor",
     },
     seo: {
-      seoTitle: "Private En-Suite Room to Rent in Shoreditch, London | £1,650/mo — Brand Estate",
+      seoTitle: "Private En-Suite Room to Rent in Shoreditch, London | £1,650/mo — RealHoms",
       metaDescription:
         "Private en-suite room in an industrial-chic Shoreditch loft. Bills included. Sharing with 2 professionals. Available from £1,650/month.",
       ogImageUrl:
@@ -118,13 +118,13 @@ export const roomSharesMock: RoomShareProperty[] = [
       avatar:
         "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=300&q=80",
       phone: "+61-2-9555-0821",
-      email: "james.whitmore@brandestate.com.au",
-      agencyName: "Brand Estate Sydney",
+      email: "james.whitmore@realhoms.com.au",
+      agencyName: "RealHoms Sydney",
       licenseNumber: "NSW-REAA-2024-06421",
       agentSlug: "marco-rossi",
     },
     seo: {
-      seoTitle: "Master Bedroom Room Share Near Bondi Beach, Sydney | AUD 1,950/mo — Brand Estate",
+      seoTitle: "Master Bedroom Room Share Near Bondi Beach, Sydney | AUD 1,950/mo — RealHoms",
       metaDescription:
         "Private master bedroom with balcony and attached bath in Bondi Beach townhouse. Sharing with 2 females. All bills + weekly cleaning included. AUD 1,950/mo.",
       ogImageUrl:
@@ -183,13 +183,13 @@ export const roomSharesMock: RoomShareProperty[] = [
       avatar:
         "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=300&q=80",
       phone: "+1 (212) 555-0775",
-      email: "tara.mitchell@brandestate.com",
-      agencyName: "Brand Estate Manhattan",
+      email: "tara.mitchell@realhoms.com",
+      agencyName: "RealHoms Manhattan",
       licenseNumber: "NY-RE-0091228",
       agentSlug: "sophia-chen",
     },
     seo: {
-      seoTitle: "Shared Room for Rent in Midtown Manhattan | $1,100/mo — Brand Estate",
+      seoTitle: "Shared Room for Rent in Midtown Manhattan | $1,100/mo — RealHoms",
       metaDescription:
         "Budget-friendly co-living room in Midtown Manhattan near Grand Central. All utilities and linen included. Ideal for professionals and interns. From $1,100/month.",
       ogImageUrl:

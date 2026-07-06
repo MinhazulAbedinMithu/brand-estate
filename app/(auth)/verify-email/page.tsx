@@ -76,7 +76,7 @@ function SuccessCard() {
         </h2>
         <p className="text-sm text-text-muted leading-relaxed max-w-xs mx-auto">
           Your account is now active. You can sign in and start exploring
-          premium properties on Brand Estate.
+          premium properties on RealHoms.
         </p>
       </div>
 

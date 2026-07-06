@@ -4,7 +4,7 @@ import { SuperAdminClient } from "./super-admin-client";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Platform Console | Brand Estate",
+  title: "Platform Console | RealHoms",
   description: "Super admin workspace console to evaluate security audit logs and invoke developer triggers.",
 };
 

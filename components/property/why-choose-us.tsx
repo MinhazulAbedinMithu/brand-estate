@@ -132,7 +132,7 @@ export function WhyChooseUs() {
             Security & Performance
           </div>
           <h2 className="text-3xl sm:text-4xl text-text-primary dark:text-white font-heading font-extrabold tracking-tight">
-            Why Choose Brand Estate?
+            Why Choose RealHoms?
           </h2>
           <p className="text-text-muted dark:text-white/70 text-sm sm:text-base font-body font-normal">
             We merge sophisticated property management analytics, certified agent channels, and client-centric features to deliver a seamless real estate SaaS experience.

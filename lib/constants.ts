@@ -119,7 +119,7 @@ export const AMENITIES = [
 // App Config
 // ─────────────────────────────────────────────
 
-export const APP_NAME = 'Brand Estate';
+export const APP_NAME = 'RealHoms';
 export const APP_TAGLINE = 'Find Your Perfect Property';
 export const ITEMS_PER_PAGE = 12;
 export const FEATURED_LISTINGS_COUNT = 6;

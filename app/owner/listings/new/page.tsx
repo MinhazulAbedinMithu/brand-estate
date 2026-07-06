@@ -4,7 +4,7 @@ import { NewListingClient } from "./new-listing-client";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Create Listing | Brand Estate",
+  title: "Create Listing | RealHoms",
   description: "Add a new real estate property listing using our 5-step wizard form.",
 };
 

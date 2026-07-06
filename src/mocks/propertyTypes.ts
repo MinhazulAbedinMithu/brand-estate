@@ -1,6 +1,6 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // propertyTypes.ts
-// Master Type Definitions & Interfaces — Brand Estate Mock Schema
+// Master Type Definitions & Interfaces — RealHoms Mock Schema
 // ─────────────────────────────────────────────────────────────────────────────
 
 // ─── Primitive Helpers ───────────────────────────────────────────────────────

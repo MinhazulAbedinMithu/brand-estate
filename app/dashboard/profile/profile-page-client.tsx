@@ -67,7 +67,7 @@ export function ProfilePageClient() {
   // Form details states
   const [profileForm, setProfileForm] = React.useState({
     name: currentUser?.name || "Alex Johnson",
-    email: currentUser?.email || "user@brandestate.com",
+    email: currentUser?.email || "user@realhoms.com",
     bio: (currentUser as any)?.bio || "Passionate about finding modern, sustainable architectural properties in metropolitan areas. Looking to purchase a primary residence by late 2026.",
   });
 
@@ -91,8 +91,8 @@ export function ProfilePageClient() {
   const [loading, setLoading] = React.useState(false);
 
   // Dynamic settings URLs
-  const [backgroundCheckUrlLink, setBackgroundCheckUrlLink] = React.useState("https://check.brandestate.com/test-bg-report");
-  const [creditScoreCheckUrlLink, setCreditScoreCheckUrlLink] = React.useState("https://check.brandestate.com/test-credit-score");
+  const [backgroundCheckUrlLink, setBackgroundCheckUrlLink] = React.useState("https://check.realhoms.com/test-bg-report");
+  const [creditScoreCheckUrlLink, setCreditScoreCheckUrlLink] = React.useState("https://check.realhoms.com/test-credit-score");
 
   React.useEffect(() => {
     async function loadSettings() {
@@ -963,7 +963,7 @@ export function ProfilePageClient() {
                           target="_blank"
                           rel="noopener noreferrer"
                           onClick={() => {
-                            setBackgroundReportUrl("https://brandestate.com/reports/bg-check-clean-usr9482.pdf");
+                            setBackgroundReportUrl("https://realhoms.com/reports/bg-check-clean-usr9482.pdf");
                             toast.success("Test check complete!", { description: "Clean record verified. PDF report auto-selected for submission." });
                           }}
                           className="h-10 px-5 flex items-center justify-center rounded-xl bg-accent-primary text-white font-bold text-xs hover:bg-accent-primary-hov shadow-md"
@@ -1028,7 +1028,7 @@ export function ProfilePageClient() {
                           target="_blank"
                           rel="noopener noreferrer"
                           onClick={() => {
-                            setCreditReportUrl("https://brandestate.com/reports/credit-score-740-usr9482.pdf");
+                            setCreditReportUrl("https://realhoms.com/reports/credit-score-740-usr9482.pdf");
                             setCreditScore("740");
                             toast.success("Credit check complete!", { description: "Score of 740 calculated. Report auto-selected." });
                           }}

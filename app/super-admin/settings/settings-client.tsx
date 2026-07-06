@@ -11,13 +11,13 @@ import { MarkdownEditor } from "@/components/blog/markdown-editor";
 export function SettingsClient() {
   const [generalSettings, setGeneralSettings] = React.useState({
     appName: "BrandEstate",
-    supportEmail: "support@brandestate.com",
-    supportUrl: "https://support.brandestate.com",
+    supportEmail: "support@realhoms.com",
+    supportUrl: "https://support.realhoms.com",
   });
 
   const [verificationLinks, setVerificationLinks] = React.useState({
-    backgroundCheckUrl: "https://check.brandestate.com/test-bg-report",
-    creditScoreCheckUrl: "https://check.brandestate.com/test-credit-score",
+    backgroundCheckUrl: "https://check.realhoms.com/test-bg-report",
+    creditScoreCheckUrl: "https://check.realhoms.com/test-credit-score",
   });
 
   const [legalContents, setLegalContents] = React.useState({
@@ -418,7 +418,7 @@ export function SettingsClient() {
                       value={credentials.resendFromEmail}
                       onChange={(e) => setCredentials(p => ({ ...p, resendFromEmail: e.target.value }))}
                       className="h-10 border-border-default bg-bg-base text-text-primary text-sm font-mono"
-                      placeholder="Brand Estate <onboarding@resend.dev>"
+                      placeholder="RealHoms <onboarding@resend.dev>"
                     />
                   </div>
                 </div>

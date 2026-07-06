@@ -14,26 +14,26 @@ import { cn } from "@/lib/utils";
 import type { MockProperty } from "@/src/mocks/propertyTypes";
 
 export const metadata: Metadata = {
-  title: "Search Properties | Brand Estate",
+  title: "Search Properties | RealHoms",
   description: "Browse and filter premium properties available for sale, rent, or co-living roommate shares.",
   openGraph: {
-    title: "Search Properties | Brand Estate",
+    title: "Search Properties | RealHoms",
     description: "Browse and filter premium properties available for sale, rent, or co-living roommate shares.",
     url: "/properties",
-    siteName: "Brand Estate",
+    siteName: "RealHoms",
     images: [
       {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "Search Properties | Brand Estate",
+        alt: "Search Properties | RealHoms",
       },
     ],
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Search Properties | Brand Estate",
+    title: "Search Properties | RealHoms",
     description: "Browse and filter premium properties available for sale, rent, or co-living roommate shares.",
     images: ["/og-image.png"],
   },

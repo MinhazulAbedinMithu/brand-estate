@@ -220,7 +220,7 @@ Allows agents to upload licenses/documents. Sets agent account status to `pendin
   {
     "licenseNumber": "RE-8890-NY",
     "agencyName": "Elite Properties Group",
-    "documentUrl": "https://cdn.brandestate.com/licenses/cert-NY8890.pdf"
+    "documentUrl": "https://cdn.realhoms.com/licenses/cert-NY8890.pdf"
   }
   ```
 * **Success Response (`200 OK`)**:

@@ -4,7 +4,7 @@ import { SettingsClient } from "./settings-client";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Platform Settings | Brand Estate",
+  title: "Platform Settings | RealHoms",
   description: "Super admin workspace to customize system flags, toggle features, and configure active regional directories.",
 };
 

@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Application Canceled | Brand Estate",
+  title: "Application Canceled | RealHoms",
   description: "Your property tenancy application payment checkout was canceled.",
 };
 

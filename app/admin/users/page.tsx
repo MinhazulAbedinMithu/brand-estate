@@ -4,7 +4,7 @@ import { UsersClient } from "./users-client";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "User Management | Brand Estate",
+  title: "User Management | RealHoms",
   description: "Admin panel to manage roles, inspect user logs, and suspend or activate accounts.",
 };
 

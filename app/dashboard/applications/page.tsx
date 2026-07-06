@@ -4,7 +4,7 @@ import { TenantApplicationsClient } from "@/app/dashboard/applications/applicati
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "My Applications | Brand Estate",
+  title: "My Applications | RealHoms",
   description: "Track your property tenancy and purchase applications.",
 };
 

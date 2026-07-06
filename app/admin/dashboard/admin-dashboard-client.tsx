@@ -58,8 +58,8 @@ export function AdminDashboardClient() {
   const [loading, setLoading] = React.useState(true);
 
   // Verification links management
-  const [backgroundCheckUrl, setBackgroundCheckUrl] = React.useState("https://check.brandestate.com/test-bg-report");
-  const [creditScoreCheckUrl, setCreditScoreCheckUrl] = React.useState("https://check.brandestate.com/test-credit-score");
+  const [backgroundCheckUrl, setBackgroundCheckUrl] = React.useState("https://check.realhoms.com/test-bg-report");
+  const [creditScoreCheckUrl, setCreditScoreCheckUrl] = React.useState("https://check.realhoms.com/test-credit-score");
   const [savingSettings, setSavingSettings] = React.useState(false);
 
   // Verification Inspector Modal States
@@ -173,8 +173,8 @@ export function AdminDashboardClient() {
         setPendingListings(pendingJson.data || []);
       }
       if (settingsJson.status === "success" && settingsJson.data) {
-        setBackgroundCheckUrl(settingsJson.data.backgroundCheckUrl || "https://check.brandestate.com/test-bg-report");
-        setCreditScoreCheckUrl(settingsJson.data.creditScoreCheckUrl || "https://check.brandestate.com/test-credit-score");
+        setBackgroundCheckUrl(settingsJson.data.backgroundCheckUrl || "https://check.realhoms.com/test-bg-report");
+        setCreditScoreCheckUrl(settingsJson.data.creditScoreCheckUrl || "https://check.realhoms.com/test-credit-score");
       }
     } catch (err) {
       console.error("Failed to load admin dashboard statistics:", err);
@@ -719,7 +719,7 @@ export function AdminDashboardClient() {
                   required
                   value={backgroundCheckUrl}
                   onChange={(e) => setBackgroundCheckUrl(e.target.value)}
-                  placeholder="https://check.brandestate.com/test-bg-report"
+                  placeholder="https://check.realhoms.com/test-bg-report"
                   className="w-full h-10 px-3.5 border bg-bg-base text-text-primary border-border-default rounded-xl focus:outline-none focus:ring-1 focus:ring-accent-primary transition-all text-sm font-medium"
                 />
               </div>
@@ -731,7 +731,7 @@ export function AdminDashboardClient() {
                   required
                   value={creditScoreCheckUrl}
                   onChange={(e) => setCreditScoreCheckUrl(e.target.value)}
-                  placeholder="https://check.brandestate.com/test-credit-score"
+                  placeholder="https://check.realhoms.com/test-credit-score"
                   className="w-full h-10 px-3.5 border bg-bg-base text-text-primary border-border-default rounded-xl focus:outline-none focus:ring-1 focus:ring-accent-primary transition-all text-sm font-medium"
                 />
               </div>

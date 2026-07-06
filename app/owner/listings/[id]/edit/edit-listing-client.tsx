@@ -1197,7 +1197,7 @@ export function EditListingClient({ property }: EditListingClientProps) {
                 SEO Search Engine Optimization
               </h4>
               <p className="text-[11px] text-text-muted mt-1 leading-normal font-medium">
-                Brand Estate automates metadata mapping by default. Use the toggle switchboard below to override specific SEO and social parameters.
+                RealHoms automates metadata mapping by default. Use the toggle switchboard below to override specific SEO and social parameters.
               </p>
             </div>
 
@@ -1341,7 +1341,7 @@ export function EditListingClient({ property }: EditListingClientProps) {
               </div>
               <div className="space-y-1">
                 <div className="text-xs text-slate-400 font-normal truncate leading-tight">
-                  brandestate.com/property/{(form.title.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "")) || "listing-slug"}
+                  realhoms.com/property/{(form.title.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "")) || "listing-slug"}
                 </div>
                 <div className="text-[17px] text-[#8ab4f8] hover:underline font-normal font-sans leading-snug cursor-pointer truncate">
                   {form.seoTitle.trim() || form.title.trim() || "Untitled Property Listing"}
@@ -1460,14 +1460,14 @@ export function EditListingClient({ property }: EditListingClientProps) {
                     BE
                   </div>
                   <div className="flex flex-col">
-                    <span className="text-[11px] text-text-primary font-semibold leading-tight">Brand Estate</span>
+                    <span className="text-[11px] text-text-primary font-semibold leading-tight">RealHoms</span>
                     <span className="text-[9px] text-text-muted leading-tight truncate max-w-[280px]">
-                      https://brand-estate.com/property/{form.title.toLowerCase().replace(/[^a-z0-9]+/g, "-") || "listing-slug"}
+                      https://realhoms.com/property/{form.title.toLowerCase().replace(/[^a-z0-9]+/g, "-") || "listing-slug"}
                     </span>
                   </div>
                 </div>
                 <h4 className="text-base font-medium text-[#1a0dab] dark:text-[#8ab4f8] hover:underline cursor-pointer leading-snug break-words">
-                  {form.seoTitle || form.title || "Untitled Property Listing | Brand Estate"}
+                  {form.seoTitle || form.title || "Untitled Property Listing | RealHoms"}
                 </h4>
                 <p className="text-xs text-text-secondary leading-relaxed break-words font-normal">
                   {form.seoDescription || form.description || "Add a meta description to preview search engine results here..."}

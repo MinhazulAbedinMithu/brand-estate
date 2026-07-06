@@ -4,7 +4,7 @@ import { RolesClient } from "./roles-client";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Role Management | Brand Estate",
+  title: "Role Management | RealHoms",
   description: "Super admin workspace to adjust operator privileges and review role audit logs.",
 };
 

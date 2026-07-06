@@ -64,7 +64,7 @@ export function ShareButtons({ title, slug }: { title: string; slug: string }) {
     if (typeof window !== "undefined") {
       return `${window.location.origin}/blogs/${slug}`;
     }
-    return `https://brand-estate.com/blogs/${slug}`;
+    return `https://realhoms.com/blogs/${slug}`;
   };
 
   const handleCopy = async () => {

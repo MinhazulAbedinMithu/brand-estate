@@ -4,7 +4,7 @@ import { SavedPageClient } from "./saved-page-client";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Saved Properties | Brand Estate",
+  title: "Saved Properties | RealHoms",
   description: "Monitor and track details for your favorited real estate listings.",
 };
 

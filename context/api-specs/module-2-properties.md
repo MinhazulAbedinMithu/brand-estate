@@ -207,7 +207,7 @@ Fetches properties list matching dynamic search filters, keyword criteria, sorti
         "squareMeters": 603.85,
         "bedrooms": 6,
         "bathrooms": 7,
-        "images": ["https://cdn.brandestate.com/listings/hamptons-1.jpg"],
+        "images": ["https://cdn.realhoms.com/listings/hamptons-1.jpg"],
         "status": "active",
         "isFeatured": true
       }
@@ -252,7 +252,7 @@ Fetches full property record, lister profile, price/tax timelines, and category 
       "bedrooms": 6,
       "bathrooms": 7,
       "yearBuilt": 2018,
-      "images": ["https://cdn.brandestate.com/listings/hamptons-1.jpg"],
+      "images": ["https://cdn.realhoms.com/listings/hamptons-1.jpg"],
       "videoTourUrl": "https://youtube.com/watch?v=mock",
       "virtualTourUrl": "https://matterport.com/discover/mock",
       "status": "active",
@@ -260,16 +260,16 @@ Fetches full property record, lister profile, price/tax timelines, and category 
       "ownerId": "60d5ec4934d52c1b9c9f225f",
       "listerProfile": {
         "name": "Sarah Connor",
-        "avatar": "https://cdn.brandestate.com/agents/sarah.jpg",
+        "avatar": "https://cdn.realhoms.com/agents/sarah.jpg",
         "phone": "+1-555-0199",
-        "email": "sarah@brandestate.com",
+        "email": "sarah@realhoms.com",
         "agencyName": "Elite Properties Group",
         "agentSlug": "sarah-connor"
       },
       "seo": {
-        "seoTitle": "Luxury Oceanfront Estate for Sale in East Hampton | Brand Estate",
+        "seoTitle": "Luxury Oceanfront Estate for Sale in East Hampton | RealHoms",
         "metaDescription": "Explore this stunning 6-bed oceanfront retreat on Dune Road...",
-        "ogImageUrl": "https://cdn.brandestate.com/listings/hamptons-1.jpg",
+        "ogImageUrl": "https://cdn.realhoms.com/listings/hamptons-1.jpg",
         "keywords": ["beachfront", "hamptons", "luxury home"]
       },
       "amenities": ["Pool", "Private Beach", "Smart Home", "Hot Tub"],
@@ -313,14 +313,14 @@ Publishes a new property. Restricts category structure inputs to match the decla
     "bedrooms": 2,
     "bathrooms": 2,
     "yearBuilt": 2021,
-    "images": ["https://cdn.brandestate.com/listings/nyc-loft.jpg"],
+    "images": ["https://cdn.realhoms.com/listings/nyc-loft.jpg"],
     "videoTourUrl": null,
     "virtualTourUrl": null,
     "amenities": ["Elevator", "Gym", "Concierge"],
     "seo": {
       "seoTitle": "Modern Skyline Loft Apartment For Rent in NYC",
       "metaDescription": "View details for this premium 2-bed loft in downtown Manhattan.",
-      "ogImageUrl": "https://cdn.brandestate.com/listings/nyc-loft.jpg",
+      "ogImageUrl": "https://cdn.realhoms.com/listings/nyc-loft.jpg",
       "keywords": ["rent", "nyc loft", "luxury apartment"]
     },
     "apartment": {

@@ -4,7 +4,7 @@ import { OwnerPackagesClient } from "./packages-client";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Pricing Packages | Brand Estate",
+  title: "Pricing Packages | RealHoms",
   description: "View and manage your listing subscription plan limits.",
 };
 

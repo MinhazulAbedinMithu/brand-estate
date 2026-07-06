@@ -6,27 +6,27 @@ import { DEFAULT_COOKIE_POLICY } from "@/lib/db/legal-defaults";
 import { LegalLayout } from "@/components/layout/legal-layout";
 
 export const metadata: Metadata = {
-  title: "Cookie Policy | Brand Estate",
-  description: "Read how Brand Estate uses cookies, session authentications, and theme configurations to optimize your user experience.",
+  title: "Cookie Policy | RealHoms",
+  description: "Read how RealHoms uses cookies, session authentications, and theme configurations to optimize your user experience.",
   openGraph: {
-    title: "Cookie Policy | Brand Estate",
-    description: "Read how Brand Estate uses cookies, session authentications, and theme configurations to optimize your user experience.",
+    title: "Cookie Policy | RealHoms",
+    description: "Read how RealHoms uses cookies, session authentications, and theme configurations to optimize your user experience.",
     url: "/cookies",
-    siteName: "Brand Estate",
+    siteName: "RealHoms",
     images: [
       {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "Cookie Policy | Brand Estate",
+        alt: "Cookie Policy | RealHoms",
       },
     ],
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Cookie Policy | Brand Estate",
-    description: "Read how Brand Estate uses cookies, session authentications, and theme configurations to optimize your user experience.",
+    title: "Cookie Policy | RealHoms",
+    description: "Read how RealHoms uses cookies, session authentications, and theme configurations to optimize your user experience.",
     images: ["/og-image.png"],
   },
 };

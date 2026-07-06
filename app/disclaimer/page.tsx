@@ -6,27 +6,27 @@ import { DEFAULT_DISCLAIMER } from "@/lib/db/legal-defaults";
 import { LegalLayout } from "@/components/layout/legal-layout";
 
 export const metadata: Metadata = {
-  title: "Platform Disclaimer | Brand Estate",
-  description: "Read the Brand Estate platform disclaimer regarding real estate listing accuracies, investment projections, and third-party reports.",
+  title: "Platform Disclaimer | RealHoms",
+  description: "Read the RealHoms platform disclaimer regarding real estate listing accuracies, investment projections, and third-party reports.",
   openGraph: {
-    title: "Platform Disclaimer | Brand Estate",
-    description: "Read the Brand Estate platform disclaimer regarding real estate listing accuracies, investment projections, and third-party reports.",
+    title: "Platform Disclaimer | RealHoms",
+    description: "Read the RealHoms platform disclaimer regarding real estate listing accuracies, investment projections, and third-party reports.",
     url: "/disclaimer",
-    siteName: "Brand Estate",
+    siteName: "RealHoms",
     images: [
       {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "Platform Disclaimer | Brand Estate",
+        alt: "Platform Disclaimer | RealHoms",
       },
     ],
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Platform Disclaimer | Brand Estate",
-    description: "Read the Brand Estate platform disclaimer regarding real estate listing accuracies, investment projections, and third-party reports.",
+    title: "Platform Disclaimer | RealHoms",
+    description: "Read the RealHoms platform disclaimer regarding real estate listing accuracies, investment projections, and third-party reports.",
     images: ["/og-image.png"],
   },
 };

@@ -4,7 +4,7 @@ import { LeadsClient } from "./leads-client";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Leads Inbox | Brand Estate",
+  title: "Leads Inbox | RealHoms",
   description: "Review and respond directly to property buyer inquiries and message history.",
 };
 

@@ -211,7 +211,7 @@ export async function POST(request: NextRequest) {
 
     // Assemble SEO metadata
     const finalSeo = {
-      title: seo?.title || `${title} | Brand Estate`,
+      title: seo?.title || `${title} | RealHoms`,
       metaDescription: seo?.metaDescription || excerpt,
       keywords: seo?.keywords || tags || [],
       ogImage: seo?.ogImage || coverImage,

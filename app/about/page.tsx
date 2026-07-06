@@ -4,26 +4,26 @@ import { Sparkles } from "lucide-react";
 import { getAboutPageSchema, getOrganizationSchema } from "@/lib/seo-json-ld";
 
 export const metadata: Metadata = {
-  title: "About Us | Brand Estate",
+  title: "About Us | RealHoms",
   description: "Discover our real estate legacy, global operations milestones, and meet our executive team.",
   openGraph: {
-    title: "About Us | Brand Estate",
+    title: "About Us | RealHoms",
     description: "Discover our real estate legacy, global operations milestones, and meet our executive team.",
     url: "/about",
-    siteName: "Brand Estate",
+    siteName: "RealHoms",
     images: [
       {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "About Us | Brand Estate",
+        alt: "About Us | RealHoms",
       },
     ],
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "About Us | Brand Estate",
+    title: "About Us | RealHoms",
     description: "Discover our real estate legacy, global operations milestones, and meet our executive team.",
     images: ["/og-image.png"],
   },

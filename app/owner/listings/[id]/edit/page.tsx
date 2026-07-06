@@ -64,9 +64,9 @@ async function getPropertyData(id: string) {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
   const property = await getPropertyData(id);
-  if (!property) return { title: "Edit Listing | Brand Estate" };
+  if (!property) return { title: "Edit Listing | RealHoms" };
   return {
-    title: `Edit Listing: ${property.title} | Brand Estate`,
+    title: `Edit Listing: ${property.title} | RealHoms`,
     description: `Modify real estate property listing details for ${property.title}.`,
   };
 }

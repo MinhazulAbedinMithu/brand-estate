@@ -3,26 +3,26 @@ import { ContactClient } from "./contact-client";
 import { getContactPageSchema, getOrganizationSchema } from "@/lib/seo-json-ld";
 
 export const metadata: Metadata = {
-  title: "Contact Us | Brand Estate",
+  title: "Contact Us | RealHoms",
   description: "Have questions regarding property directory listings or our SaaS broker console subscriptions? Drop us a line.",
   openGraph: {
-    title: "Contact Us | Brand Estate",
+    title: "Contact Us | RealHoms",
     description: "Have questions regarding property directory listings or our SaaS broker console subscriptions? Drop us a line.",
     url: "/contact",
-    siteName: "Brand Estate",
+    siteName: "RealHoms",
     images: [
       {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "Contact Us | Brand Estate",
+        alt: "Contact Us | RealHoms",
       },
     ],
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Contact Us | Brand Estate",
+    title: "Contact Us | RealHoms",
     description: "Have questions regarding property directory listings or our SaaS broker console subscriptions? Drop us a line.",
     images: ["/og-image.png"],
   },

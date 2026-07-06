@@ -2,7 +2,7 @@
 
 This document details the database models, API endpoints, request payloads, response payloads, and tracking statuses for the complete **User Authentication & Session** module.
 
-## Database setup: mongodb+srv://brandestate:<db_password>@brandestate.wkegp0x.mongodb.net/?appName=brandestate
+## Database setup: mongodb+srv://realhoms:<db_password>@realhoms.wkegp0x.mongodb.net/?appName=realhoms
 
 ## Resend Setup: 
 api key: re_key

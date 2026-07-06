@@ -67,7 +67,7 @@ export async function generateMetadata({ params }: DetailPageProps): Promise<Met
       title,
       description,
       url: `/property/${slug.toLowerCase()}`,
-      siteName: "Brand Estate",
+      siteName: "RealHoms",
       type: "website",
       images: [
         {

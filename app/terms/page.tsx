@@ -6,27 +6,27 @@ import { DEFAULT_TERMS_OF_SERVICE } from "@/lib/db/legal-defaults";
 import { LegalLayout } from "@/components/layout/legal-layout";
 
 export const metadata: Metadata = {
-  title: "Terms of Service | Brand Estate",
-  description: "Read the Terms of Service and user agreement policy guidelines for Brand Estate listing directory SaaS platform.",
+  title: "Terms of Service | RealHoms",
+  description: "Read the Terms of Service and user agreement policy guidelines for RealHoms listing directory SaaS platform.",
   openGraph: {
-    title: "Terms of Service | Brand Estate",
-    description: "Read the Terms of Service and user agreement policy guidelines for Brand Estate listing directory SaaS platform.",
+    title: "Terms of Service | RealHoms",
+    description: "Read the Terms of Service and user agreement policy guidelines for RealHoms listing directory SaaS platform.",
     url: "/terms",
-    siteName: "Brand Estate",
+    siteName: "RealHoms",
     images: [
       {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "Terms of Service | Brand Estate",
+        alt: "Terms of Service | RealHoms",
       },
     ],
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Terms of Service | Brand Estate",
-    description: "Read the Terms of Service and user agreement policy guidelines for Brand Estate listing directory SaaS platform.",
+    title: "Terms of Service | RealHoms",
+    description: "Read the Terms of Service and user agreement policy guidelines for RealHoms listing directory SaaS platform.",
     images: ["/og-image.png"],
   },
 };
@@ -56,7 +56,7 @@ export default async function TermsOfServicePage() {
   return (
     <LegalLayout
       title="Terms of Service"
-      description="Please read these terms and conditions carefully before registering, uploading listings, or conducting inquiries on the Brand Estate SaaS platform."
+      description="Please read these terms and conditions carefully before registering, uploading listings, or conducting inquiries on the RealHoms SaaS platform."
       content={content}
       updatedAt={updatedAt}
     />

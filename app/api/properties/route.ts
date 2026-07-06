@@ -295,7 +295,7 @@ export async function POST(request: NextRequest) {
     // Construct lister profile using agent's account details
     const listerProfile = {
       name: user.name,
-      avatar: user.avatar || 'https://cdn.brandestate.com/avatars/default.jpg',
+      avatar: user.avatar || 'https://cdn.realhoms.com/avatars/default.jpg',
       phone: user.phone || '+1-555-0100', // default fallback
       email: user.email,
       agencyName: user.legalDocs?.agencyName || 'Independent Agent',
@@ -304,7 +304,7 @@ export async function POST(request: NextRequest) {
     };
 
     // Construct SEO
-    const seoTitle = seo?.seoTitle?.trim() || `${title} | Brand Estate`;
+    const seoTitle = seo?.seoTitle?.trim() || `${title} | RealHoms`;
     const metaDescription = seo?.metaDescription?.trim() || description.slice(0, 155);
     const ogImageUrl = seo?.ogImageUrl || images?.[0] || '';
     const keywords = seo?.keywords || [];

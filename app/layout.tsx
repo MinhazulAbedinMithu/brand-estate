@@ -30,11 +30,11 @@ const montserrat = Montserrat({
 export const metadata: Metadata = {
   metadataBase: new URL(getAppUrl()),
   title: {
-    default: "Brand Estate — Find Your Perfect Property",
-    template: "%s | Brand Estate",
+    default: "RealHoms — Find Your Perfect Property",
+    template: "%s | RealHoms",
   },
   description:
-    "Brand Estate is a premium real estate platform connecting buyers, renters, sellers, and agents. Search thousands of properties and find your perfect home.",
+    "RealHoms is a premium real estate platform connecting buyers, renters, sellers, and agents. Search thousands of properties and find your perfect home.",
   keywords: ["real estate", "property", "homes for sale", "rent", "agents"],
   icons: {
     icon: [
@@ -50,10 +50,10 @@ export const metadata: Metadata = {
   },
   openGraph: {
     type: "website",
-    siteName: "Brand Estate",
-    title: "Brand Estate — Find Your Perfect Property",
+    siteName: "RealHoms",
+    title: "RealHoms — Find Your Perfect Property",
     description:
-      "Search thousands of properties and find your perfect home with Brand Estate.",
+      "Search thousands of properties and find your perfect home with RealHoms.",
   },
 };
 
@@ -80,7 +80,7 @@ export default function RootLayout({
             __html: `
               (function() {
                 try {
-                  var theme = localStorage.getItem('brand-estate-theme') || 'system';
+                  var theme = localStorage.getItem('realhoms-theme') || 'system';
                   var root = document.documentElement;
                   root.classList.remove('light', 'dark');
                   if (theme === 'system') {

@@ -21,7 +21,7 @@ const getFallbackSettings = () => ({
   cookiePolicy: DEFAULT_COOKIE_POLICY,
   disclaimer: DEFAULT_DISCLAIMER,
   resendApiKey: process.env.RESEND_API_KEY || "",
-  resendFromEmail: "Brand Estate <onboarding@resend.dev>",
+  resendFromEmail: "RealHoms <onboarding@resend.dev>",
   stripePublishableKey: process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || "",
   stripeSecretKey: process.env.STRIPE_SECRET_KEY || "",
   stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET || "",

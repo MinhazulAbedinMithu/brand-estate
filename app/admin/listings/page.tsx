@@ -4,7 +4,7 @@ import { ListingsManagementClient } from "./listings-management";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Listing Management | Brand Estate",
+  title: "Listing Management | RealHoms",
   description: "Evaluate property listings, review agent declarations, and verify listings.",
 };
 

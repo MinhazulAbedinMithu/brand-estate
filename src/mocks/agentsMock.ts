@@ -45,7 +45,7 @@ export const agentsMock: MockAgent[] = [
     id: "agent-001",
     slug: "sophia-chen",
     name: "Sophia Chen",
-    email: "sophia.chen@brandestate.com",
+    email: "sophia.chen@realhoms.com",
     phone: "+1 (212) 555-0142",
     avatar:
       "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80",
@@ -104,7 +104,7 @@ export const agentsMock: MockAgent[] = [
     id: "agent-002",
     slug: "james-okafor",
     name: "James Okafor",
-    email: "james.okafor@brandestate.com",
+    email: "james.okafor@realhoms.com",
     phone: "+44 20 7946 0392",
     avatar:
       "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=400&q=80",
@@ -163,7 +163,7 @@ export const agentsMock: MockAgent[] = [
     id: "agent-003",
     slug: "amara-patel",
     name: "Amara Patel",
-    email: "amara.patel@brandestate.com",
+    email: "amara.patel@realhoms.com",
     phone: "+971 50 444 8823",
     avatar:
       "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=400&q=80",
@@ -222,7 +222,7 @@ export const agentsMock: MockAgent[] = [
     id: "agent-004",
     slug: "lena-hoffmann",
     name: "Lena Hoffmann",
-    email: "lena.hoffmann@brandestate.com",
+    email: "lena.hoffmann@realhoms.com",
     phone: "+49 30 2093 8811",
     avatar:
       "https://images.unsplash.com/photo-1567532939604-b6b5b0db2604?auto=format&fit=crop&w=400&q=80",
@@ -281,7 +281,7 @@ export const agentsMock: MockAgent[] = [
     id: "agent-005",
     slug: "daniel-kowalski",
     name: "Daniel Kowalski",
-    email: "daniel.kowalski@brandestate.com",
+    email: "daniel.kowalski@realhoms.com",
     phone: "+1 (310) 555-0284",
     avatar:
       "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80",
@@ -340,7 +340,7 @@ export const agentsMock: MockAgent[] = [
     id: "agent-006",
     slug: "fatima-al-rashidi",
     name: "Fatima Al-Rashidi",
-    email: "fatima.alrashidi@brandestate.com",
+    email: "fatima.alrashidi@realhoms.com",
     phone: "+65 8122 4490",
     avatar:
       "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?auto=format&fit=crop&w=400&q=80",
@@ -398,7 +398,7 @@ export const agentsMock: MockAgent[] = [
     id: "agent-007",
     slug: "marco-rossi",
     name: "Marco Rossi",
-    email: "marco.rossi@brandestate.com",
+    email: "marco.rossi@realhoms.com",
     phone: "+61 2 9374 4821",
     avatar:
       "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=400&q=80",
@@ -457,7 +457,7 @@ export const agentsMock: MockAgent[] = [
     id: "agent-008",
     slug: "ashley-brooks",
     name: "Ashley Brooks",
-    email: "ashley.brooks@brandestate.com",
+    email: "ashley.brooks@realhoms.com",
     phone: "+1 (416) 555-0391",
     avatar:
       "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=400&q=80",

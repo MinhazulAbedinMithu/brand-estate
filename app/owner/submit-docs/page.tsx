@@ -4,7 +4,7 @@ import { OwnerSubmitDocsClient } from "./owner-submit-docs-client";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Submit Legal Documents | Brand Estate",
+  title: "Submit Legal Documents | RealHoms",
   description: "Verify your real estate owner credentials by submitting license and registration details.",
 };
 

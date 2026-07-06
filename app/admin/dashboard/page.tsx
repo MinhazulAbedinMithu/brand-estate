@@ -4,7 +4,7 @@ import { AdminDashboardClient } from "./admin-dashboard-client";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Admin Panel | Brand Estate",
+  title: "Admin Panel | RealHoms",
   description: "Monitor user activities, evaluate listed properties and resolve moderation flags.",
 };
 

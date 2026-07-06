@@ -33,10 +33,10 @@ interface User {
 
 ## Mock Accounts for Testing
 To allow easy navigation and demonstration, we will support standard credentials that immediately sign the user in with appropriate roles:
-- **Buyer/Renter (User)**: `user@brandestate.com` / password: `Password123` (logs in as `auth_user`)
-- **Agent**: `agent@brandestate.com` / password: `Password123` (logs in as `agent`)
-- **Admin**: `admin@brandestate.com` / password: `Password123` (logs in as `admin`)
-- **Super Admin**: `superadmin@brandestate.com` / password: `Password123` (logs in as `super_admin`)
+- **Buyer/Renter (User)**: `user@realhoms.com` / password: `Password123` (logs in as `auth_user`)
+- **Agent**: `agent@realhoms.com` / password: `Password123` (logs in as `agent`)
+- **Admin**: `admin@realhoms.com` / password: `Password123` (logs in as `admin`)
+- **Super Admin**: `superadmin@realhoms.com` / password: `Password123` (logs in as `super_admin`)
 
 ## Acceptance Criteria
 

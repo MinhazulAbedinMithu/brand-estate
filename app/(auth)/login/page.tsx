@@ -35,21 +35,21 @@ const DEMO_ACCOUNTS = [
   {
     label: "Buyer",
     tag: "auth_user",
-    email: "user@brandestate.com",
+    email: "user@realhoms.com",
     dotColor: "bg-accent-primary",
     tagBg: "bg-accent-primary/8 dark:bg-accent-primary/12 text-accent-primary border-accent-primary/20",
   },
   {
     label: "Agent",
     tag: "agent",
-    email: "agent@brandestate.com",
+    email: "agent@realhoms.com",
     dotColor: "bg-emerald-500",
     tagBg: "bg-emerald-500/8 dark:bg-emerald-500/12 text-emerald-600 dark:text-emerald-400 border-emerald-500/20",
   },
   {
     label: "Admin",
     tag: "admin",
-    email: "admin@brandestate.com",
+    email: "admin@realhoms.com",
     dotColor: "bg-violet-500",
     tagBg: "bg-violet-500/8 dark:bg-violet-500/12 text-violet-600 dark:text-violet-400 border-violet-500/20",
   },
@@ -410,8 +410,8 @@ export default function LoginPage() {
             </div>
             <p className="text-xs text-text-muted dark:text-slate-500 leading-relaxed max-w-sm mx-auto">
               If you believe this is a mistake or wish to appeal this decision, please contact our support team at{" "}
-              <a href="mailto:support@brandestate.com" className="text-accent-primary font-bold hover:underline">
-                support@brandestate.com
+              <a href="mailto:support@realhoms.com" className="text-accent-primary font-bold hover:underline">
+                support@realhoms.com
               </a>.
             </p>
           </div>

@@ -1278,7 +1278,7 @@ export function NewListingClient() {
                   </span>
                 </div>
                 <Input
-                  placeholder="e.g. Modern Penthouse with City Views for Sale | Brand Estate"
+                  placeholder="e.g. Modern Penthouse with City Views for Sale | RealHoms"
                   value={form.seoTitle}
                   onChange={(e) => setForm(p => ({ ...p, seoTitle: e.target.value.slice(0, 70) }))}
                   className="h-10 border-border-default bg-bg-base text-text-primary text-sm rounded-xl"
@@ -1384,14 +1384,14 @@ export function NewListingClient() {
                     BE
                   </div>
                   <div className="flex flex-col">
-                    <span className="text-[11px] text-text-primary font-semibold leading-tight">Brand Estate</span>
+                    <span className="text-[11px] text-text-primary font-semibold leading-tight">RealHoms</span>
                     <span className="text-[9px] text-text-muted leading-tight truncate max-w-[280px]">
-                      https://brand-estate.com/property/{form.title.toLowerCase().replace(/[^a-z0-9]+/g, "-") || "new-listing"}
+                      https://realhoms.com/property/{form.title.toLowerCase().replace(/[^a-z0-9]+/g, "-") || "new-listing"}
                     </span>
                   </div>
                 </div>
                 <h4 className="text-base font-medium text-[#1a0dab] dark:text-[#8ab4f8] hover:underline cursor-pointer leading-snug break-words">
-                  {form.seoTitle || form.title || "Untitled Property Listing | Brand Estate"}
+                  {form.seoTitle || form.title || "Untitled Property Listing | RealHoms"}
                 </h4>
                 <p className="text-xs text-text-secondary leading-relaxed break-words font-normal">
                   {form.seoDescription || form.description || "Add a meta description to preview search engine results here..."}

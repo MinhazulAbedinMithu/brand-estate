@@ -109,12 +109,12 @@ Fetches blogs list matching category filtering, topic tags, and search keywords.
         "title": "Navigating Interest Rate Shifts in 2026",
         "slug": "navigating-interest-rate-shifts-2026",
         "excerpt": "A comprehensive analysis of mortgage rate forecasts and buyer tactics.",
-        "coverImage": "https://cdn.brandestate.com/blogs/rates-cover.jpg",
+        "coverImage": "https://cdn.realhoms.com/blogs/rates-cover.jpg",
         "category": "market-trends",
         "tags": ["mortgage", "rates", "buying"],
         "author": {
           "name": "Marcus Vance",
-          "avatar": "https://cdn.brandestate.com/authors/marcus.jpg",
+          "avatar": "https://cdn.realhoms.com/authors/marcus.jpg",
           "role": "Chief Economist"
         },
         "publishedAt": "2026-06-15T00:00:00.000Z",
@@ -154,12 +154,12 @@ Fetches full blog content matching dynamic URL slug. Returns Schema.org JSON-LD 
       "slug": "navigating-interest-rate-shifts-2026",
       "content": "# Navigating Interest Rate Shifts\n\nInterest rates have shifted again. Here is what that means for your purchasing power...\n\n```math\nMonthlyPayment = P \\cdot \\frac{r(1+r)^n}{(1+r)^n - 1}\n```",
       "excerpt": "A comprehensive analysis of mortgage rate forecasts and buyer tactics.",
-      "coverImage": "https://cdn.brandestate.com/blogs/rates-cover.jpg",
+      "coverImage": "https://cdn.realhoms.com/blogs/rates-cover.jpg",
       "category": "market-trends",
       "tags": ["mortgage", "rates", "buying"],
       "author": {
         "name": "Marcus Vance",
-        "avatar": "https://cdn.brandestate.com/authors/marcus.jpg",
+        "avatar": "https://cdn.realhoms.com/authors/marcus.jpg",
         "role": "Chief Economist",
         "bio": "Marcus Vance has over 15 years analyzing global real estate movements."
       },
@@ -174,10 +174,10 @@ Fetches full blog content matching dynamic URL slug. Returns Schema.org JSON-LD 
         "clap": 4
       },
       "seo": {
-        "title": "Navigating Mortgage Interest Rates Forecasts | Brand Estate",
+        "title": "Navigating Mortgage Interest Rates Forecasts | RealHoms",
         "metaDescription": "Detailed analysis of interest rates and real estate purchasing decisions.",
         "keywords": ["mortgage rates", "market 2026", "house purchase"],
-        "ogImage": "https://cdn.brandestate.com/blogs/rates-cover.jpg",
+        "ogImage": "https://cdn.realhoms.com/blogs/rates-cover.jpg",
         "ogType": "article"
       },
       "publishedAt": "2026-06-15T00:00:00.000Z"
@@ -198,16 +198,16 @@ Creates a new blog entry. Post starts as `pending` or `draft` status depending o
     "title": "5 Tips For Selling Your House Quickly",
     "content": "Selling your house can be stressful, but these 5 tips will help you speed up the process...",
     "excerpt": "Get your house ready for sale with these five easy-to-follow staging and pricing tips.",
-    "coverImage": "https://cdn.brandestate.com/blogs/selling-tips.jpg",
+    "coverImage": "https://cdn.realhoms.com/blogs/selling-tips.jpg",
     "category": "selling-guide",
     "tags": ["selling", "home design", "staging"],
     "readTimeMinutes": 4,
     "status": "pending",
     "seo": {
-      "title": "5 Tips For Staging & Selling Your House Quickly | Brand Estate",
+      "title": "5 Tips For Staging & Selling Your House Quickly | RealHoms",
       "metaDescription": "Learn how to stage your home, set the right price, and attract cash buyers quickly.",
       "keywords": ["home staging", "sell fast", "real estate tips"],
-      "ogImage": "https://cdn.brandestate.com/blogs/selling-tips.jpg"
+      "ogImage": "https://cdn.realhoms.com/blogs/selling-tips.jpg"
     }
   }
   ```

@@ -1,7 +1,7 @@
 # 05 — Blog Post Schema, Mock Data & UI Components
 
 ## What This Builds
-A high-fidelity TypeScript schema, a rich mock dataset, and the complete blog UI section for the Brand Estate SaaS platform. This includes:
+A high-fidelity TypeScript schema, a rich mock dataset, and the complete blog UI section for the RealHoms SaaS platform. This includes:
 1. **Blog Card Component**: Reusable card displaying post summary, category badge, and metadata.
 2. **Homepage Blogs Section**: Beautiful 3-column row displaying featured articles with a link to the main blog page.
 3. **Blog List Page (`/blogs`)**: An index page with search capabilities, category-based tabs, and a responsive article grid.

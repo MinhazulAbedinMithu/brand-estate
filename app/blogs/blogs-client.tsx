@@ -64,7 +64,7 @@ export function BlogsClient() {
         <div className="text-center space-y-4 max-w-2xl mx-auto">
           <span className="inline-flex items-center gap-1.5 bg-accent-primary/10 text-accent-primary dark:bg-dark-accent-primary/15 dark:text-dark-accent-primary border border-accent-primary/15 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
             <BookOpen className="h-3 w-3" />
-            Brand Estate Blog
+            RealHoms Blog
           </span>
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold font-heading text-text-primary tracking-tight">
             Insights & Real Estate Resources

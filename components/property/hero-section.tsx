@@ -151,7 +151,7 @@ export function HeroSection({ properties = [] }: { properties?: MockProperty[] }
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-black/35 border border-white/20 backdrop-blur-md">
               <Sparkles className="h-3.5 w-3.5 text-sky-400" />
               <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-sky-300">
-                Introducing Brand Estate
+                Introducing RealHoms
               </span>
             </div>
 

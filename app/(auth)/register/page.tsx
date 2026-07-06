@@ -274,7 +274,7 @@ export default function RegisterPage() {
       return;
     }
 
-    toast.success(`Welcome to Brand Estate, ${result.user?.name?.split(" ")[0]}! 🎉`, {
+    toast.success(`Welcome to RealHoms, ${result.user?.name?.split(" ")[0]}! 🎉`, {
       description: "Your account has been registered successfully with Google.",
     });
     router.push(getDashboardRoute(result.user!.role));
@@ -294,7 +294,7 @@ export default function RegisterPage() {
   return (
     <AuthLayoutShell
       heading="Create your account"
-      subheading="Join thousands of buyers, renters, and agents on Brand Estate."
+      subheading="Join thousands of buyers, renters, and agents on RealHoms."
     >
       {/* Root error */}
       {errors.root && (

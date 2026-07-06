@@ -4,7 +4,7 @@ import { ProfilePageClient } from "./profile-page-client";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Profile Settings | Brand Estate",
+  title: "Profile Settings | RealHoms",
   description: "Configure your personal information, notification flags, and account security details.",
 };
 

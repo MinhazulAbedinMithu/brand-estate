@@ -149,11 +149,11 @@ export function DashboardShell({ children, allowedRoles }: DashboardShellProps) 
   const handleRoleSwitch = async (newRole: UserRole) => {
     const emailMap: Record<UserRole, string> = {
       guest: "",
-      auth_user: "user@brandestate.com",
-      agent: "agent@brandestate.com",
-      owner: "owner@brandestate.com",
-      admin: "admin@brandestate.com",
-      super_admin: "superadmin@brandestate.com",
+      auth_user: "user@realhoms.com",
+      agent: "agent@realhoms.com",
+      owner: "owner@realhoms.com",
+      admin: "admin@realhoms.com",
+      super_admin: "superadmin@realhoms.com",
     };
 
     const targetEmail = emailMap[newRole];

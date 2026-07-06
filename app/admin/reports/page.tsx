@@ -4,7 +4,7 @@ import { ReportsClient } from "./reports-client";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "User Reports | Brand Estate",
+  title: "User Reports | RealHoms",
   description: "Assess compliance reports, resolve spam allegations, and suspend listings.",
 };
 
