@@ -17,6 +17,7 @@ import { LocationSelector } from "./location-selector";
 import { SearchModal } from "@/components/shared/search-modal";
 import { useAuth, getDashboardRoute } from "@/lib/auth-context";
 import type { UserRole } from "@/lib/types";
+import Image from "next/image";
 
 // ─── Role badge color helper ──────────────────────────────────────────────────
 function getRoleBadgeColor(role: UserRole): string {
@@ -159,10 +160,17 @@ export function Navbar() {
           <div className="flex items-center shrink-0">
             <Link
               href="/"
-              className="font-heading text-xl sm:text-2xl font-bold tracking-tight text-text-primary hover:opacity-90 transition-opacity flex items-center gap-2"
+              className="hover:opacity-90 transition-opacity flex items-center"
+              aria-label={`${APP_NAME} — Home`}
             >
-              <img src="/favicon-32x32.png" alt="Logo" className="h-5 w-5 shrink-0" />
-              <span>{APP_NAME}</span>
+              <Image
+                src="/nav-logo.png"
+                alt={APP_NAME}
+                width={140}
+                height={63}
+                priority
+                className="h-16 md:h-20 w-auto object-cover shrink-0"
+              />
             </Link>
           </div>
 
