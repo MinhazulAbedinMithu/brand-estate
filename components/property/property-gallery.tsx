@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { cn } from "@/lib/utils";
-import { Heart, Share2, Video, Play, Compass, X, ChevronLeft, ChevronRight } from "lucide-react";
+import { Heart, Share2, Video, Play, Compass, X, ChevronLeft, ChevronRight, GitCompareArrows, Printer } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -10,6 +10,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { useFavourites } from "@/lib/favourites-store";
+import { addToCompare, removeFromCompare, isInCompare } from "@/lib/compare-store";
+import { toast } from "sonner";
 
 interface PropertyGalleryProps {
   images: string[];
@@ -18,6 +21,9 @@ interface PropertyGalleryProps {
   transactionType: string;
   videoTourUrl: string | null;
   virtualTourUrl: string | null;
+  propertyId?: string;
+  propertySlug?: string;
+  propertyPrice?: string;
 }
 
 export function PropertyGallery({
@@ -27,12 +33,52 @@ export function PropertyGallery({
   transactionType,
   videoTourUrl,
   virtualTourUrl,
+  propertyId,
+  propertySlug,
+  propertyPrice,
 }: PropertyGalleryProps) {
   const [activeIdx, setActiveIdx] = React.useState(0);
-  const [isSaved, setIsSaved] = React.useState(false);
   const [isCopied, setIsCopied] = React.useState(false);
   const [videoOpen, setVideoOpen] = React.useState(false);
   const [virtualOpen, setVirtualOpen] = React.useState(false);
+  const [inCompare, setInCompare] = React.useState(false);
+  const { isSaved, toggle } = useFavourites();
+
+  const saved = propertyId ? isSaved(propertyId) : false;
+
+  React.useEffect(() => {
+    if (!propertyId) return;
+    setInCompare(isInCompare(propertyId));
+    const onchange = () => setInCompare(isInCompare(propertyId));
+    window.addEventListener("comparechange", onchange);
+    return () => window.removeEventListener("comparechange", onchange);
+  }, [propertyId]);
+
+  const handleSave = () => {
+    if (!propertyId) return;
+    toggle(propertyId, title);
+  };
+
+  const handleCompare = () => {
+    if (!propertyId || !propertySlug) return;
+    if (inCompare) {
+      removeFromCompare(propertyId);
+      toast.success("Removed from compare");
+    } else {
+      const result = addToCompare({
+        id: propertyId,
+        slug: propertySlug,
+        title,
+        image: images[0] ?? "",
+        price: propertyPrice ?? "",
+      });
+      if (!result.success) {
+        toast.error("Compare limit reached", { description: result.message });
+      } else {
+        toast.success("Added to compare ⇄");
+      }
+    }
+  };
 
   const handleShare = () => {
     navigator.clipboard.writeText(window.location.href);
@@ -109,14 +155,46 @@ export function PropertyGallery({
             </div>
           )}
 
+          {propertyId && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleCompare}
+              className={cn(
+                "h-10 w-10 rounded-full backdrop-blur-md border transition-all shadow-md active:scale-95",
+                inCompare
+                  ? "bg-accent-primary/30 border-accent-primary/50 text-accent-primary hover:bg-accent-primary/40 hover:text-accent-primary"
+                  : "bg-black/40 border-white/15 text-white hover:bg-black/60 hover:text-white"
+              )}
+              aria-label={inCompare ? "Remove from compare" : "Add to compare"}
+            >
+              <GitCompareArrows className="h-4 w-4" />
+            </Button>
+          )}
+
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => setIsSaved(!isSaved)}
+            onClick={() => window.print()}
             className="h-10 w-10 rounded-full bg-black/40 backdrop-blur-md border border-white/15 text-white hover:bg-black/60 hover:text-white transition-all shadow-md active:scale-95"
-            aria-label={isSaved ? "Saved to favorites" : "Save to favorites"}
+            aria-label="Print property"
           >
-            <Heart className={cn("h-4 w-4 transition-colors", isSaved ? "fill-state-error text-state-error" : "text-white")} />
+            <Printer className="h-4 w-4" />
+          </Button>
+
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleSave}
+            className={cn(
+              "h-10 w-10 rounded-full backdrop-blur-md border transition-all shadow-md active:scale-95",
+              saved
+                ? "bg-state-error/20 border-state-error/40 text-state-error hover:bg-state-error/30 hover:text-state-error"
+                : "bg-black/40 border-white/15 text-white hover:bg-black/60 hover:text-white"
+            )}
+            aria-label={saved ? "Saved to favourites" : "Save to favourites"}
+          >
+            <Heart className={cn("h-4 w-4 transition-all", saved ? "fill-state-error" : "")} />
           </Button>
         </div>
 

@@ -5,9 +5,10 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/layout/theme-provider";
 import { AuthProvider } from "@/lib/auth-context";
 import { BlogProvider } from "@/lib/blog-context";
+import { FavouritesProvider } from "@/lib/favourites-store";
 import { Toaster } from "@/components/ui/sonner";
 import { ConditionalLayout } from "@/components/layout/conditional-layout";
-
+import { CompareBar } from "@/components/property/compare-bar";
 import { getAppUrl } from "@/lib/utils";
 
 // ── Headings: Playfair Display ──────────────────────────
@@ -97,9 +98,12 @@ export default function RootLayout({
         <ThemeProvider>
           <AuthProvider>
             <BlogProvider>
-              {/* ConditionalLayout shows/hides Navbar+Footer based on route */}
-              <ConditionalLayout>{children}</ConditionalLayout>
-              <Toaster richColors position="top-right" />
+              <FavouritesProvider>
+                {/* ConditionalLayout shows/hides Navbar+Footer based on route */}
+                <ConditionalLayout>{children}</ConditionalLayout>
+                <Toaster richColors position="top-right" />
+                <CompareBar />
+              </FavouritesProvider>
             </BlogProvider>
           </AuthProvider>
         </ThemeProvider>

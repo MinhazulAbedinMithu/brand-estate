@@ -9,6 +9,7 @@ import { AgentContactCard } from "@/components/property/agent-contact-card";
 import { PropertyApplyCard } from "@/components/property/property-apply-card";
 import { OutdoorFacilitiesCard } from "@/components/property/outdoor-facilities-card";
 import { RelatedListings } from "@/components/property/related-listings";
+import { PropertyDetailActions } from "@/components/property/property-detail-actions";
 import {
   MapPin,
   Bed,
@@ -189,7 +190,23 @@ export default async function PropertyDetailPage({ params }: DetailPageProps) {
         transactionType={property.transactionType}
         videoTourUrl={property.videoTourUrl}
         virtualTourUrl={property.virtualTourUrl}
+        propertyId={property.id}
+        propertySlug={property.slug}
+        propertyPrice={formattedPrice}
       />
+
+      {/* Action bar: Save / Compare / Print / Share */}
+      <div className="border-b border-border-default/40 bg-bg-surface/80 backdrop-blur-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+          <PropertyDetailActions
+            propertyId={property.id}
+            propertyTitle={property.title}
+            propertySlug={property.slug}
+            propertyImage={property.images[0] ?? ""}
+            propertyPrice={formattedPrice}
+          />
+        </div>
+      </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-16">
         {/* SECTION B: Two-Column Content Layout */}

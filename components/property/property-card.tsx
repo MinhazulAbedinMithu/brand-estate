@@ -2,9 +2,12 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { MapPin, Bed, Bath, Ruler, Star, ArrowUpRight, Heart } from "lucide-react";
+import { MapPin, Bed, Bath, Ruler, Star, ArrowUpRight, Heart, GitCompareArrows, ImageIcon, Video } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { MockProperty } from "@/src/mocks/propertyTypes";
+import { useFavourites } from "@/lib/favourites-store";
+import { addToCompare, removeFromCompare, isInCompare } from "@/lib/compare-store";
+import { toast } from "sonner";
 
 // ─── Label maps ───────────────────────────────────────────────────────────────
 
@@ -67,14 +70,47 @@ function formatPrice(property: MockProperty): string {
 
 function GridCard({ property, className }: { property: MockProperty; className?: string }) {
   const [hovered, setHovered] = React.useState(false);
-  const [isSaved, setIsSaved] = React.useState(false);
+  const [inCompare, setInCompare] = React.useState(false);
+  const { isSaved, toggle } = useFavourites();
 
   const img2 = property.images[1] ?? property.images[0];
+  const saved = isSaved(property.id);
+  const hasVideo = !!property.videoTourUrl;
+  const imageCount = property.images.length;
 
-  const handleFavorite = (e: React.MouseEvent) => {
+  React.useEffect(() => {
+    setInCompare(isInCompare(property.id));
+    const onchange = () => setInCompare(isInCompare(property.id));
+    window.addEventListener("comparechange", onchange);
+    return () => window.removeEventListener("comparechange", onchange);
+  }, [property.id]);
+
+  const handleFavourite = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    setIsSaved(!isSaved);
+    toggle(property.id, property.title);
+  };
+
+  const handleCompare = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (inCompare) {
+      removeFromCompare(property.id);
+      toast.success("Removed from compare");
+    } else {
+      const result = addToCompare({
+        id: property.id,
+        slug: property.slug,
+        title: property.title,
+        image: property.images[0] ?? "",
+        price: formatPrice(property),
+      });
+      if (!result.success) {
+        toast.error("Compare limit reached", { description: result.message });
+      } else {
+        toast.success("Added to compare ⇄");
+      }
+    }
   };
 
   return (
@@ -108,14 +144,33 @@ function GridCard({ property, className }: { property: MockProperty; className?:
           </div>
         )}
 
-        {/* Favorite Action Button (Right) */}
-        <button
-          onClick={handleFavorite}
-          className="absolute top-3 right-3 flex items-center justify-center h-8.5 w-8.5 rounded-full bg-black/35 backdrop-blur-md border border-white/15 text-white hover:bg-black/55 hover:scale-105 active:scale-95 shadow transition-all duration-200 z-10"
-          aria-label="Save listing"
-        >
-          <Heart className={cn("h-4 w-4 transition-colors", isSaved ? "fill-state-error text-state-error" : "text-white")} />
-        </button>
+        {/* Action Buttons (Top Right) */}
+        <div className="absolute top-3 right-3 flex flex-col gap-1.5 z-10">
+          <button
+            onClick={handleFavourite}
+            className={cn(
+              "flex items-center justify-center h-8 w-8 rounded-full backdrop-blur-md border shadow transition-all duration-200",
+              saved
+                ? "bg-state-error/20 border-state-error/40 text-state-error"
+                : "bg-black/35 border-white/15 text-white hover:bg-black/55 hover:scale-105 active:scale-95"
+            )}
+            aria-label={saved ? "Remove from saved" : "Save listing"}
+          >
+            <Heart className={cn("h-3.5 w-3.5 transition-all", saved ? "fill-state-error" : "")} />
+          </button>
+          <button
+            onClick={handleCompare}
+            className={cn(
+              "flex items-center justify-center h-8 w-8 rounded-full backdrop-blur-md border shadow transition-all duration-200",
+              inCompare
+                ? "bg-accent-primary/20 border-accent-primary/40 text-accent-primary"
+                : "bg-black/35 border-white/15 text-white hover:bg-black/55 hover:scale-105 active:scale-95"
+            )}
+            aria-label={inCompare ? "Remove from compare" : "Add to compare"}
+          >
+            <GitCompareArrows className="h-3.5 w-3.5" />
+          </button>
+        </div>
 
         {/* Category & Transaction floating badges */}
         <div className="absolute bottom-3 left-3 flex gap-1.5 z-10">
@@ -125,6 +180,22 @@ function GridCard({ property, className }: { property: MockProperty; className?:
           <span className="bg-accent-primary text-white text-[9px] px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider shadow-sm">
             {TRANSACTION_LABEL[property.transactionType]}
           </span>
+        </div>
+
+        {/* Image & Video count (Bottom Right) */}
+        <div className="absolute bottom-3 right-3 flex gap-1.5 z-10">
+          {imageCount > 0 && (
+            <span className="flex items-center gap-1 bg-black/50 backdrop-blur-md text-white text-[9px] px-2 py-0.5 rounded-full font-bold">
+              <ImageIcon className="h-2.5 w-2.5" />
+              {imageCount}
+            </span>
+          )}
+          {hasVideo && (
+            <span className="flex items-center gap-1 bg-black/50 backdrop-blur-md text-white text-[9px] px-2 py-0.5 rounded-full font-bold">
+              <Video className="h-2.5 w-2.5" />
+              1
+            </span>
+          )}
         </div>
       </div>
 
@@ -200,12 +271,46 @@ function GridCard({ property, className }: { property: MockProperty; className?:
 // ─── List card ────────────────────────────────────────────────────────────────
 
 function ListCard({ property, className }: { property: MockProperty; className?: string }) {
-  const [isSaved, setIsSaved] = React.useState(false);
+  const [inCompare, setInCompare] = React.useState(false);
+  const { isSaved, toggle } = useFavourites();
 
-  const handleFavorite = (e: React.MouseEvent) => {
+  const saved = isSaved(property.id);
+  const hasVideo = !!property.videoTourUrl;
+  const imageCount = property.images.length;
+
+  React.useEffect(() => {
+    setInCompare(isInCompare(property.id));
+    const onchange = () => setInCompare(isInCompare(property.id));
+    window.addEventListener("comparechange", onchange);
+    return () => window.removeEventListener("comparechange", onchange);
+  }, [property.id]);
+
+  const handleFavourite = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    setIsSaved(!isSaved);
+    toggle(property.id, property.title);
+  };
+
+  const handleCompare = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (inCompare) {
+      removeFromCompare(property.id);
+      toast.success("Removed from compare");
+    } else {
+      const result = addToCompare({
+        id: property.id,
+        slug: property.slug,
+        title: property.title,
+        image: property.images[0] ?? "",
+        price: formatPrice(property),
+      });
+      if (!result.success) {
+        toast.error("Compare limit reached", { description: result.message });
+      } else {
+        toast.success("Added to compare ⇄");
+      }
+    }
   };
 
   return (
@@ -236,13 +341,49 @@ function ListCard({ property, className }: { property: MockProperty; className?:
           </div>
         )}
 
-        <button
-          onClick={handleFavorite}
-          className="absolute top-3 right-3 flex items-center justify-center h-8 w-8 rounded-full bg-black/35 backdrop-blur-md border border-white/15 text-white hover:bg-black/55 hover:scale-105 active:scale-95 shadow transition-all duration-200 z-10"
-          aria-label="Save listing"
-        >
-          <Heart className={cn("h-4 w-4 transition-colors", isSaved ? "fill-state-error text-state-error" : "text-white")} />
-        </button>
+        {/* Action Buttons (Top Right) */}
+        <div className="absolute top-3 right-3 flex flex-col gap-1.5 z-10">
+          <button
+            onClick={handleFavourite}
+            className={cn(
+              "flex items-center justify-center h-8 w-8 rounded-full backdrop-blur-md border shadow transition-all duration-200",
+              saved
+                ? "bg-state-error/20 border-state-error/40 text-state-error"
+                : "bg-black/35 border-white/15 text-white hover:bg-black/55 hover:scale-105 active:scale-95"
+            )}
+            aria-label={saved ? "Remove from saved" : "Save listing"}
+          >
+            <Heart className={cn("h-3.5 w-3.5 transition-all", saved ? "fill-state-error" : "")} />
+          </button>
+          <button
+            onClick={handleCompare}
+            className={cn(
+              "flex items-center justify-center h-8 w-8 rounded-full backdrop-blur-md border shadow transition-all duration-200",
+              inCompare
+                ? "bg-accent-primary/20 border-accent-primary/40 text-accent-primary"
+                : "bg-black/35 border-white/15 text-white hover:bg-black/55 hover:scale-105 active:scale-95"
+            )}
+            aria-label={inCompare ? "Remove from compare" : "Add to compare"}
+          >
+            <GitCompareArrows className="h-3.5 w-3.5" />
+          </button>
+        </div>
+
+        {/* Image & Video count (Bottom Right) */}
+        <div className="absolute bottom-3 right-3 flex gap-1.5 z-10">
+          {imageCount > 0 && (
+            <span className="flex items-center gap-1 bg-black/50 backdrop-blur-md text-white text-[9px] px-2 py-0.5 rounded-full font-bold">
+              <ImageIcon className="h-2.5 w-2.5" />
+              {imageCount}
+            </span>
+          )}
+          {hasVideo && (
+            <span className="flex items-center gap-1 bg-black/50 backdrop-blur-md text-white text-[9px] px-2 py-0.5 rounded-full font-bold">
+              <Video className="h-2.5 w-2.5" />
+              1
+            </span>
+          )}
+        </div>
       </div>
 
       {/* Body Details */}
