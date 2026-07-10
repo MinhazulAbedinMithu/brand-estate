@@ -426,4 +426,7 @@ Phase 2 specs to be defined and implemented in order:
   - Updated the submission logic in [property-apply-card.tsx](file:///Users/minhaz/Documents/projects/brand/brand-estate/components/property/property-apply-card.tsx) to allow submitting tenancy applications once the user has verified at least their Email Address and Identity KYC.
 - **Navbar Logo Integration**:
   - Replaced the missing `/logo-navbar.png` and `/logo-navbar-dark.png` image references in the public navbar ([navbar.tsx](file:///Users/minhaz/Documents/projects/brand/brand-estate/components/layout/navbar.tsx)) with the Next.js `<Image>` component referencing the new `/nav-logo.png` image asset with optimized layout dimensions (`width={120}`, `height={63}`, and `priority`), ensuring responsive scaling and layout shift prevention across all viewport sizes.
-
+- **Phone Country Selection Dropdown**:
+  - Defined and exported `CountryCodeItem` type in `lib/types.ts`.
+  - Added the `COUNTRY_CODES` mapping array with flag emojis and dial codes in `lib/constants.ts`.
+  - Integrated the country code select dropdown side-by-side with the phone inputs in `profile-page-client.tsx` (for both the OTP verification tab and the general profile settings form), dynamically parsing and prefixing dial codes.

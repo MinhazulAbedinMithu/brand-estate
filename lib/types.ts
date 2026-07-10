@@ -352,4 +352,12 @@ export interface BlogPost {
   views?: number;
 }
 
+export interface CountryCodeItem {
+  name: string;
+  code: string;
+  flag: string;
+  dialCode: string;
+}
+
+
 

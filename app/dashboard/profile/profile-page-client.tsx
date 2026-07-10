@@ -10,6 +10,9 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { toast } from "sonner";
 import { cn, calculateProfileCompleteness } from "@/lib/utils";
 import { DocumentViewer } from "@/components/shared/document-viewer";
+import { COUNTRY_CODES } from "@/lib/constants";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+
 
 export function ProfilePageClient() {
   const { currentUser } = useAuth();
@@ -37,9 +40,44 @@ export function ProfilePageClient() {
 
   const [phone, setPhone] = React.useState(currentUser?.phone || "");
   const [phoneVerified, setPhoneVerified] = React.useState(currentUser?.phoneVerified || false);
+
+  // Find current country matching the phone state
+  const currentCountry = React.useMemo(() => {
+    const matched = COUNTRY_CODES.find((c) => phone.startsWith(c.dialCode));
+    if (matched) return matched;
+    // Fallback to US
+    return COUNTRY_CODES.find(c => c.code === "US") || COUNTRY_CODES[0];
+  }, [phone]);
+
+  // The local display national number is phone minus currentCountry.dialCode
+  const nationalNumber = React.useMemo(() => {
+    if (phone.startsWith(currentCountry.dialCode)) {
+      return phone.slice(currentCountry.dialCode.length);
+    }
+    return phone;
+  }, [phone, currentCountry]);
+
+  const handleCountryChange = (newCountry: typeof COUNTRY_CODES[0]) => {
+    setPhone(newCountry.dialCode + nationalNumber);
+  };
+
+  const handlePhoneInputChange = (val: string) => {
+    const cleanVal = val.trim();
+    // If they typed/pasted a full number with a plus sign:
+    if (cleanVal.startsWith("+")) {
+      const matchedCountry = COUNTRY_CODES.find(c => cleanVal.startsWith(c.dialCode));
+      if (matchedCountry) {
+        setPhone(cleanVal);
+      } else {
+        setPhone(cleanVal);
+      }
+    } else {
+      setPhone(currentCountry.dialCode + cleanVal);
+    }
+  };
+
   const [otpCode, setOtpCode] = React.useState("");
   const [otpSent, setOtpSent] = React.useState(false);
-  const [generatedOtp, setGeneratedOtp] = React.useState("");
   const [verifyingOtp, setVerifyingOtp] = React.useState(false);
   const [confirmationResult, setConfirmationResult] = React.useState<any>(null);
 
@@ -288,7 +326,8 @@ export function ProfilePageClient() {
 
     const formattedPhone = phone.trim().startsWith("+") ? phone.trim() : `+${phone.trim()}`;
 
-    toast.loading("Sending verification code via Firebase...");
+    // console.log({ formattedPhone, phone });
+    toast.loading("Sending verification code...");
     try {
       const settingsRes = await fetch("/api/settings");
       const settingsData = await settingsRes.json();
@@ -312,13 +351,20 @@ export function ProfilePageClient() {
       const app = getApps().length === 0 ? initializeApp(config) : getApp();
       const auth = getAuth(app);
 
-      let verifier = (window as any).recaptchaVerifier;
-      if (!verifier) {
-        verifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-          size: 'invisible'
-        });
-        (window as any).recaptchaVerifier = verifier;
+      // Clear any existing global verifier to prevent stale DOM element bindings
+      if ((window as any).recaptchaVerifier) {
+        try {
+          (window as any).recaptchaVerifier.clear();
+        } catch (e) {
+          console.warn("Error clearing RecaptchaVerifier:", e);
+        }
+        (window as any).recaptchaVerifier = null;
       }
+
+      const verifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+        size: 'invisible'
+      });
+      (window as any).recaptchaVerifier = verifier;
 
       const confirmResult = await signInWithPhoneNumber(auth, formattedPhone, verifier);
       setConfirmationResult(confirmResult);
@@ -327,29 +373,8 @@ export function ProfilePageClient() {
       toast.success("Verification code sent via SMS! 📱");
     } catch (err: any) {
       toast.dismiss();
-      console.warn("Firebase send OTP error, falling back to test mode:", err);
-      
-      toast.loading("Sending test code...");
-      try {
-        const res = await fetch('/api/user/phone', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ phone })
-        });
-        const data = await res.json();
-        toast.dismiss();
-        if (data.status === 'success') {
-          setOtpSent(true);
-          setGeneratedOtp(data.code);
-          setConfirmationResult(null);
-          toast.success("Test code sent!", { description: `For testing, enter: ${data.code}` });
-        } else {
-          toast.error("Failed to send test code", { description: data.message });
-        }
-      } catch (mockErr) {
-        toast.dismiss();
-        toast.error("Error sending verification code.");
-      }
+      console.error("Firebase send OTP error:", err);
+      toast.error("Error sending verification code", { description: err.message || "Please check your network and credentials." });
     }
   };
 
@@ -359,42 +384,30 @@ export function ProfilePageClient() {
       return;
     }
 
+    if (!confirmationResult) {
+      toast.error("Session error", { description: "No active verification session found. Please request a new code." });
+      return;
+    }
+
     setVerifyingOtp(true);
     try {
-      if (confirmationResult) {
-        const result = await confirmationResult.confirm(otpCode);
-        const idToken = await result.user.getIdToken();
-        const formattedPhone = phone.trim().startsWith("+") ? phone.trim() : `+${phone.trim()}`;
+      const result = await confirmationResult.confirm(otpCode);
+      const idToken = await result.user.getIdToken();
+      const formattedPhone = phone.trim().startsWith("+") ? phone.trim() : `+${phone.trim()}`;
 
-        const res = await fetch('/api/user/phone/confirm', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ token: idToken, phone: formattedPhone })
-        });
-        const data = await res.json();
-        if (data.status === 'success') {
-          setPhoneVerified(true);
-          setOtpSent(false);
-          toast.success("Phone verified successfully!");
-          setTimeout(() => window.location.reload(), 1000);
-        } else {
-          toast.error("Verification failed", { description: data.message });
-        }
+      const res = await fetch('/api/user/phone/confirm', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: idToken, phone: formattedPhone })
+      });
+      const data = await res.json();
+      if (data.status === 'success') {
+        setPhoneVerified(true);
+        setOtpSent(false);
+        toast.success("Phone verified successfully!");
+        setTimeout(() => window.location.reload(), 1000);
       } else {
-        const res = await fetch('/api/user/phone/confirm', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ code: otpCode })
-        });
-        const data = await res.json();
-        if (data.status === 'success') {
-          setPhoneVerified(true);
-          setOtpSent(false);
-          toast.success("Phone verified successfully!");
-          setTimeout(() => window.location.reload(), 1000);
-        } else {
-          toast.error("Verification failed", { description: data.message });
-        }
+        toast.error("Verification failed", { description: data.message });
       }
     } catch (err: any) {
       console.error("Verification error:", err);
@@ -546,7 +559,7 @@ export function ProfilePageClient() {
               accept="image/*"
               className="hidden"
             />
-            <div 
+            <div
               onClick={() => !uploadingAvatar && avatarInputRef.current?.click()}
               className="relative group cursor-pointer mb-4"
             >
@@ -569,9 +582,9 @@ export function ProfilePageClient() {
           </div>
 
           <div className="border-t border-border-default/60 pt-4 flex flex-col gap-2.5">
-            <Button 
-              size="sm" 
-              variant="outline" 
+            <Button
+              size="sm"
+              variant="outline"
               onClick={() => avatarInputRef.current?.click()}
               disabled={uploadingAvatar}
               className="w-full h-9 rounded-xl border-border-default hover:bg-bg-elevated text-xs text-text-secondary"
@@ -584,9 +597,9 @@ export function ProfilePageClient() {
               ) : "Upload New Photo"}
             </Button>
             {currentUser?.avatar && (
-              <Button 
-                size="sm" 
-                variant="ghost" 
+              <Button
+                size="sm"
+                variant="ghost"
                 onClick={handleAvatarRemove}
                 disabled={uploadingAvatar}
                 className="w-full h-9 rounded-xl text-xs text-text-muted hover:text-text-primary"
@@ -889,19 +902,45 @@ export function ProfilePageClient() {
                         </p>
 
                         <div className="flex gap-2">
-                          <Input
-                            placeholder="e.g. +1555123456"
-                            value={phone}
-                            onChange={(e) => setPhone(e.target.value)}
-                            className="h-10 rounded-xl border-border-default bg-bg-base text-sm text-text-primary flex-1"
-                            disabled={otpSent}
-                          />
+                          <div className="flex gap-2 flex-1">
+                            <Select
+                              value={currentCountry.code}
+                              onValueChange={(code) => {
+                                const nextC = COUNTRY_CODES.find(c => c.code === code);
+                                if (nextC) handleCountryChange(nextC);
+                              }}
+                              disabled={otpSent}
+                            >
+                              <SelectTrigger className="h-10! rounded-xl border-border-default bg-bg-base px-3 text-sm text-text-primary gap-1 shrink-0 select-none">
+                                <SelectValue>
+                                  <span>{currentCountry.flag}</span>
+                                  <span>{currentCountry.dialCode}</span>
+                                </SelectValue>
+                              </SelectTrigger>
+                              <SelectContent alignItemWithTrigger={false} side="bottom" className="bg-bg-surface border border-border-default rounded-xl w-64 max-h-60 overflow-y-auto">
+                                {COUNTRY_CODES.map((c) => (
+                                  <SelectItem key={c.code} value={c.code}>
+                                    <span className="mr-2">{c.flag}</span>
+                                    <span className="font-medium mr-2">{c.name}</span>
+                                    <span className="text-text-muted">{c.dialCode}</span>
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            <Input
+                              placeholder="e.g. 555123456"
+                              value={nationalNumber}
+                              onChange={(e) => handlePhoneInputChange(e.target.value)}
+                              className="h-10 rounded-xl border-border-default bg-bg-base text-sm text-text-primary flex-1"
+                              disabled={otpSent}
+                            />
+                          </div>
                           {!otpSent ? (
-                            <Button onClick={handleRequestOtp} className="h-10 bg-accent-primary text-white font-bold text-xs px-5 rounded-xl">
+                            <Button onClick={handleRequestOtp} className="h-10 bg-accent-primary text-white font-bold text-xs px-5 rounded-xl shrink-0">
                               Send OTP
                             </Button>
                           ) : (
-                            <Button onClick={() => setOtpSent(false)} variant="outline" className="h-10 border-border-default text-text-secondary font-bold text-xs px-5 rounded-xl">
+                            <Button onClick={() => setOtpSent(false)} variant="outline" className="h-10 border-border-default text-text-secondary font-bold text-xs px-5 rounded-xl shrink-0">
                               Change Phone
                             </Button>
                           )}
@@ -924,11 +963,6 @@ export function ProfilePageClient() {
                                 {verifyingOtp ? 'Verifying...' : 'Verify OTP'}
                               </Button>
                             </div>
-                            {generatedOtp && (
-                              <p className="text-[10px] text-accent-primary font-bold">
-                                Mock OTP code generated for testing: <span className="font-mono text-xs underline">{generatedOtp}</span>
-                              </p>
-                            )}
                           </div>
                         )}
                       </div>
@@ -1113,12 +1147,37 @@ export function ProfilePageClient() {
                   <label className="text-[11px] font-bold text-text-secondary uppercase tracking-wider">
                     Phone Number {phoneVerified ? <span className="text-emerald-500 font-extrabold text-[9px] uppercase ml-1">(Verified)</span> : <span className="text-amber-500 font-extrabold text-[9px] uppercase ml-1">(Unverified)</span>}
                   </label>
-                  <Input
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    className="h-10 rounded-xl border-border-default bg-bg-base text-sm text-text-primary"
-                    placeholder="Verify in verification tab above"
-                  />
+                  <div className="flex gap-2">
+                    <Select
+                      value={currentCountry.code}
+                      onValueChange={(code) => {
+                        const nextC = COUNTRY_CODES.find(c => c.code === code);
+                        if (nextC) handleCountryChange(nextC);
+                      }}
+                    >
+                      <SelectTrigger className="h-10! rounded-xl border-border-default bg-bg-base px-3 text-sm text-text-primary gap-1 shrink-0 select-none">
+                        <SelectValue>
+                          <span>{currentCountry.flag}</span>
+                          <span>{currentCountry.dialCode}</span>
+                        </SelectValue>
+                      </SelectTrigger>
+                      <SelectContent alignItemWithTrigger={false} side="bottom" className="bg-bg-surface border border-border-default rounded-xl w-64 max-h-60 overflow-y-auto">
+                        {COUNTRY_CODES.map((c) => (
+                          <SelectItem key={c.code} value={c.code}>
+                            <span className="mr-2">{c.flag}</span>
+                            <span className="font-medium mr-2">{c.name}</span>
+                            <span className="text-text-muted">{c.dialCode}</span>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <Input
+                      value={nationalNumber}
+                      onChange={(e) => handlePhoneInputChange(e.target.value)}
+                      className="h-10 rounded-xl border-border-default bg-bg-base text-sm text-text-primary flex-1"
+                      placeholder="Verify in verification tab above"
+                    />
+                  </div>
                 </div>
                 <div className="space-y-1.5">
                   <label className="text-[11px] font-bold text-text-secondary uppercase tracking-wider">Title/Role</label>

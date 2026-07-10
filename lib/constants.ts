@@ -1,4 +1,4 @@
-import type { ListingType, ListingStatus, PropertyType, UserRole, NavLinkWithDropdown } from './types';
+import type { ListingType, ListingStatus, PropertyType, UserRole, NavLinkWithDropdown, CountryCodeItem } from './types';
 
 // ─────────────────────────────────────────────
 // User Roles
@@ -342,4 +342,24 @@ export const DEFAULT_PACKAGES = [
     isActive: true,
   },
 ];
+
+export const COUNTRY_CODES: readonly CountryCodeItem[] = [
+  { name: "United Arab Emirates", code: "AE", flag: "🇦🇪", dialCode: "+971" },
+  { name: "Bangladesh", code: "BD", flag: "🇧🇩", dialCode: "+880" },
+  { name: "Australia", code: "AU", flag: "🇦🇺", dialCode: "+61" },
+  { name: "Brazil", code: "BR", flag: "🇧🇷", dialCode: "+55" },
+  { name: "Canada", code: "CA", flag: "🇨🇦", dialCode: "+1" },
+  { name: "France", code: "FR", flag: "🇫🇷", dialCode: "+33" },
+  { name: "Germany", code: "DE", flag: "🇩🇪", dialCode: "+49" },
+  { name: "India", code: "IN", flag: "🇮🇳", dialCode: "+91" },
+  { name: "Italy", code: "IT", flag: "🇮🇹", dialCode: "+39" },
+  { name: "Japan", code: "JP", flag: "🇯🇵", dialCode: "+81" },
+  { name: "Singapore", code: "SG", flag: "🇸🇬", dialCode: "+65" },
+  { name: "South Africa", code: "ZA", flag: "🇿🇦", dialCode: "+27" },
+  { name: "Spain", code: "ES", flag: "🇪🇸", dialCode: "+34" },
+  { name: "Turkey", code: "TR", flag: "🇹🇷", dialCode: "+90" },
+  { name: "United Kingdom", code: "GB", flag: "🇬🇧", dialCode: "+44" },
+  { name: "United States", code: "US", flag: "🇺🇸", dialCode: "+1" },
+] as const;
+
 
