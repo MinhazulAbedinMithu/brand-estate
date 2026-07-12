@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import {
   Send,
   Mail,
@@ -177,10 +178,16 @@ export function Footer() {
           <div className="space-y-5 lg:col-span-1">
             <Link
               href="/"
-              className="font-heading text-2xl font-bold tracking-tight text-text-primary flex items-center gap-2"
+              className="flex items-center"
             >
-              <img src="/favicon-32x32.png" alt="Logo" className="h-6 w-6" />
-              <span>{APP_NAME}</span>
+              <Image
+                src="/nav-logo.png"
+                alt={APP_NAME}
+                width={140}
+                height={63}
+                priority
+                className="h-16 md:h-20 w-auto object-cover shrink-0"
+              />
             </Link>
             <p className="text-sm text-text-secondary leading-relaxed">
               {APP_TAGLINE}. We offer premium properties and professional services connecting property buyers, renters, and agents worldwide.

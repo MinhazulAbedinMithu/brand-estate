@@ -448,3 +448,6 @@ Phase 2 specs to be defined and implemented in order:
   - Defined and exported `CountryCodeItem` type in `lib/types.ts`.
   - Added the `COUNTRY_CODES` mapping array with flag emojis and dial codes in `lib/constants.ts`.
   - Integrated the country code select dropdown side-by-side with the phone inputs in `profile-page-client.tsx` (for both the OTP verification tab and the general profile settings form), dynamically parsing and prefixing dial codes.
+- **Footer Logo Rebranding**:
+  - Updated the public footer ([footer.tsx](file:///Users/minhaz/Documents/projects/brand/brand-estate/components/layout/footer.tsx)) to replace the text-based brand logo with the premium Next.js `<Image>` component referencing the navigation logo `/nav-logo.png`.
+
