@@ -1,11 +1,12 @@
 "use client";
 
 import * as React from "react";
-import { FileText, Calendar, Building, User, Wallet, Check, X, Shield, Loader2 } from "lucide-react";
+import { FileText, Calendar, Building, User, Wallet, Check, X, Shield, Loader2, Clock } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 export function OwnerApplicationsClient() {
   const [applications, setApplications] = React.useState<any[]>([]);
@@ -15,6 +16,12 @@ export function OwnerApplicationsClient() {
   // Rejection reason overlay states
   const [rejectId, setRejectId] = React.useState<string | null>(null);
   const [reason, setReason] = React.useState("");
+
+  // Approval schedule dialog states
+  const [approveId, setApproveId] = React.useState<string | null>(null);
+  const [scheduleDate, setScheduleDate] = React.useState("");
+  const [scheduleTime, setScheduleTime] = React.useState("");
+  const [approving, setApproving] = React.useState(false);
 
   async function loadApplications() {
     try {
@@ -41,7 +48,10 @@ export function OwnerApplicationsClient() {
       const res = await fetch(`/api/applications/${id}/status`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status, rejectionReason: rejectReason })
+        body: JSON.stringify({ 
+          status, 
+          feedback: rejectReason 
+        })
       });
       const data = await res.json();
       if (data.status === "success") {
@@ -57,6 +67,39 @@ export function OwnerApplicationsClient() {
       toast.error("Network error");
     } finally {
       setProcessingId(null);
+    }
+  };
+
+  const handleApproveSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!approveId || !scheduleDate || !scheduleTime) return;
+    
+    setApproving(true);
+    try {
+      const res = await fetch(`/api/applications/${approveId}/status`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          status: "approved", 
+          scheduleDate, 
+          scheduleTime 
+        })
+      });
+      const data = await res.json();
+      if (data.status === "success") {
+        toast.success("Application approved and visit scheduled! 🗓️");
+        setApproveId(null);
+        setScheduleDate("");
+        setScheduleTime("");
+        loadApplications();
+      } else {
+        toast.error("Failed to approve application", { description: data.message });
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Network error");
+    } finally {
+      setApproving(false);
     }
   };
 
@@ -175,20 +218,30 @@ export function OwnerApplicationsClient() {
                         Application fee paid: <span className="font-bold text-text-primary">${app.feePaid}</span>
                       </p>
 
+                      {app.status === "approved" && app.scheduleDate && (
+                        <div className="p-3 bg-emerald-500/5 border border-emerald-500/15 rounded-xl text-[10px] text-emerald-400 font-bold space-y-1 mt-2">
+                          <p className="flex items-center gap-1.5 text-emerald-400">
+                            <Clock className="h-3.5 w-3.5" />
+                            Visit Scheduled
+                          </p>
+                          <p className="font-mono text-[9px] pl-5">{app.scheduleDate} @ {app.scheduleTime}</p>
+                        </div>
+                      )}
+
                       {app.status === "pending" && rejectId !== app._id && (
                         <div className="flex gap-2 pt-2">
                           <Button 
                             disabled={processingId === app._id}
-                            onClick={() => handleUpdateStatus(app._id, "approved")}
-                            className="h-8 flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-[10px] rounded-lg"
+                            onClick={() => setApproveId(app._id)}
+                            className="h-8 flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-[10px] rounded-lg cursor-pointer"
                           >
-                            Approve Tenancy
+                            Approve & Schedule
                           </Button>
                           <Button 
                             disabled={processingId === app._id}
                             onClick={() => setRejectId(app._id)}
                             variant="outline"
-                            className="h-8 flex-1 border-rose-500/30 text-rose-500 hover:bg-rose-500/5 font-bold text-[10px] rounded-lg"
+                            className="h-8 flex-1 border-rose-500/30 text-rose-500 hover:bg-rose-500/5 font-bold text-[10px] rounded-lg cursor-pointer"
                           >
                             Reject
                           </Button>
@@ -206,14 +259,15 @@ export function OwnerApplicationsClient() {
                           <div className="flex gap-2">
                             <Button 
                               onClick={() => handleUpdateStatus(app._id, "rejected", reason)}
-                              className="h-8 flex-1 bg-rose-600 hover:bg-rose-500 text-white font-bold text-[10px] rounded-lg"
+                              disabled={processingId === app._id}
+                              className="h-8 flex-1 bg-rose-600 hover:bg-rose-500 text-white font-bold text-[10px] rounded-lg cursor-pointer"
                             >
                               Confirm Reject
                             </Button>
                             <Button 
                               onClick={() => { setRejectId(null); setReason(""); }}
                               variant="outline"
-                              className="h-8 border-border-default text-text-muted font-bold text-[10px] rounded-lg"
+                              className="h-8 border-border-default text-text-muted font-bold text-[10px] rounded-lg cursor-pointer"
                             >
                               Cancel
                             </Button>
@@ -228,6 +282,71 @@ export function OwnerApplicationsClient() {
           })}
         </div>
       )}
+
+      {/* Meetup Schedule Dialog */}
+      <Dialog open={approveId !== null} onOpenChange={(isOpen) => !isOpen && setApproveId(null)}>
+        <DialogContent className="bg-bg-surface border-border-default text-text-primary rounded-2xl max-w-sm">
+          <form onSubmit={handleApproveSubmit}>
+            <DialogHeader>
+              <DialogTitle className="text-text-primary font-heading font-bold text-left text-base flex items-center gap-2">
+                <Calendar className="h-5 w-5 text-accent-primary" />
+                Schedule Meetup Visit
+              </DialogTitle>
+              <DialogDescription className="text-left text-text-muted text-xs leading-relaxed">
+                Provide a date and time for the applicant to visit the property and meet.
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="space-y-4 my-4">
+              <div className="space-y-1.5 text-left">
+                <label className="text-[10px] font-bold text-text-muted uppercase tracking-wider">Meetup Date</label>
+                <Input
+                  type="date"
+                  required
+                  value={scheduleDate}
+                  onChange={(e) => setScheduleDate(e.target.value)}
+                  className="h-10 rounded-xl border-border-default bg-bg-surface/50 text-xs font-bold focus:border-accent-primary"
+                />
+              </div>
+
+              <div className="space-y-1.5 text-left">
+                <label className="text-[10px] font-bold text-text-muted uppercase tracking-wider">Meetup Time</label>
+                <Input
+                  type="time"
+                  required
+                  value={scheduleTime}
+                  onChange={(e) => setScheduleTime(e.target.value)}
+                  className="h-10 rounded-xl border-border-default bg-bg-surface/50 text-xs font-bold focus:border-accent-primary"
+                />
+              </div>
+            </div>
+
+            <DialogFooter className="flex flex-row gap-3 mt-4">
+              <Button
+                type="button"
+                onClick={() => setApproveId(null)}
+                variant="outline"
+                className="flex-1 h-10 rounded-xl border-border-default text-text-secondary cursor-pointer"
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                disabled={approving || !scheduleDate || !scheduleTime}
+                className="flex-1 h-10 rounded-xl bg-accent-primary hover:bg-accent-primary-hov text-white font-bold text-xs"
+              >
+                {approving ? (
+                  <span className="flex items-center justify-center gap-1.5">
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" /> Scheduling...
+                  </span>
+                ) : (
+                  "Approve & Schedule"
+                )}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

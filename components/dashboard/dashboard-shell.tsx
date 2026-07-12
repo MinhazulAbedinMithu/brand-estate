@@ -23,7 +23,8 @@ import {
   Loader2,
   Sparkles,
   Info,
-  Contact2
+  Contact2,
+  Wallet
 } from "lucide-react";
 import { useAuth, getDashboardRoute } from "@/lib/auth-context";
 import { cn } from "@/lib/utils";
@@ -60,6 +61,7 @@ const ROLE_NAV_ITEMS: Record<UserRole, NavItem[]> = {
   guest: [],
   auth_user: [
     { label: "Overview", href: "/dashboard", icon: LayoutDashboard },
+    { label: "My Wallet", href: "/dashboard/wallet", icon: Wallet },
     { label: "Saved Properties", href: "/dashboard/saved", icon: Heart },
     { label: "My Inquiries", href: "/dashboard/inquiries", icon: MessageSquare },
     { label: "My Applications", href: "/dashboard/applications", icon: FileText },
@@ -68,6 +70,7 @@ const ROLE_NAV_ITEMS: Record<UserRole, NavItem[]> = {
   ],
   agent: [
     { label: "Agent Overview", href: "/agent/dashboard", icon: LayoutDashboard },
+    { label: "My Wallet", href: "/dashboard/wallet", icon: Wallet },
     { label: "My Listings", href: "/agent/listings", icon: Building },
     { label: "Create Listing", href: "/agent/listings/new", icon: PlusCircle },
     { label: "Tenant Applications", href: "/agent/applications", icon: FileText },
@@ -78,6 +81,7 @@ const ROLE_NAV_ITEMS: Record<UserRole, NavItem[]> = {
   ],
   owner: [
     { label: "Owner Overview", href: "/owner/dashboard", icon: LayoutDashboard },
+    { label: "My Wallet", href: "/dashboard/wallet", icon: Wallet },
     { label: "My Listings", href: "/owner/listings", icon: Building },
     { label: "Create Listing", href: "/owner/listings/new", icon: PlusCircle },
     { label: "Tenant Applications", href: "/owner/applications", icon: FileText },
@@ -92,11 +96,13 @@ const ROLE_NAV_ITEMS: Record<UserRole, NavItem[]> = {
     { label: "Manage Listings", href: "/admin/listings", icon: Building },
     { label: "Manage Blogs", href: "/admin/blogs", icon: FileText },
     { label: "User Reports", href: "/admin/reports", icon: AlertOctagon },
+    { label: "Withdraw Requests", href: "/admin/withdrawals", icon: Wallet },
     { label: "Manage Packages", href: "/admin/packages", icon: Settings },
   ],
   super_admin: [
     { label: "Platform Console", href: "/super-admin/dashboard", icon: ShieldCheck },
     { label: "Manage Roles", href: "/super-admin/roles", icon: Users },
+    { label: "Withdraw Requests", href: "/admin/withdrawals", icon: Wallet },
     { label: "Platform Settings", href: "/super-admin/settings", icon: Settings },
   ],
 };
@@ -129,6 +135,57 @@ export function DashboardShell({ children, allowedRoles }: DashboardShellProps) 
   const pathname = usePathname();
   const { currentUser, isAuthenticated, isLoading, logout, login } = useAuth();
   const [mobileOpen, setMobileOpen] = React.useState(false);
+
+  // Real-time notifications state
+  const [notifications, setNotifications] = React.useState<any[]>([]);
+  const [unreadCount, setUnreadCount] = React.useState(0);
+
+  const fetchNotifications = React.useCallback(async () => {
+    try {
+      const res = await fetch("/api/notifications");
+      if (res.ok) {
+        const data = await res.json();
+        if (data.status === "success") {
+          const list = data.data || [];
+          setNotifications(list);
+          setUnreadCount(list.filter((n: any) => !n.read).length);
+        }
+      }
+    } catch (e) {
+      console.error("Failed to fetch notifications:", e);
+    }
+  }, []);
+
+  React.useEffect(() => {
+    if (isAuthenticated) {
+      fetchNotifications();
+      const interval = setInterval(fetchNotifications, 15000);
+      return () => clearInterval(interval);
+    }
+  }, [isAuthenticated, fetchNotifications]);
+
+  const handleMarkAllRead = async () => {
+    try {
+      const res = await fetch("/api/notifications", { method: "POST" });
+      if (res.ok) {
+        fetchNotifications();
+        toast.success("All notifications marked as read");
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const formatTimeAgo = (dateString: string) => {
+    const date = new Date(dateString);
+    const seconds = Math.floor((new Date().getTime() - date.getTime()) / 1000);
+    if (seconds < 60) return "Just now";
+    const minutes = Math.floor(seconds / 60);
+    if (minutes < 60) return `${minutes}m ago`;
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return `${hours}h ago`;
+    return date.toLocaleDateString();
+  };
 
   // Authenticate / Redirect check
   React.useEffect(() => {
@@ -397,31 +454,37 @@ export function DashboardShell({ children, allowedRoles }: DashboardShellProps) 
               <DropdownMenuTrigger render={
                 <Button variant="ghost" size="icon-sm" className="h-9 w-9 rounded-full text-text-muted hover:text-text-primary hover:bg-bg-elevated/40 relative cursor-pointer">
                   <Bell className="h-4.5 w-4.5" />
-                  <span className="absolute top-2.5 right-2.5 h-1.5 w-1.5 bg-rose-500 rounded-full" />
+                  {unreadCount > 0 && (
+                    <span className="absolute top-2 right-2 h-2 w-2 bg-rose-500 rounded-full animate-pulse" />
+                  )}
                 </Button>
               } />
               <DropdownMenuContent align="end" className="w-80 bg-bg-surface border-border-default text-text-secondary dark:text-slate-200 rounded-xl p-1 shadow-2xl">
                 <DropdownMenuLabel className="text-xs font-bold px-3 py-2 flex items-center justify-between border-b border-border-default/60">
                   <span>Workspace Notifications</span>
-                  <span className="text-[10px] text-accent-primary font-bold hover:underline cursor-pointer">Mark all read</span>
+                  {unreadCount > 0 && (
+                    <span onClick={handleMarkAllRead} className="text-[10px] text-accent-primary font-bold hover:underline cursor-pointer">
+                      Mark all read
+                    </span>
+                  )}
                 </DropdownMenuLabel>
                 <div className="py-1 max-h-64 overflow-y-auto">
-                  <div className="px-3 py-2.5 hover:bg-bg-elevated/60 cursor-pointer rounded-lg text-xs flex gap-2">
-                    <span className="h-2 w-2 rounded-full bg-accent-primary mt-1.5 shrink-0" />
-                    <div>
-                      <p className="font-semibold text-text-primary">New Agent inquiry</p>
-                      <p className="text-[10px] text-text-muted mt-0.5 font-medium">David Chen sent inquiry for Manhattan Penthouse</p>
-                      <span className="text-[9px] text-text-faint block mt-1">2 mins ago</span>
+                  {notifications.length === 0 ? (
+                    <div className="px-4 py-6 text-center text-xs text-text-muted">
+                      No notifications yet.
                     </div>
-                  </div>
-                  <div className="px-3 py-2.5 hover:bg-bg-elevated/60 cursor-pointer rounded-lg text-xs flex gap-2">
-                    <span className="h-2 w-2 rounded-full bg-accent-primary mt-1.5 shrink-0" />
-                    <div>
-                      <p className="font-semibold text-text-primary">Listing Approved</p>
-                      <p className="text-[10px] text-text-muted mt-0.5 font-medium">Your luxury villa listing has been approved by admin</p>
-                      <span className="text-[9px] text-text-faint block mt-1">1 hour ago</span>
-                    </div>
-                  </div>
+                  ) : (
+                    notifications.map((n) => (
+                      <div key={n.id} className={cn("px-3 py-2.5 hover:bg-bg-elevated/60 cursor-pointer rounded-lg text-xs flex gap-2 border-b border-border-default/20 last:border-0", !n.read && "bg-accent-primary/5")}>
+                        <span className={cn("h-2 w-2 rounded-full mt-1.5 shrink-0", n.read ? "bg-text-faint" : "bg-accent-primary")} />
+                        <div>
+                          <p className={cn("font-semibold text-text-primary", !n.read && "font-bold")}>{n.title}</p>
+                          <p className="text-[10px] text-text-muted mt-0.5 font-medium leading-normal">{n.message}</p>
+                          <span className="text-[9px] text-text-faint block mt-1">{formatTimeAgo(n.createdAt)}</span>
+                        </div>
+                      </div>
+                    ))
+                  )}
                 </div>
               </DropdownMenuContent>
             </DropdownMenu>

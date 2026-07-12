@@ -16,6 +16,9 @@ export interface IPropertyApplication extends Document {
   stripePaymentIntentId?: string;
   stripeRefundId?: string;
   paymentStatus?: 'unpaid' | 'paid' | 'refunded';
+  scheduleDate?: string;
+  scheduleTime?: string;
+  scheduledAt?: Date;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -45,6 +48,9 @@ const PropertyApplicationSchema = new Schema<IPropertyApplication>(
       enum: ['unpaid', 'paid', 'refunded'],
       default: 'unpaid',
     },
+    scheduleDate: { type: String },
+    scheduleTime: { type: String },
+    scheduledAt: { type: Date },
   },
   {
     timestamps: true,
@@ -58,3 +64,4 @@ PropertyApplicationSchema.index({ propertyId: 1 });
 export const PropertyApplication: Model<IPropertyApplication> =
   (mongoose.models.PropertyApplication as Model<IPropertyApplication>) ||
   mongoose.model<IPropertyApplication>('PropertyApplication', PropertyApplicationSchema);
+

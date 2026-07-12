@@ -223,6 +223,23 @@ Implement, test, and integrate backend API routes (Next.js API Routes / Mongoose
   - [x] Updated Navbar, Footer, and Auth shell logos to render the new logo image asset instead of the Lucide Building icon.
   - [x] Updated APP_NAME, layout metadata, database keys, session tags, and seed user emails to RealHoms.
   - [x] Performed codebase-wide text replacements to clean up all "Brand Estate" references.
+- [x] **Payment Module & Wallet System COMPLETE** ✅
+  - [x] Created Mongoose schemas for `WalletTransaction` (deposit, withdraw, transfer send, transfer receive, refund send, refund receive) and `Notification` models.
+  - [x] Added scheduling date, time, and scheduledAt fields to the `PropertyApplication` schema.
+  - [x] Implemented the Stripe checkout deposit API endpoint (`POST /api/payment/deposit`) and deposit verification endpoint (`GET /api/payment/deposit/verify`).
+  - [x] Implemented the transaction history retriever (`GET /api/payment/transactions`).
+  - [x] Implemented the withdrawal request creator (`POST /api/payment/withdraw`) with 10% fee calculation.
+  - [x] Implemented admin listing of withdrawal requests (`GET /api/admin/withdrawals`) and admin review decisions (`POST /api/admin/withdrawals/[id]/review`) supporting simulated Stripe Connected Account transfers or wallet refunds on rejection.
+  - [x] Updated the application submission API (`POST /api/applications`) to deduct fees from the buyer's wallet, credit the agent/owner's wallet, and record transfer logs on both sides.
+  - [x] Updated the application status updater (`POST /api/applications/[id]/status`) to require schedule details on approval and perform wallet-balance refunds on rejection.
+  - [x] Updated the Stripe webhook listener (`POST /api/payment/webhook`) to credit deposits.
+  - [x] Connected `refreshUser` inside `lib/auth-context.tsx` to pull updated balance logs dynamically.
+  - [x] Built the unified **Wallet Dashboard** (`app/dashboard/wallet/page.tsx` & `wallet-client.tsx`) allowing deposits, payouts requests, and rendering a transaction ledger.
+  - [x] Built the **Admin Payouts Console** (`app/admin/withdrawals/page.tsx` & `withdrawals-client.tsx`) letting admins approve or reject payouts inline.
+  - [x] Modified the **Apply Card** (`components/property/property-apply-card.tsx`) to verify wallet balances against required application fees and process applications using wallet funds.
+  - [x] Modified the **Agent and Owner Applications Console** (`agent-applications-client.tsx` and `owner-applications-client.tsx`) to prompt for meetup visit date/time scheduling during approval.
+  - [x] Integrated dynamic notifications in the dashboard shell bell dropdown (`components/dashboard/dashboard-shell.tsx`).
+  - [x] Verified static compilation with zero errors under `npm run build`.
 
 ## In Progress
 
@@ -249,6 +266,7 @@ Phase 2 specs to be defined and implemented in order:
 | 90    | Platform Settings & Verification   | ✅ Done |
 | 91    | Admin & Agent Analytics API       | ✅ Done |
 | 92    | Super Admin Security Audit Logs   | ⏳ Pending |
+| 93    | Payment Module & Wallet System    | ✅ Done |
 
 ### Completed Phase 1 Specs
 

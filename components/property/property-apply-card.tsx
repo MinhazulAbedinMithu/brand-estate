@@ -24,13 +24,14 @@ interface PropertyApplyCardProps {
 }
 
 export function PropertyApplyCard({ property, className }: PropertyApplyCardProps) {
-  const { currentUser } = useAuth();
+  const { currentUser, refreshUser } = useAuth();
   const [open, setOpen] = React.useState(false);
   const [submitting, setSubmitting] = React.useState(false);
   
   // Wallet state
   const balance = currentUser?.walletBalance ?? 1000;
   const reqFee = property.applicationFeeRequired ? (property.applicationFee ?? 0) : 0;
+  const hasSufficientBalance = balance >= reqFee;
   
   // Checklist validation states
   const emailOk = !!currentUser?.isVerified;
@@ -55,25 +56,26 @@ export function PropertyApplyCard({ property, className }: PropertyApplyCardProp
       return;
     }
 
+    if (!hasSufficientBalance) {
+      toast.error("Insufficient wallet balance", { description: "Please deposit money into your wallet first." });
+      return;
+    }
+
     setSubmitting(true);
     try {
-      const res = await fetch("/api/payment/checkout", {
+      const res = await fetch("/api/applications", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ propertyId: property.id }),
       });
       const data = await res.json();
       if (data.status === "success") {
-        if (data.direct) {
-          toast.success("Application submitted successfully! 🚀");
-          setOpen(false);
-          setTimeout(() => window.location.reload(), 1500);
-        } else if (data.url) {
-          toast.success("Redirecting to secure Stripe checkout...");
-          window.location.href = data.url;
-        }
+        toast.success("Application submitted successfully! 🚀");
+        setOpen(false);
+        await refreshUser(); // Update wallet balance state on client
+        setTimeout(() => window.location.reload(), 1500);
       } else {
-        toast.error("Checkout initialization failed", { description: data.message });
+        toast.error("Application submission failed", { description: data.message });
       }
     } catch (err) {
       console.error(err);
@@ -164,18 +166,39 @@ export function PropertyApplyCard({ property, className }: PropertyApplyCardProp
                 ))}
               </div>
 
-              {/* Fee calculations and Stripe disclaimer */}
+              {/* Fee calculations and Wallet balance warning */}
               <div className="pt-4 border-t border-border-default/60 space-y-3 text-xs text-left">
                 <div className="flex justify-between items-center font-bold">
                   <span className="text-text-secondary">Required Application Fee:</span>
                   <span className="text-text-primary">{reqFee > 0 ? `$${reqFee}` : "Free"}</span>
                 </div>
-                {reqFee > 0 && (
+                
+                <div className="flex justify-between items-center font-bold">
+                  <span className="text-text-secondary">Your Wallet Balance:</span>
+                  <span className={cn(hasSufficientBalance ? "text-emerald-500" : "text-rose-500")}>
+                    ${balance.toFixed(2)}
+                  </span>
+                </div>
+
+                {reqFee > 0 && hasSufficientBalance && (
                   <div className="p-3 bg-accent-primary-dim/30 border border-accent-primary/20 rounded-xl text-[10px] text-text-secondary leading-relaxed flex items-start gap-2">
                     <Shield className="h-4 w-4 text-accent-primary shrink-0 mt-0.5" />
                     <span>
-                      Payments are processed securely via Stripe. Application fees are fully refunded back to your card if your application is rejected.
+                      The application fee will be deducted directly from your wallet balance. Fully refunded back to your wallet if rejected.
                     </span>
+                  </div>
+                )}
+                
+                {reqFee > 0 && !hasSufficientBalance && (
+                  <div className="p-3 bg-rose-500/5 border border-rose-500/15 rounded-xl text-[10px] text-rose-400 font-bold leading-relaxed space-y-2">
+                    <p>
+                      Your wallet balance is insufficient to pay this fee. Please deposit funds into your wallet to apply.
+                    </p>
+                    <Link href="/dashboard/wallet" className="block w-full">
+                      <Button className="w-full h-8 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-[10px]">
+                        Go to Wallet Dashboard & Deposit
+                      </Button>
+                    </Link>
                   </div>
                 )}
                 
@@ -200,7 +223,7 @@ export function PropertyApplyCard({ property, className }: PropertyApplyCardProp
               </Button>
               <Button
                 onClick={handleApply}
-                disabled={!canApply || submitting}
+                disabled={!canApply || !hasSufficientBalance || submitting}
                 className="flex-1 h-10 rounded-xl bg-accent-primary hover:bg-accent-primary-hov text-white font-bold text-xs"
               >
                 {submitting ? (

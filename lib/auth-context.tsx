@@ -166,6 +166,7 @@ interface AuthContextValue {
     suspendedReason?: string;
   }>;
   logout: () => Promise<void>;
+  refreshUser: () => Promise<void>;
   
   // Custom Local Storage DB Helpers
   getUsers: () => User[];
@@ -921,6 +922,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setCurrentUser(null);
   }, []);
 
+  const refreshUser = React.useCallback(async () => {
+    try {
+      const res = await fetch('/api/auth/me', { credentials: 'include' });
+      if (res.ok) {
+        const data = await res.json();
+        const mapped = mapApiUser(data.data);
+        setCurrentUser(mapped);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(mapped));
+      }
+    } catch (e) {
+      console.error('Session refresh error:', e);
+    }
+  }, []);
+
   const value = React.useMemo<AuthContextValue>(
     () => ({
       currentUser,
@@ -930,6 +945,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       register,
       googleLogin,
       logout,
+      refreshUser,
       
       // DB Helpers
       getUsers,
@@ -944,7 +960,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       updatePackage,
       createPackage,
     }),
-    [currentUser, isLoading, login, register, googleLogin, logout, getUsers, updateUserStatus, deleteUser, submitLegalDocs, submitNidDocs, updateUserNidStatus, getPackages, updatePackage, createPackage]
+    [currentUser, isLoading, login, register, googleLogin, logout, refreshUser, getUsers, updateUserStatus, deleteUser, submitLegalDocs, submitNidDocs, updateUserNidStatus, getPackages, updatePackage, createPackage]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
