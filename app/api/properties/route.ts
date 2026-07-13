@@ -8,6 +8,23 @@ import { verifyJwt } from '@/lib/auth/tokens';
 const COOKIE_NAME = 'be_auth_token';
 
 // ─────────────────────────────────────────────
+// Helper to resolve country from city name if not provided
+function resolveCountry(city: string): string {
+  const c = city?.trim().toLowerCase();
+  if (!c) return 'United States';
+  if (c.includes('mumbai') || c.includes('delhi') || c.includes('bangalore') || c.includes('kolkata') || c.includes('chennai')) return 'India';
+  if (c.includes('dhaka') || c.includes('chittagong') || c.includes('sylhet')) return 'Bangladesh';
+  if (c.includes('shibuya') || c.includes('tokyo') || c.includes('kyoto')) return 'Japan';
+  if (c.includes('dubai') || c.includes('abu dhabi')) return 'United Arab Emirates';
+  if (c.includes('berlin') || c.includes('munich') || c.includes('frankfurt')) return 'Germany';
+  if (c.includes('london') || c.includes('manchester')) return 'United Kingdom';
+  if (c.includes('sydney') || c.includes('melbourne')) return 'Australia';
+  if (c.includes('toronto') || c.includes('vancouver')) return 'Canada';
+  if (c.includes('paris')) return 'France';
+  if (c.includes('singapore')) return 'Singapore';
+  return 'United States'; // fallback
+}
+
 // GET /api/properties (Filtered, Paginated)
 // ─────────────────────────────────────────────
 export async function GET(request: NextRequest) {
@@ -20,6 +37,7 @@ export async function GET(request: NextRequest) {
     const category = searchParams.get('category'); // apartment, house, room_share, commercial
     const type = searchParams.get('type'); // buy, rent, roommate_share
     const city = searchParams.get('city');
+    const country = searchParams.get('country');
     const minPrice = searchParams.get('minPrice');
     const maxPrice = searchParams.get('maxPrice');
     const bedrooms = searchParams.get('bedrooms');
@@ -51,6 +69,10 @@ export async function GET(request: NextRequest) {
 
     if (city) {
       filter.city = { $regex: new RegExp(city, 'i') };
+    }
+
+    if (country) {
+      filter.country = { $regex: new RegExp(country, 'i') };
     }
 
     if (ownerId) {
@@ -239,6 +261,7 @@ export async function POST(request: NextRequest) {
       formattedAddress,
       city,
       state,
+      country,
       zipCode,
       latitude,
       longitude,
@@ -335,6 +358,7 @@ export async function POST(request: NextRequest) {
       formattedAddress,
       city,
       state,
+      country: country || resolveCountry(city),
       zipCode,
       _geo: {
         lat: parseFloat(latitude || '40.7128'),

@@ -22,12 +22,12 @@ export async function RelatedListings({ currentId, category, className }: Relate
 
   const relatedDocs = await Property.find(query).limit(4).lean();
 
-  const related = (relatedDocs as unknown as IProperty[]).map((p) => ({
+  const plainDocs = JSON.parse(JSON.stringify(relatedDocs));
+
+  const related = plainDocs.map((p: any) => ({
     ...p,
-    id: p._id.toString(),
-    ownerId: p.ownerId.toString(),
-    createdAt: p.createdAt?.toISOString(),
-    updatedAt: p.updatedAt?.toISOString(),
+    id: p._id,
+    ownerId: p.ownerId,
   })) as unknown as MockProperty[];
 
   if (related.length === 0) return null;

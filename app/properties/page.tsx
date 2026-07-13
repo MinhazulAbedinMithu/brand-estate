@@ -12,6 +12,7 @@ import { Sheet, SheetTrigger, SheetContent } from "@/components/ui/sheet";
 import { SlidersHorizontal } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { MockProperty } from "@/src/mocks/propertyTypes";
+import { cookies } from "next/headers";
 
 export const metadata: Metadata = {
   title: "Search Properties | RealHoms",
@@ -50,6 +51,37 @@ export default async function PropertiesPage({
   
   await connectDB();
 
+  // Dynamic backfill migration for missing country field in legacy properties
+  const countMissing = await Property.countDocuments({ country: { $exists: false } });
+  if (countMissing > 0) {
+    const cityCountryMap: Record<string, string> = {
+      "New York": "United States",
+      "Malibu": "United States",
+      "Chicago": "United States",
+      "Los Angeles": "United States",
+      "East Hampton": "United States",
+      "Austin": "United States",
+      "Houston": "United States",
+      "Shibuya": "Japan",
+      "Dubai": "United Arab Emirates",
+      "Berlin": "Germany",
+      "London": "United Kingdom",
+      "Sydney": "Australia",
+      "Toronto": "Canada",
+      "Melbourne": "Australia",
+      "Paris": "France",
+      "Singapore": "Singapore",
+      "Mumbai": "India",
+      "Dhaka": "Bangladesh"
+    };
+
+    const docsToUpdate = await Property.find({ country: { $exists: false } }).lean();
+    for (const doc of docsToUpdate) {
+      const resolved = cityCountryMap[doc.city] || "United States";
+      await Property.updateOne({ _id: doc._id }, { $set: { country: resolved } });
+    }
+  }
+
   interface PropertyFilterQuery {
     status?: string;
     propertyCategory?: string;
@@ -59,10 +91,26 @@ export default async function PropertiesPage({
     bathrooms?: { $gte: number };
     squareFeet?: { $gte?: number; $lte?: number };
     isFeatured?: boolean;
+    city?: string | { $regex: RegExp };
+    country?: string | { $regex: RegExp };
     $or?: Array<{ [key: string]: string | RegExp | { $regex: RegExp } }>;
   }
 
   const filter: PropertyFilterQuery = { status: "active" };
+
+  const cookieStore = await cookies();
+  const userCity = cookieStore.get("user_city")?.value;
+  const userCountry = cookieStore.get("user_country")?.value;
+
+  // Apply default location filters from cookie if not searching/filtering explicitly by address/city/zip
+  if (!parsedParams.q) {
+    if (userCity) {
+      filter.city = { $regex: new RegExp(`^${userCity}$`, "i") };
+    }
+    if (userCountry) {
+      filter.country = { $regex: new RegExp(`^${userCountry}$`, "i") };
+    }
+  }
 
   if (parsedParams.category) {
     filter.propertyCategory = parsedParams.category;
@@ -122,8 +170,17 @@ export default async function PropertiesPage({
   const limit = 12;
   const skip = (page - 1) * limit;
 
-  const [total, propertiesDocs] = await Promise.all([
-    Property.countDocuments(filter as unknown as Record<string, unknown>),
+  let total = await Property.countDocuments(filter as unknown as Record<string, unknown>);
+  if (total === 0 && !parsedParams.q && userCity && userCountry) {
+    // If no properties match city, try country-only fallback (removes city, but keeps country!)
+    if (filter.city) {
+      delete filter.city;
+      total = await Property.countDocuments(filter as unknown as Record<string, unknown>);
+    }
+  }
+
+  const [_, propertiesDocs] = await Promise.all([
+    Promise.resolve(total),
     Property.find(filter as unknown as Record<string, unknown>)
       .sort(sortOptions)
       .skip(skip)
@@ -131,13 +188,14 @@ export default async function PropertiesPage({
       .lean(),
   ]);
 
+  // Convert Mongoose documents/dates/ObjectIds to plain JSON primitives
+  const plainDocs = JSON.parse(JSON.stringify(propertiesDocs));
+
   // Map database documents to MockProperty shape for components
-  const items = (propertiesDocs as unknown as IProperty[]).map((p) => ({
+  const items = plainDocs.map((p: any) => ({
     ...p,
-    id: p._id.toString(),
-    ownerId: p.ownerId.toString(),
-    createdAt: p.createdAt?.toISOString(),
-    updatedAt: p.updatedAt?.toISOString(),
+    id: p._id,
+    ownerId: p.ownerId,
   })) as unknown as MockProperty[];
 
   const totalPages = Math.max(1, Math.ceil(total / limit));

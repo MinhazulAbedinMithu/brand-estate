@@ -112,25 +112,54 @@ export function Navbar() {
     };
   }, []);
 
-  // Geolocation effect
+  // Helper to read cookie values on client side
+  const getCookie = (name: string): string => {
+    if (typeof document === 'undefined') return '';
+    const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]*)'));
+    return match ? decodeURIComponent(match[2]) : '';
+  };
+
+  // Geolocation & Cookie mount effect
   React.useEffect(() => {
     let active = true;
-    fetch("https://ipapi.co/json/")
-      .then((res) => {
-        if (!res.ok) throw new Error("Geolocation failed");
-        return res.json();
-      })
-      .then((data) => {
-        if (active && data.country_name) {
-          setLocation(data.country_name);
-        }
-      })
-      .catch(() => {
-        if (active) setLocation("United States");
-      })
-      .finally(() => {
-        if (active) setIsGeoLoading(false);
-      });
+    const cCity = getCookie("user_city");
+    const cCountry = getCookie("user_country");
+
+    if (cCity || cCountry) {
+      if (active) {
+        const formatted = cCity ? `${cCity}, ${cCountry}` : cCountry;
+        setLocation(formatted);
+        setIsGeoLoading(false);
+      }
+    } else {
+      fetch("https://ipapi.co/json/")
+        .then((res) => {
+          if (!res.ok) throw new Error("Geolocation failed");
+          return res.json();
+        })
+        .then((data) => {
+          if (active && data.country_name) {
+            const city = data.city || "";
+            const country = data.country_name;
+            const formatted = city ? `${city}, ${country}` : country;
+            setLocation(formatted);
+
+            // Save to cookies
+            document.cookie = `user_city=${encodeURIComponent(city)}; path=/; max-age=31536000; SameSite=Lax`;
+            document.cookie = `user_country=${encodeURIComponent(country)}; path=/; max-age=31536000; SameSite=Lax`;
+          }
+        })
+        .catch(() => {
+          if (active) {
+            setLocation("New York, United States");
+            document.cookie = `user_city=New York; path=/; max-age=31536000; SameSite=Lax`;
+            document.cookie = `user_country=United States; path=/; max-age=31536000; SameSite=Lax`;
+          }
+        })
+        .finally(() => {
+          if (active) setIsGeoLoading(false);
+        });
+    }
 
     return () => {
       active = false;
@@ -147,8 +176,16 @@ export function Navbar() {
     setIsSearchOpen(true);
   };
 
-  const handleSelectCountry = (country: string) => {
-    setLocation(country);
+  const handleSelectLocation = (city: string, country: string) => {
+    const formatted = city ? `${city}, ${country}` : country;
+    setLocation(formatted);
+
+    // Save to cookies
+    document.cookie = `user_city=${encodeURIComponent(city)}; path=/; max-age=31536000; SameSite=Lax`;
+    document.cookie = `user_country=${encodeURIComponent(country)}; path=/; max-age=31536000; SameSite=Lax`;
+
+    // Refresh page to trigger server component updates
+    router.refresh();
   };
 
   return (
@@ -689,8 +726,8 @@ export function Navbar() {
         isOpen={isSearchOpen}
         onClose={() => setIsSearchOpen(false)}
         defaultTab={searchDefaultTab}
-        selectedCountry={location}
-        onSelectCountry={handleSelectCountry}
+        currentLocation={location}
+        onSelectLocation={handleSelectLocation}
       />
     </header>
   );

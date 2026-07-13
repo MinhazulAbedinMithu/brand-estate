@@ -68,6 +68,7 @@ const PropertySchema = new Schema<IProperty>(
     formattedAddress: { type: String, required: true },
     city: { type: String, required: true },
     state: { type: String, required: true },
+    country: { type: String, required: true, default: "United States" },
     zipCode: { type: String, required: true },
     _geo: {
       lat: { type: Number, required: true },

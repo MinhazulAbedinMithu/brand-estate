@@ -152,6 +152,7 @@ export interface BaseProperty {
   formattedAddress: string;
   city: string;
   state: string;
+  country?: string;
   zipCode: string;
   _geo: GeoPoint; // Meilisearch _geo format
   neighborhoodNotes: string;

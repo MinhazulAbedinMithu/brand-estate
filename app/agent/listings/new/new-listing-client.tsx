@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { COUNTRIES, COUNTRY_CITIES } from "@/lib/constants";
+import { CustomDropdown } from "@/components/ui/custom-dropdown";
 
 import { useAuth } from "@/lib/auth-context";
 import { ImageUploader } from "@/components/blog/image-uploader";
@@ -56,6 +58,7 @@ export function NewListingClient() {
     address: "",
     city: "",
     state: "",
+    country: "United States",
     zipCode: "",
     lat: "40.7128",
     lng: "-74.0060",
@@ -215,6 +218,7 @@ export function NewListingClient() {
       formattedAddress: form.address,
       city: form.city,
       state: form.state,
+      country: form.country,
       zipCode: form.zipCode,
       latitude: parseFloat(form.lat),
       longitude: parseFloat(form.lng),
@@ -435,14 +439,24 @@ export function NewListingClient() {
               />
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-bold text-text-muted uppercase tracking-wider">Country *</label>
+                <CustomDropdown
+                  value={form.country}
+                  onChange={(country) => setForm(p => ({ ...p, country, city: "" }))}
+                  options={COUNTRIES as unknown as string[]}
+                  placeholder="Select Country..."
+                />
+              </div>
               <div className="space-y-1.5">
                 <label className="text-[11px] font-bold text-text-muted uppercase tracking-wider">City *</label>
-                <Input
-                  placeholder="e.g. New York"
+                <CustomDropdown
                   value={form.city}
-                  onChange={(e) => setForm(p => ({ ...p, city: e.target.value }))}
-                  className="h-10 border-border-default bg-bg-base text-text-primary text-sm rounded-xl"
+                  onChange={(city) => setForm(p => ({ ...p, city }))}
+                  options={COUNTRY_CITIES[form.country] || []}
+                  placeholder={!form.country ? "Select Country First..." : "Select City..."}
+                  disabled={!form.country}
                 />
               </div>
               <div className="space-y-1.5">

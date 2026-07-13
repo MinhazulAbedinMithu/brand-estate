@@ -83,7 +83,106 @@ export async function GET(request: NextRequest) {
     // ── 2. Seed Properties ────────────────────────────────────────────────────
     let seededCount = 0;
 
-    for (const propMock of mockProperties) {
+    const extraProperties: any[] = [
+      {
+        id: "apt-extra-001",
+        title: "Palais Royale Skyline Apartment",
+        slug: "palais-royale-skyline-apartment-mumbai",
+        description: "Luxurious apartment overlooking the Mumbai skyline. High-end finishes, private elevator, gated security, pool, and gym access.",
+        transactionType: "buy",
+        propertyCategory: "apartment",
+        price: 180000000,
+        currency: "INR",
+        taxHistory: [],
+        priceHistory: [],
+        formattedAddress: "Palais Royale, Worli Naka, Mumbai, MH 400018, India",
+        city: "Mumbai",
+        state: "Maharashtra",
+        country: "India",
+        zipCode: "400018",
+        _geo: { lat: 19.0067, lng: 72.8194 },
+        neighborhoodNotes: "Premium neighborhood Worli, steps from premium shopping and dining.",
+        squareFeet: 3500,
+        squareMeters: 325.16,
+        totalRooms: 7,
+        bedrooms: 3,
+        bathrooms: 3,
+        yearBuilt: 2021,
+        images: ["https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1000&q=80"],
+        videoTourUrl: null,
+        virtualTourUrl: null,
+        status: "active",
+        isFeatured: true,
+        ownerId: "user-agent-001",
+        listerProfile: {
+          name: "Sophia Chen",
+          avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80",
+          phone: "+1 (555) 0199",
+          email: "sophia.chen@realhoms.com",
+          agencyName: "RealHoms Agency",
+          licenseNumber: "NY-RE-0082341",
+          agentSlug: "sophia-chen",
+        },
+        seo: {
+          seoTitle: "Palais Royale Skyline Apartment for Sale in Mumbai Worli",
+          metaDescription: "3 Bedroom luxury apartment for sale in Worli, Mumbai. Palais Royale Skyline Residence with pool and gym.",
+          ogImageUrl: "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1000&q=80",
+          keywords: ["mumbai", "worli", "luxury", "skyline", "apartment"]
+        },
+        amenities: ["Swimming Pool", "Fitness Gym", "Security System", "Elevator"]
+      },
+      {
+        id: "apt-extra-002",
+        title: "Gulshan Lakefront Residence",
+        slug: "gulshan-lakefront-residence-dhaka",
+        description: "Stunning duplex penthouse facing Gulshan Lake. Equipped with smart home automation, terrace garden, and 24/7 power backup.",
+        transactionType: "rent",
+        propertyCategory: "apartment",
+        price: 250000,
+        currency: "BDT",
+        taxHistory: [],
+        priceHistory: [],
+        formattedAddress: "Road 79, Gulshan 2, Dhaka 1212, Bangladesh",
+        city: "Dhaka",
+        state: "Dhaka",
+        country: "Bangladesh",
+        zipCode: "1212",
+        _geo: { lat: 23.7925, lng: 90.4125 },
+        neighborhoodNotes: "Gulshan 2 lakefront. Highly secure diplomatic zone close to embassies and premium clubs.",
+        squareFeet: 4200,
+        squareMeters: 390.19,
+        totalRooms: 9,
+        bedrooms: 4,
+        bathrooms: 4.5,
+        yearBuilt: 2023,
+        images: ["https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=1000&q=80"],
+        videoTourUrl: null,
+        virtualTourUrl: null,
+        status: "active",
+        isFeatured: true,
+        ownerId: "user-agent-002",
+        listerProfile: {
+          name: "Sophia Chen",
+          avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80",
+          phone: "+1 (555) 0199",
+          email: "sophia.chen@realhoms.com",
+          agencyName: "RealHoms Agency",
+          licenseNumber: "NY-RE-0082341",
+          agentSlug: "sophia-chen",
+        },
+        seo: {
+          seoTitle: "Gulshan Lakefront Duplex Penthouse for Rent in Dhaka 2",
+          metaDescription: "4 Bedroom duplex lakefront apartment for rent in Gulshan 2, Dhaka. Premium secure location.",
+          ogImageUrl: "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=1000&q=80",
+          keywords: ["dhaka", "gulshan", "penthouse", "lakefront", "rent"]
+        },
+        amenities: ["Rooftop Terrace", "Security System", "Power Backup", "Smart Home Integration"]
+      }
+    ];
+
+    const allProps = [...mockProperties, ...extraProperties];
+
+    for (const propMock of allProps) {
       // Map mock ownerId (like "user-agent-001") to the correct MongoDB user ObjectId
       const mockAgentId = propMock.ownerId.replace('user-', '');
       const dbOwnerId = agentMap[mockAgentId] || agentMap['agent-001']; // fallback to Sophia Chen
@@ -101,6 +200,29 @@ export async function GET(request: NextRequest) {
       const sqFeet = propMock.squareFeet;
       const sqMeters = Number((sqFeet * 0.092903).toFixed(2));
 
+      const cityCountryMap: Record<string, string> = {
+        "New York": "United States",
+        "Malibu": "United States",
+        "Chicago": "United States",
+        "Los Angeles": "United States",
+        "East Hampton": "United States",
+        "Austin": "United States",
+        "Houston": "United States",
+        "Shibuya": "Japan",
+        "Dubai": "United Arab Emirates",
+        "Berlin": "Germany",
+        "London": "United Kingdom",
+        "Sydney": "Australia",
+        "Toronto": "Canada",
+        "Melbourne": "Australia",
+        "Paris": "France",
+        "Singapore": "Singapore",
+        "Mumbai": "India",
+        "Dhaka": "Bangladesh"
+      };
+
+      const resolvedCountry = cityCountryMap[propMock.city] || "United States";
+
       // Build the Mongoose document fields
       const newPropData: Record<string, unknown> = {
         title: propMock.title,
@@ -115,6 +237,7 @@ export async function GET(request: NextRequest) {
         formattedAddress: propMock.formattedAddress,
         city: propMock.city,
         state: propMock.state,
+        country: resolvedCountry,
         zipCode: propMock.zipCode,
         _geo: propMock._geo,
         neighborhoodNotes: propMock.neighborhoodNotes || '',
