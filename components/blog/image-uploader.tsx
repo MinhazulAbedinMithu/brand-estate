@@ -5,12 +5,14 @@ import { Upload, X, Loader2, Link as LinkIcon, Trash } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 import { toast } from "sonner";
+import { applyWatermark } from "@/lib/watermark";
 
 interface ImageUploaderProps {
   value: string;
   onChange: (value: string) => void;
   label: string;
   required?: boolean;
+  watermark?: boolean;
 }
 
 export function ImageUploader({
@@ -18,6 +20,7 @@ export function ImageUploader({
   onChange,
   label,
   required = false,
+  watermark = false,
 }: ImageUploaderProps) {
   const [isUploading, setIsUploading] = React.useState(false);
   const [uploadProgress, setUploadProgress] = React.useState(0);
@@ -90,8 +93,12 @@ export function ImageUploader({
   };
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+    let file = e.target.files?.[0];
     if (!file) return;
+
+    if (watermark) {
+      file = await applyWatermark(file);
+    }
 
     const publicUrl = await uploadFileToR2(file);
     if (publicUrl) {
@@ -106,8 +113,12 @@ export function ImageUploader({
 
   const handleDrop = async (e: React.DragEvent) => {
     e.preventDefault();
-    const file = e.dataTransfer.files?.[0];
+    let file = e.dataTransfer.files?.[0];
     if (!file) return;
+
+    if (watermark) {
+      file = await applyWatermark(file);
+    }
 
     const publicUrl = await uploadFileToR2(file);
     if (publicUrl) {

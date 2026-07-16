@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils";
 import { COUNTRIES, COUNTRY_CITIES } from "@/lib/constants";
 import { CustomDropdown } from "@/components/ui/custom-dropdown";
 import { MockProperty, PropertyCategory, Currency } from "@/src/mocks/propertyTypes";
+import { applyWatermark } from "@/lib/watermark";
 
 interface EditListingClientProps {
   property: MockProperty;
@@ -1055,8 +1056,9 @@ export function EditListingClient({ property }: EditListingClientProps) {
                       let failedCount = 0;
 
                       for (let i = 0; i < files.length; i++) {
-                        const file = files[i];
+                        let file = files[i];
                         try {
+                          file = await applyWatermark(file);
                           const res = await fetch('/api/upload/presigned', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },

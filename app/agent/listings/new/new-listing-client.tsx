@@ -14,6 +14,7 @@ import { CustomDropdown } from "@/components/ui/custom-dropdown";
 import { useAuth } from "@/lib/auth-context";
 import { ImageUploader } from "@/components/blog/image-uploader";
 import { TagInput } from "@/components/blog/tag-input";
+import { applyWatermark } from "@/lib/watermark";
 
 const WIZARD_STEPS = [
   { id: 1, name: "Basic Info", desc: "Title, description, category and price" },
@@ -1116,6 +1117,7 @@ export function NewListingClient() {
                 onChange={(val) => setForm(p => ({ ...p, coverImage: val }))}
                 label="Property Cover Image (Primary Display Photo)"
                 required
+                watermark={true}
               />
             </div>
             
@@ -1165,8 +1167,9 @@ export function NewListingClient() {
                       let failedCount = 0;
 
                       for (let i = 0; i < files.length; i++) {
-                        const file = files[i];
+                        let file = files[i];
                         try {
+                          file = await applyWatermark(file);
                           const res = await fetch('/api/upload/presigned', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
@@ -1367,6 +1370,7 @@ export function NewListingClient() {
                     value={form.ogImageUrl}
                     onChange={(val) => setForm(p => ({ ...p, ogImageUrl: val }))}
                     label="Custom OpenGraph Social Preview Image"
+                    watermark={true}
                   />
                 </div>
               )}

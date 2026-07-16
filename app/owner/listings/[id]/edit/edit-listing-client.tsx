@@ -13,6 +13,7 @@ import { CustomDropdown } from "@/components/ui/custom-dropdown";
 import { MockProperty, PropertyCategory, Currency } from "@/src/mocks/propertyTypes";
 import { ImageUploader } from "@/components/blog/image-uploader";
 import { TagInput } from "@/components/blog/tag-input";
+import { applyWatermark } from "@/lib/watermark";
 
 interface EditListingClientProps {
   property: MockProperty;
@@ -1108,8 +1109,9 @@ export function EditListingClient({ property }: EditListingClientProps) {
                       let failedCount = 0;
 
                       for (let i = 0; i < files.length; i++) {
-                        const file = files[i];
+                        let file = files[i];
                         try {
+                          file = await applyWatermark(file);
                           const res = await fetch('/api/upload/presigned', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
@@ -1443,6 +1445,7 @@ export function EditListingClient({ property }: EditListingClientProps) {
                     value={form.ogImageUrl}
                     onChange={(val) => setForm(p => ({ ...p, ogImageUrl: val }))}
                     label="Custom OpenGraph Social Preview Image"
+                    watermark={true}
                   />
                 </div>
               )}
