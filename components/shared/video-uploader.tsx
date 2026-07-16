@@ -4,6 +4,7 @@ import * as React from "react";
 import { Video, Upload, X, Loader2, Link as LinkIcon, Trash } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { applyVideoWatermark } from "@/lib/watermark";
 
 interface VideoUploaderProps {
   value: string;
@@ -37,7 +38,8 @@ export function VideoUploader({
       return;
     }
 
-    // 3. Duration Validation (Max 2 Minutes)
+    // 3. Duration Validation & Watermarking (Max 2 Minutes)
+    let watermarkedFile = file;
     try {
       setIsUploading(true);
       setUploadProgress(2);
@@ -66,6 +68,14 @@ export function VideoUploader({
         setIsUploading(false);
         return;
       }
+
+      // Apply watermark client-side using MediaRecorder
+      setUploadProgress(5);
+      watermarkedFile = await applyVideoWatermark(file, (pct) => {
+        // scale watermarking progress from 5% to 40%
+        const watermarkProgress = Math.round(5 + (pct * 0.35));
+        setUploadProgress(watermarkProgress);
+      });
     } catch (err) {
       console.error("[Video Metadata Verification Failed]", err);
       toast.error("Validation error", { description: "Could not read video length metadata." });
@@ -75,14 +85,14 @@ export function VideoUploader({
 
     // 4. Cloud Upload via Presigned URL
     try {
-      setUploadProgress(10);
+      setUploadProgress(42);
       
       const response = await fetch("/api/upload/presigned", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          filename: file.name,
-          contentType: file.type,
+          filename: watermarkedFile.name,
+          contentType: watermarkedFile.type,
           folder: "listings/videos",
         }),
       });
@@ -97,16 +107,17 @@ export function VideoUploader({
       }
 
       const { uploadUrl, publicUrl } = data;
-      setUploadProgress(25);
+      setUploadProgress(45);
 
       const uploadedUrl = await new Promise<string | null>((resolve, reject) => {
         const xhr = new XMLHttpRequest();
         xhr.open("PUT", uploadUrl, true);
-        xhr.setRequestHeader("Content-Type", file.type);
+        xhr.setRequestHeader("Content-Type", watermarkedFile.type);
 
         xhr.upload.onprogress = (event) => {
           if (event.lengthComputable) {
-            const pct = Math.round((event.loaded / event.total) * 70) + 25; // 25% to 95%
+            // scale upload progress from 45% to 95%
+            const pct = Math.round((event.loaded / event.total) * 50) + 45;
             setUploadProgress(pct);
           }
         };
@@ -124,7 +135,7 @@ export function VideoUploader({
           reject(new Error("Network connection error during upload."));
         };
 
-        xhr.send(file);
+        xhr.send(watermarkedFile);
       });
 
       if (uploadedUrl) {
