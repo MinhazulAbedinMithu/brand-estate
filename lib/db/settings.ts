@@ -25,7 +25,5 @@ export async function getSystemSetting(key: string, envFallbackKey?: string): Pr
  */
 export async function getStripeClient(): Promise<Stripe> {
   const secretKey = await getSystemSetting("stripeSecretKey", "STRIPE_SECRET_KEY");
-  return new Stripe(secretKey, {
-    apiVersion: "2025-01-27" as any, // Standard edge compatibility parameter override
-  });
+  return new Stripe(secretKey);
 }

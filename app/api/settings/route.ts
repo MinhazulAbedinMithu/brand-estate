@@ -2,6 +2,7 @@ import { type NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/db/mongoose";
 import { SystemSetting } from "@/lib/db/models/system-setting.model";
 import { verifyJwt } from "@/lib/auth/tokens";
+import { recordAuditLog } from "@/lib/db/audit";
 import {
   DEFAULT_BACKGROUND_CHECK_URL,
   DEFAULT_CREDIT_SCORE_CHECK_URL,
@@ -124,6 +125,12 @@ export async function POST(request: NextRequest) {
         );
       }
     }
+
+    await recordAuditLog(
+      request,
+      "SETTINGS_CHANGE",
+      "Modified platform API credentials, legal parameters, and verification check configurations."
+    );
 
     return NextResponse.json({ status: "success", message: "Settings saved successfully." });
   } catch (err: any) {

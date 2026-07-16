@@ -2,6 +2,7 @@ import { type NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/db/mongoose';
 import { User } from '@/lib/db/models/user.model';
 import { verifyEdgeJwt } from '@/lib/auth/edge-jwt';
+import { recordAuditLog } from '@/lib/db/audit';
 
 const COOKIE_NAME = 'be_auth_token';
 const JWT_SECRET = process.env.JWT_SECRET || '';
@@ -76,6 +77,14 @@ export async function PATCH(
     }
 
     await user.save();
+
+    await recordAuditLog(
+      request,
+      "USER_STATUS_CHANGE",
+      `Changed user status for ${user.name} (${user.email}) to "${status}".${
+        status === "suspended" ? ` Reason: ${reason || "Violation of terms"}` : ""
+      }`
+    );
 
     return NextResponse.json(
       { status: 'success', message: 'User status updated successfully.' },

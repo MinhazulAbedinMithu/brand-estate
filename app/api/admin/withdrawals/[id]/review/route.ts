@@ -5,6 +5,7 @@ import { WalletTransaction } from "@/lib/db/models/wallet-transaction.model";
 import { Notification } from "@/lib/db/models/notification.model";
 import { getSessionUser } from "@/lib/auth/get-user";
 import { getStripeClient } from "@/lib/db/settings";
+import { recordAuditLog } from "@/lib/db/audit";
 
 interface RouteContext {
   params: Promise<{ id: string }>;
@@ -117,6 +118,14 @@ export async function POST(request: NextRequest, { params }: RouteContext) {
       });
       await notification.save();
     }
+
+    await recordAuditLog(
+      request,
+      "WITHDRAWAL_REVIEW",
+      `Reviewed withdrawal request ${transaction._id} for ${user.name} (${user.email}). Status: "${status}".${
+        reason ? ` Reason: ${reason}` : ""
+      }`
+    );
 
     return NextResponse.json(
       { 
