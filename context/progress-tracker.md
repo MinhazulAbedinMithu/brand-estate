@@ -244,7 +244,10 @@ Implement, test, and integrate backend API routes (Next.js API Routes / Mongoose
     - Added support for `watermark` property in `ImageUploader` component.
     - Integrated `watermark={true}` for Cover Images, custom OG Images, and multiple Gallery Images inside the new and edit listing pages for both owner and agent workspaces.
     - Confirmed compiler (`tsc`), linter (`eslint`), and bundling (`next build`) pass cleanly with zero new errors.
-  - [x] Verified static compilation with zero errors under `npm run build`.
+  - [x] **Listings Video Upload Functionality COMPLETE** ✅
+    - Created dual-mode `VideoUploader` component supporting size validation (max 70MB) and duration validation (max 2 minutes) client-side.
+    - Integrated uploader with progress indicator and inline controls player in all 4 creation/editing listing pages.
+    - Verified static compilation with zero errors under `npm run build`.
 
 ## In Progress
 

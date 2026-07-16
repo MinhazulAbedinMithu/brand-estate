@@ -12,6 +12,7 @@ import { COUNTRIES, COUNTRY_CITIES } from "@/lib/constants";
 import { CustomDropdown } from "@/components/ui/custom-dropdown";
 import { MockProperty, PropertyCategory, Currency } from "@/src/mocks/propertyTypes";
 import { applyWatermark } from "@/lib/watermark";
+import { VideoUploader } from "@/components/shared/video-uploader";
 
 interface EditListingClientProps {
   property: MockProperty;
@@ -1122,12 +1123,10 @@ export function EditListingClient({ property }: EditListingClientProps) {
               <h3 className="text-xs font-bold text-text-primary uppercase tracking-wider block">Interactive Virtual Tours</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5 text-left">
-                  <label className="text-[11px] font-bold text-text-muted uppercase tracking-wider block">Video Tour URL</label>
-                  <Input
-                    placeholder="e.g. https://www.youtube.com/watch?v=..."
+                  <VideoUploader
                     value={form.videoTourUrl}
-                    onChange={(e) => setForm(p => ({ ...p, videoTourUrl: e.target.value }))}
-                    className="h-10 border-border-default bg-bg-base text-text-primary text-sm rounded-xl"
+                    onChange={(val) => setForm(p => ({ ...p, videoTourUrl: val }))}
+                    label="Interactive Video Tour"
                   />
                 </div>
                 <div className="space-y-1.5 text-left">
